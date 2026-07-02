@@ -34,6 +34,15 @@ function cardPower(card,trump){
   return {'A':14,'K':13,'Q':12,'10':10,'9':9,'8':8,'7':7,'6':6}[card.rank]||0;
 }
 
+// ── Хрестовець: вибір 3 карт на скидання ──────────────────────────
+let discardSel=[];
+function submitDiscard(){
+  if(discardSel.length!==3){showToast('Обери рівно 3 карти');return;}
+  sfx('card'); vibrate('light');
+  socket.emit('discard_cards',{cardIds:[...discardSel]});
+  discardSel=[];
+}
+
 // ── Перетягування карти на стіл (drag-to-play) ────────────────────
 function isOverTable(clientY){
   const ha=document.querySelector('.my-hand-area');
@@ -72,7 +81,7 @@ function enableCardDrag(el, card){
     el.style.visibility='visible';
     if(play){
       try{ tg?.HapticFeedback?.impactOccurred?.('medium'); }catch(_){}
-      selectedCardId=card.id; submitPlay();
+      selectedCardId=card.id; sfx('card'); submitPlay();
     }
   }
 
@@ -137,12 +146,18 @@ function makeCardHTML(card){
 
 function renderGame(state){
   const{phase,players,scores,trump,currentPlayer,trick,trickCount,hand,handSizes,boaster,roundNum}=state;
+  const isKhrest=state.mode==='khrest';
   const isMyTurn=currentPlayer===myIndex,iAmBoaster=boaster===myIndex;
   const tb=$('ghTrump');tb.textContent=trump||'';tb.style.color=trump?(SUIT_RED[trump]?'#e74c3c':'#f0f0f0'):'';
   const pot=players.length*currentRoomDeposit;
   $('ghPot').textContent=pot>0?`Банк: ${pot} 💰`:`Раунд ${roundNum}`;
-  $('scoreANames').textContent=`${(players[0]?.name||'Г1').slice(0,6)} & ${(players[2]?.name||'Г3').slice(0,6)}`;
-  $('scoreBNames').textContent=`${(players[1]?.name||'Г2').slice(0,6)} & ${(players[3]?.name||'Г4').slice(0,6)}`;
+  // Хрестовець — кожен за себе: командна панель не потрібна,
+  // особисті штрафи показуємо в бейджах гравців нижче
+  const sb=document.querySelector('.score-bar'); if(sb) sb.style.display=isKhrest?'none':'flex';
+  if(!isKhrest){
+    $('scoreANames').textContent=`${(players[0]?.name||'Г1').slice(0,6)} & ${(players[2]?.name||'Г3').slice(0,6)}`;
+    $('scoreBNames').textContent=`${(players[1]?.name||'Г2').slice(0,6)} & ${(players[3]?.name||'Г4').slice(0,6)}`;
+  }
   renderOpponents(state);
   renderOpponentCards(state);
 
@@ -164,16 +179,51 @@ function renderGame(state){
     tc.appendChild(slot);
   }
   let msg='';
-  if(phase==='choose_trump'||phase==='show9')msg=iAmBoaster?'🗣️ Обери козир':`⏳ ${(players[boaster]?.name||'?').slice(0,10)} обирає козир...`;
-  else if(phase==='play')msg=isMyTurn?'👆 Твій хід!':`⏳ Ходить ${(players[currentPlayer]?.name||'?').slice(0,10)}...`;
+  if(phase==='discard'){
+    const iDiscarded=(state.discardDone||[]).includes(myIndex);
+    msg=iDiscarded?`⏳ Чекаємо інших (${(state.discardDone||[]).length}/${state.maxPlayers})...`
+                  :`🗑 Скинь 3 карти (${discardSel.length}/3)`;
+  }
+  else if(phase==='choose_trump'||phase==='show9')msg=iAmBoaster?'🗣️ Обери козир':`⏳ ${(players[boaster]?.name||'?').slice(0,10)} обирає козир...`;
+  else if(phase==='play')msg=(isMyTurn?'👆 Твій хід!':`⏳ Ходить ${(players[currentPlayer]?.name||'?').slice(0,10)}...`)
+    +(isKhrest?(iAmBoaster?' · норма 5':' · норма 2'):'');
   $('statusPill').textContent=msg;
   const mnt=$('myNameTag');
   mnt.textContent=(players[myIndex]?.name||'Ти')+(iAmBoaster?' 🗣️':'')+(isMyTurn?' 👆':'');
   mnt.className='my-name-tag'+(isMyTurn?' active':'')+(iAmBoaster?' boaster':'');
-  $('tricksMini').innerHTML=trickCount.map((c,i)=>`<span class="tm-badge">${(players[i]?.name||`Г${i+1}`).slice(0,4)}: ${c}</span>`).join('');
+  // Бейджі: у хрестовці — дачки + особистий штраф до 24
+  $('tricksMini').innerHTML=trickCount.map((c,i)=>`<span class="tm-badge">${(players[i]?.name||`Г${i+1}`).slice(0,4)}: ${c}${isKhrest?` · ${scores[i]}/24`:''}</span>`).join('');
+
+  // Кнопка скидання (Хрестовець)
+  const db=$('discardBtn');
+  if(db){
+    const iDiscarded=(state.discardDone||[]).includes(myIndex);
+    db.className='play-action-btn'+(phase==='discard'&&!iDiscarded&&discardSel.length===3?' show':'');
+  }
+
   const hd=$('myHandCards');hd.innerHTML='';
   const sorted = trump ? sortHand(hand, trump) : hand;
   if(sorted.length===0) return;
+
+  // ── Фаза скидання (Хрестовець): обери 3 карти ──────────────────
+  if(phase==='discard'){
+    const iDiscarded=(state.discardDone||[]).includes(myIndex);
+    sorted.forEach((card,i)=>{
+      const isSel=discardSel.includes(card.id);
+      const el=makeCard(card,{selected:isSel,onClick:()=>{
+        if(iDiscarded)return;
+        if(card.id==='J♣'){showToast('Хрестового валета скидати не можна ♣',2200);return;}
+        if(isSel)discardSel=discardSel.filter(id=>id!==card.id);
+        else{ if(discardSel.length>=3){showToast('Максимум 3 карти');return;} discardSel.push(card.id); }
+        sfx('click');
+        renderGame(gameState);
+      }});
+      if(iDiscarded)el.classList.add('invalid');
+      el.style.zIndex=isSel?50:i+1;
+      hd.appendChild(el);
+    });
+    return; // нижче — логіка фази гри
+  }
 
   // Simple overlap row - all cards visible, scroll if needed
   sorted.forEach((card, i) => {
@@ -213,8 +263,8 @@ function renderGame(state){
     const t3=$('trump3cards');
     if(t3){
       t3.innerHTML='';
-      // partialHand = перші 3 карти (до повної роздачі)
-      const show3 = state.partialHand && state.partialHand.length>0 ? state.partialHand : hand.slice(0,3);
+      // хФали: перші 3 карти; Хрестовець: вся рука з 9 (козир після скидання)
+      const show3 = isKhrest ? hand : (state.partialHand && state.partialHand.length>0 ? state.partialHand : hand.slice(0,3));
       show3.forEach(card=>{ t3.innerHTML+=makeCardHTML(card); });
     }
   } else {
@@ -242,9 +292,24 @@ function renderOpponents(state){
 
 function renderRoundEnd(result){
   const players=gameState?.players||[];
-  $('roundSummaryText').textContent=`Хвалящий взяв ${result.boasterTricks} дачок з 9`;
   const grid=$('roundResultGrid');grid.innerHTML='';
   const target=result.target||24;
+
+  // ── Хрестовець: особисті норми (5 хвалящому / 2 іншим) і штрафи ──
+  if(result.mode==='khrest'){
+    $('roundSummaryText').textContent=`Норма: хвалящий 5 · інші по 2`;
+    for(let i=0;i<3;i++){
+      const took=result.trickCount[i], req=result.required[i], pen=result.deltas[i];
+      const div=document.createElement('div');div.className=`rp ${pen>0?'neg':'pos'}`;
+      div.innerHTML=`<div class="rp-name">${(players[i]?.name||`Г${i+1}`).slice(0,10)}${i===myIndex?' (ти)':''}${i===result.boaster?' 🗣️':''}</div>
+        <div class="rp-delta">${took}/${req}${pen>0?' · +'+pen:' ✓'}</div>
+        <div class="rp-total">${result.scores[i]}/${target}</div>`;
+      grid.appendChild(div);
+    }
+    return;
+  }
+
+  $('roundSummaryText').textContent=`Хвалящий взяв ${result.boasterTricks} дачок з 9`;
   for(let i=0;i<4;i++){
     const d=result.deltas[i];
     // Штрафні очки: отримав штраф (d>0) — погано (червоне); 0 — добре (зелене)
@@ -379,12 +444,14 @@ function playDealAnimation(hand, onDone) {
 
 // ── Збір взятки: карти зі столу злітаються в стопку до переможця ──
 function trickWinnerAnchor(winnerIdx){
-  const off=(((winnerIdx-myIndex)%4)+4)%4;
+  const N=(gameState&&gameState.maxPlayers)||4;
+  const off=(((winnerIdx-myIndex)%N)+N)%N;
   let el=null;
-  if(off===0) el=document.querySelector('.my-hand-area'); // я → знизу
-  else if(off===1) el=$('oppTop');                        // наступний → зверху
-  else if(off===2) el=$('oppLeft');                       // ліворуч
-  else el=$('oppRight');                                  // праворуч
+  if(off===0) el=document.querySelector('.my-hand-area');      // я → знизу
+  else if(N===3) el=off===1?$('oppLeft'):$('oppRight');        // 3 гравці: ліво/право
+  else if(off===1) el=$('oppTop');                             // наступний → зверху
+  else if(off===2) el=$('oppLeft');                            // ліворуч
+  else el=$('oppRight');                                       // праворуч
   const r=el?el.getBoundingClientRect():null;
   if(!r) return {x:window.innerWidth/2, y:window.innerHeight/2};
   return {x:r.left+r.width/2, y:r.top+r.height/2};
@@ -465,9 +532,15 @@ function renderOpponentCards(state) {
     {containerId:'oppRightCards', labelId:'oppRightLabel', horiz:false},
   ];
 
-  [1,2,3].forEach((offset, ri) => {
-    const idx = (myIndex + offset) % 4;
-    const pos = positions[ri];
+  const N = state.maxPlayers||4;
+  // 3 гравці (Хрестовець): двоє суперників — ліворуч і праворуч, верх порожній
+  const offsets = N===3 ? [1,2] : [1,2,3];
+  const posMap  = N===3 ? [positions[1],positions[2]] : positions;
+  if(N===3){ const c=$('oppTopCards'),l=$('oppTopLabel'); if(c)c.innerHTML=''; if(l)l.innerHTML=''; }
+
+  offsets.forEach((offset, ri) => {
+    const idx = (myIndex + offset) % N;
+    const pos = posMap[ri];
     const container = $(pos.containerId);
     const label = $(pos.labelId);
     if(!container || !label) return;
@@ -529,6 +602,7 @@ let dealIntroDone = false;
 
 function showDealIntro(players, boasterIdx, onDone) {
   dealIntroDone = false;
+  sfx('deal');
   const overlay = $('dealIntro');
   const title = $('dealIntroTitle');
   const sub = $('dealIntroSub');

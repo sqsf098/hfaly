@@ -445,33 +445,34 @@ body.theme-fan::before{content:'';position:fixed;inset:0;z-index:0;pointer-event
 
 /* ── Навігація "карткова рука" (нижній док) ─────────────────────── */
 body.fan-nav .tab-bar{display:none !important}
-body.fan-nav .content{padding-bottom:calc(146px + env(safe-area-inset-bottom))}
-body.fan-nav #homeScreen{padding-bottom:calc(128px + env(safe-area-inset-bottom))}
-#fanNav{display:none;position:fixed;left:0;right:0;bottom:0;z-index:120;pointer-events:none;
-  height:calc(122px + env(safe-area-inset-bottom))}
+body.fan-nav .content{padding-bottom:calc(118px + env(safe-area-inset-bottom))}
+body.fan-nav #homeScreen{padding-bottom:calc(104px + env(safe-area-inset-bottom))}
+/* Рівний ряд карт-вкладок: нічого не перекривається, чіткі зони тапу */
+#fanNav{display:none;position:fixed;left:0;right:0;bottom:0;z-index:120;
+  padding:10px 8px calc(10px + env(safe-area-inset-bottom));
+  background:rgba(7,11,21,0.94);backdrop-filter:blur(14px);border-top:1px solid var(--border2)}
 body.fan-nav #fanNav{display:block}
 body.in-game #fanNav{display:none !important}
-#fanNav::before{content:'';position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(0deg,rgba(6,9,20,0.99) 34%,rgba(6,9,20,0.92) 64%,transparent 100%)}
-.fan-title{display:none} /* мітку показуємо на самих картах — без наїзду на контент */
-.fan-wrap{position:absolute;left:50%;bottom:calc(12px + env(safe-area-inset-bottom));transform:translateX(-50%);width:2px;height:88px}
-.fan-card{position:absolute;bottom:0;left:0;width:60px;height:84px;margin-left:-30px;
-  border-radius:13px;transform-origin:50% 135%;cursor:pointer;pointer-events:auto;
+.fan-title{display:none}
+.fan-wrap{display:flex;justify-content:center;align-items:flex-end;gap:8px;max-width:360px;margin:0 auto}
+.fan-card{position:relative;width:60px;height:80px;flex-shrink:0;
+  border-radius:12px;cursor:pointer;
   background:linear-gradient(165deg,rgba(34,50,90,0.96),rgba(16,24,46,0.98));
   border:1.5px solid var(--border);
-  box-shadow:0 8px 20px rgba(0,0,0,0.5),inset 0 1px 0 var(--panel-top);
-  transition:transform 0.26s cubic-bezier(.2,.8,.2,1),box-shadow 0.22s,border-color 0.2s,opacity 0.22s,color 0.2s;
+  box-shadow:0 4px 12px rgba(0,0,0,0.4),inset 0 1px 0 var(--panel-top);
+  transition:transform 0.2s cubic-bezier(.2,.8,.2,1),box-shadow 0.2s,border-color 0.2s,color 0.2s;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;color:var(--text3);
-  overflow:hidden;will-change:transform}
-.fan-card:active{transition-duration:0.08s}
-.fan-card .fc-suit{position:absolute;top:5px;left:6px;font-size:9px;opacity:0.45}
-.fan-card .fc-suit.br{top:auto;left:auto;bottom:5px;right:6px;transform:rotate(180deg)}
+  overflow:hidden}
+.fan-card:active{transform:scale(0.94)}
+.fan-card .fc-suit{position:absolute;top:4px;left:6px;font-size:9px;opacity:0.45}
+.fan-card .fc-suit.br{top:auto;left:auto;bottom:4px;right:6px;transform:rotate(180deg)}
 .fan-card .fc-icon{color:var(--text2);filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5));transition:color 0.2s}
 .fan-card.active .fc-icon{color:var(--gold2)}
 .fan-card .fc-label{font-size:9px;font-weight:800;font-family:'Rubik',sans-serif;letter-spacing:0.2px}
-.fan-card.active{color:var(--text);border-color:var(--gold);
+.fan-card.active{color:var(--text);border-color:var(--gold);transform:translateY(-6px);
   background:linear-gradient(165deg,rgba(54,74,124,0.98),rgba(24,34,64,0.99));
-  box-shadow:0 0 22px rgba(255,209,102,0.45),0 12px 26px rgba(0,0,0,0.55),inset 0 1px 0 var(--panel-top)}
+  box-shadow:0 0 18px rgba(217,185,106,0.35),0 8px 18px rgba(0,0,0,0.5),inset 0 1px 0 var(--panel-top)}
+.fan-card.active:active{transform:translateY(-6px) scale(0.96)}
 .fan-card.active .fc-icon{transform:scale(1.1)}
 
 /* ── Головне меню: строгий грід (стиль класичних карткових застосунків) ── */

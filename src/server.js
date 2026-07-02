@@ -72,7 +72,8 @@ loadEscrow();
 const refunded = refundOrphans(getWallet);
 if (refunded) { flushWallets(); log(`💸 Повернено ${refunded} депозитів після рестарту`); }
 log(`🔐 Telegram auth: ${AUTH.REQUIRE ? "обов'язковий" : 'вимкнений (dev), у production з BOT_TOKEN увімкнеться сам'}`);
-initBaseRooms();
+// Порожніх кімнат-заготовок більше немає: столи створюють гравці (зі ставкою
+// і режимом), у списку видно, ХТО набирає гру. initBaseRooms() вимкнено.
 startCleanupLoop();
 sockets.registerHandlers(io);
 bots.init({ io, broadcastState: sockets.broadcastState });

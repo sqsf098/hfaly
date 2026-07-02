@@ -4,47 +4,52 @@ function loadRooms(){
   socket.emit('get_rooms');
 }
 
-// Кімнати списком — строгий стиль класичних карткових застосунків:
-// рядок = стіл (ставка · назва · гравці · дія), без кольорового шуму
+// Кімнати = живі набори від гравців: видно, ХТО збирає стіл.
+// Порожніх заготовок немає — список тільки з реальних людей.
 function renderRooms(list){
   const grid=$('baseRoomsGrid');
   if(!grid)return;
-  const baseRooms=list.filter(r=>r.isBaseRoom);
-  if(!baseRooms.length){grid.innerHTML='<div style="color:var(--text3);font-size:12px;text-align:center;padding:12px">Завантаження...</div>';return;}
   grid.className='table-list';
   grid.innerHTML='';
-  for(const room of baseRooms){
-    const isPlaying=room.phase!=='waiting';
+  if(!list.length){
+    grid.innerHTML=`<div style="text-align:center;padding:22px 14px;color:var(--text3)">
+      <div style="font-size:13px;margin-bottom:4px">Зараз ніхто не набирає стіл</div>
+      <div style="font-size:11px">Створи свій — друзі та інші гравці побачать його тут</div>
+    </div>`;
+    return;
+  }
+  for(const room of list){
+    const mp=room.maxPlayers||4;
     const locked=myCoins<room.deposit;
+    const modeLabel=room.mode==='khrest'?'Хрестовець · 3 гравці':'хФали · 2 vs 2';
     const row=document.createElement('div');
-    row.className=`table-row ${locked?'locked':''} ${isPlaying?'playing':''}`;
+    row.className=`table-row ${locked?'locked':''}`;
     row.innerHTML=`
-      <div class="tr-stake"><div class="val">${room.deposit}</div><div class="lbl">ставка</div></div>
+      <div class="tr-stake"><div class="val">${room.deposit||'—'}</div><div class="lbl">${room.deposit?'ставка':'без став.'}</div></div>
       <div class="tr-info">
-        <div class="tr-name">${room.name}</div>
+        <div class="tr-name">Стіл: ${room.host}</div>
         <div class="tr-sub">
-          <span class="tr-dots">${[0,1,2,3].map(i=>`<i class="${i<room.players?'on':''}"></i>`).join('')}</span>
-          ${room.players}/4${room.pot>0?` · банк ${room.pot}`:''}${room.minCoins>0?` · від ${room.minCoins} 💰`:''}
+          <span class="tr-dots">${Array.from({length:mp},(_,i)=>`<i class="${i<room.players?'on':''}"></i>`).join('')}</span>
+          ${room.players}/${mp} · ${modeLabel}
         </div>
       </div>
-      <div class="tr-action">${isPlaying?'Гра йде':(locked?`Треба ${room.deposit}`:'Грати')}</div>`;
-    if(!locked&&!isPlaying) row.onclick=()=>openJoinBaseRoom(room);
-    else if(isPlaying) row.onclick=()=>showToast('Гра вже розпочалась, чекай наступну',2000);
+      <div class="tr-action">${locked?`Треба ${room.deposit}`:'Сісти'}</div>`;
+    if(!locked) row.onclick=()=>openJoinBaseRoom(room);
     grid.appendChild(row);
   }
 }
 
 function openJoinBaseRoom(room){
   pendingBaseRoomId=room.id;
-  $('jbrTitle').textContent=`${room.emoji} ${room.name}`;
+  $('jbrTitle').textContent=`Стіл: ${room.host||room.name||room.id}`;
   $('jbrInfo').innerHTML=`
     <div style="margin-bottom:10px">
-      <div style="font-family:'Rubik',sans-serif;font-size:28px;color:var(--gold2);font-weight:800">${room.deposit} 💰</div>
+      <div style="font-family:'Rubik',sans-serif;font-size:28px;color:var(--gold2);font-weight:800">${room.deposit||0} 💰</div>
       <div style="font-size:11px;color:var(--text3)">депозит</div>
     </div>
-    <div style="font-size:12px;color:var(--text2);margin-bottom:4px">Банк кімнати: <b style="color:${room.color}">${room.pot} 💰</b></div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:4px">${room.mode==='khrest'?'♣ Хрестовець — кожен за себе, 3 гравці':'хФали — 2 vs 2, 4 гравці'}</div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:4px">Гравці: <b>${(room.playerNames||[]).join(', ')||'—'}</b></div>
     <div style="font-size:12px;color:var(--text2)">Твій баланс: <b style="color:var(--gold)">${myCoins} 💰</b></div>
-    <div style="font-size:10px;color:var(--text3);margin-top:8px">Переможна команда ділить весь банк (${room.pot+room.deposit*2} 💰 якщо зберуться всі)</div>
   `;
   $('joinBaseRoomModal').classList.add('show');
 }
@@ -61,7 +66,8 @@ function createPrivateRoom(){
   $('createRoomModal').classList.remove('show');
   connectSocket();
   const roomId=Math.random().toString(36).slice(2,8).toUpperCase();
-  socket.emit('join_room',{roomId,name:getMyName(),tgId:getMyTgId(),isPublic:roomType==='public'});
+  socket.emit('join_room',{roomId,name:getMyName(),tgId:getMyTgId(),isPublic:roomType==='public',
+    deposit:privateDeposit||0, mode:roomMode});
 }
 
 function joinByCode(){
@@ -82,19 +88,22 @@ function showWaiting(roomId,deposit){
 
 function renderWaiting(state){
   const slots=$('waitingSlots');slots.innerHTML='';
-  const teamNames=['Г1 🔵 Team A','Г2 🔴 Team B','Г3 🔵 Team A','Г4 🔴 Team B'];
-  const tc=['team-a','team-b','team-a','team-b'];
+  const N=state.maxPlayers||4;
+  const isKh=state.mode==='khrest';
+  const teamNames=isKh?['♣ Кожен за себе','♣ Кожен за себе','♣ Кожен за себе']
+    :['Г1 🔵 Team A','Г2 🔴 Team B','Г3 🔵 Team A','Г4 🔴 Team B'];
+  const tc=isKh?['','','']:['team-a','team-b','team-a','team-b'];
   const pot=state.players.length*currentRoomDeposit;
-  $('waitingPot').innerHTML=`${pot} 💰 <span>Банк (${state.players.length}/4 гравців)</span>`;
-  $('waitingRoomName').textContent=state.players.length+'/4 гравців';
-  for(let i=0;i<4;i++){
+  $('waitingPot').innerHTML=`${pot} 💰 <span>Банк (${state.players.length}/${N} гравців)</span>`;
+  $('waitingRoomName').textContent=(isKh?'♣ Хрестовець · ':'')+state.players.length+`/${N} гравців`;
+  for(let i=0;i<N;i++){
     const p=state.players?.[i];
     const div=document.createElement('div');
     div.className=`pslot ${tc[i]} ${p?'filled':''}`;
     div.innerHTML=p?`<div>${p.name}${i===myIndex?' (ти)':''}</div><div class="pslot-team">${teamNames[i]}</div>`:`<div style="opacity:.4">Вільно</div><div class="pslot-team">${teamNames[i]}</div>`;
     slots.appendChild(div);
   }
-  $('waitingStatus').textContent=state.players.length===4?'Гра розпочинається!':(`${4-state.players.length} місць залишилось`);
+  $('waitingStatus').textContent=state.players.length===N?'Гра розпочинається!':(`${N-state.players.length} місць залишилось`);
 }
 
 function addBot(){

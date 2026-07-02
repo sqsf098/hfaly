@@ -26,27 +26,15 @@ function buildFanNav(){
 }
 
 function layoutFan(){
-  const cards=document.querySelectorAll('#fanWrap .fan-card');
-  const center=(FAN_SECTIONS.length-1)/2; // фіксований симетричний віяр навколо центру
-  cards.forEach(c=>{
-    const i=+c.dataset.i, pos=i-center;
-    const rot=pos*8, tx=pos*40;
-    if(i===fanActive){
-      c.classList.add('active');
-      // активна карта піднімається на СВОЄМУ місці (стабільно, не стрибає)
-      c.style.transform=`translateX(${tx}px) translateY(-16px) rotate(${rot}deg) scale(1.08)`;
-      c.style.opacity='1'; c.style.zIndex=50;
-    } else {
-      c.classList.remove('active');
-      c.style.transform=`translateX(${tx}px) translateY(${Math.abs(pos)*6}px) rotate(${rot}deg) scale(0.92)`;
-      c.style.opacity='0.92'; c.style.zIndex=20-Math.abs(pos);
-    }
+  document.querySelectorAll('#fanWrap .fan-card').forEach(c=>{
+    c.classList.toggle('active',+c.dataset.i===fanActive);
+    c.style.transform=''; c.style.opacity=''; c.style.zIndex='';
   });
   const t=$('fanTitle'); if(t) t.textContent=FAN_SECTIONS[fanActive].label;
 }
 
 // Тактильний відгук Telegram (покращує "відчуття" на телефоні)
-function fanHaptic(){ try{ tg?.HapticFeedback?.selectionChanged?.(); }catch(e){} }
+function fanHaptic(){ sfx('click'); vibrate('selection'); }
 
 function fanSelect(i){
   const s=FAN_SECTIONS[i];

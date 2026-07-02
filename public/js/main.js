@@ -6,6 +6,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   updateCoinsUI();
   initParticles();
   mountIcons(); // SVG-іконки в усі [data-icon]
+  initAudio();  // звук/музика після першого дотику
   initTheme();
   if(!params.get('notc')) initTonConnect(); // ?notc — пропустити TON (dev/скриншоти)
   connectSocket();

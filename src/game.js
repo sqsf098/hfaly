@@ -102,29 +102,35 @@ function calcRoundScores(trickCount, boasterIndex) {
 
 // ─── Стан кімнати ─────────────────────────────────────────────────────────────
 
-function createRoom(roomId) {
+// mode: 'hfaly' (2v2, 4 гравці) | 'khrest' (Хрестовець: кожен за себе, 3 гравці)
+function createRoom(roomId, mode = 'hfaly') {
+  const n = mode === 'khrest' ? 3 : 4;
   return {
     id: roomId,
-    phase: 'waiting',      // waiting | choose_trump | show9 | play | round_end
+    mode,
+    maxPlayers: n,
+    phase: 'waiting',      // waiting | discard(khrest) | choose_trump | play | round_end
     players: [],           // [{id, name, telegramId, index}]
-    scores: [0, 0, 0, 0],
+    scores: Array(n).fill(0),
     roundNum: 0,
     boaster: null,
     dealer: null,
-    hands: [[], [], [], []],
+    hands: Array.from({ length: n }, () => []),
     trump: null,
     currentPlayer: null,
     trick: [],
-    trickCount: [0, 0, 0, 0],
+    trickCount: Array(n).fill(0),
     ninthCard: null,
     partialHands: null,
     restDeck: null,
+    discardDone: [],       // khrest: хто вже скинув 3 карти
     log: [],
     createdAt: Date.now(),
   };
 }
 
 function startRound(room) {
+  if (room.mode === 'khrest') return startRoundKhrest(room);
   const deck = shuffle(buildDeck());
 
   // Знімання колоди — гравець зліва від здаючого
@@ -152,6 +158,45 @@ function startRound(room) {
   room.log.push(`--- Раунд ${room.roundNum}: хвалящий ${room.players[room.boaster]?.name}, здає ${room.players[room.dealer]?.name} ---`);
 }
 
+// ── ХРЕСТОВЕЦЬ: 3 гравці, 36 карт по 12; кожен скидає 3 → по 9.
+// Хвалящий — у кого J♣ (оголошується ПІСЛЯ скидання), він обирає козир.
+// Норма дачок: хвалящий 5, решта по 2. Штраф — КОЖНОМУ окремо, 24 = програв.
+function startRoundKhrest(room) {
+  const deck = shuffle(buildDeck());
+  room.hands = [deck.slice(0, 12), deck.slice(12, 24), deck.slice(24, 36)].map(h => [...h]);
+  room.partialHands = null;
+  room.restDeck = null;
+  room.trick = [];
+  room.trickCount = [0, 0, 0];
+  room.trump = null;
+  room.ninthCard = null;
+  room.discardDone = [];
+  room.currentPlayer = null;
+  room.boaster = room.hands.findIndex(h => h.some(c => c.id === 'J♣'));
+  room.phase = 'discard';
+  room.log.push(`--- Раунд ${room.roundNum} (Хрестовець): кожен скидає по 3 карти ---`);
+}
+
+function discardThree(room, playerIndex, cardIds) {
+  if (room.mode !== 'khrest' || room.phase !== 'discard') return { ok: false, error: 'Зараз не фаза скидання' };
+  if (room.discardDone.includes(playerIndex)) return { ok: false, error: 'Ти вже скинув 3 карти' };
+  if (!Array.isArray(cardIds) || new Set(cardIds).size !== 3) return { ok: false, error: 'Обери рівно 3 карти' };
+  if (cardIds.includes('J♣')) return { ok: false, error: 'Хрестового валета скидати не можна' };
+  const hand = room.hands[playerIndex];
+  if (!cardIds.every(id => hand.some(c => c.id === id))) return { ok: false, error: 'Цих карт немає в руці' };
+
+  room.hands[playerIndex] = hand.filter(c => !cardIds.includes(c.id));
+  room.discardDone.push(playerIndex);
+  room.log.push(`${room.players[playerIndex]?.name} скинув 3 карти`);
+
+  if (room.discardDone.length === room.maxPlayers) {
+    room.phase = 'choose_trump'; // тепер хвалящий (J♣) відкривається і обирає козир
+    room.log.push(`Хвалящий — ${room.players[room.boaster]?.name} (J♣)`);
+    return { ok: true, allDone: true };
+  }
+  return { ok: true, allDone: false };
+}
+
 function dealFullHands(room) {
   const rest = room.restDeck;
   room.hands = room.partialHands.map((h, i) => [...h, ...rest.slice(i * 6, i * 6 + 6)]);
@@ -162,7 +207,12 @@ function dealFullHands(room) {
 
 function chooseTrump(room, suit) {
   room.trump = suit;
-  dealFullHands(room);
+  if (room.mode === 'khrest') {
+    room.currentPlayer = room.boaster; // хвалящий і ходить першим
+    room.phase = 'play';
+  } else {
+    dealFullHands(room);
+  }
   room.log.push(`Козир: ${suit}`);
 }
 
@@ -197,7 +247,8 @@ function playCard(room, playerIndex, cardId) {
   room.trick.push({ playerIndex, card });
   room.log.push(`${room.players[playerIndex]?.name}: ${card.rank}${card.suit}`);
 
-  if (room.trick.length === 4) {
+  const N = room.maxPlayers || 4;
+  if (room.trick.length === N) {
     const winner = trickWinner(room.trick, room.trump);
     room.trickCount[winner]++;
     room.log.push(`Дачку взяв ${room.players[winner]?.name}`);
@@ -212,11 +263,12 @@ function playCard(room, playerIndex, cardId) {
     return { ok: true, trickDone: true, trickWinner: winner, roundDone: false };
   }
 
-  room.currentPlayer = (playerIndex + 1) % 4;
+  room.currentPlayer = (playerIndex + 1) % N;
   return { ok: true, trickDone: false };
 }
 
 function endRound(room) {
+  if (room.mode === 'khrest') return endRoundKhrest(room);
   const result = calcRoundScores(room.trickCount, room.boaster);
   room.scores = room.scores.map((s, i) => s + result.deltas[i]);
   room.phase = 'round_end';
@@ -236,7 +288,36 @@ function endRound(room) {
   return { ...result, scores: room.scores, teamA, teamB, target: TARGET_SCORE, gameOver, winningTeam, losingTeam };
 }
 
+// Хрестовець: кожен сам за себе. Не взяв норму (5 хвалящому / 2 іншим) —
+// +6 штрафу ОСОБИСТО. Хто перший набрав 24 — програв, двоє інших виграли.
+function endRoundKhrest(room) {
+  const required = room.trickCount.map((_, i) => i === room.boaster ? 5 : 2);
+  const deltas = room.trickCount.map((took, i) => took >= required[i] ? 0 : 6);
+  room.scores = room.scores.map((s, i) => s + deltas[i]);
+  room.phase = 'round_end';
+
+  const mx = Math.max(...room.scores);
+  const gameOver = mx >= TARGET_SCORE;
+  let loser = null, winners = null;
+  if (gameOver) {
+    loser = room.scores.indexOf(mx);
+    winners = [0, 1, 2].filter(i => i !== loser);
+    room.phase = 'game_over';
+  }
+  room.log.push(`Раунд: дачки ${room.trickCount.join('/')}, штрафи ${deltas.join('/')}${gameOver ? ' — ГРА ЗАВЕРШЕНА' : ''}`);
+  return {
+    mode: 'khrest', deltas, required, trickCount: [...room.trickCount],
+    boaster: room.boaster, scores: room.scores, target: TARGET_SCORE,
+    gameOver, loser, winners,
+  };
+}
+
 function advanceRound(room) {
+  if (room.mode === 'khrest') {
+    room.roundNum++;      // хвалящий визначається новою роздачею (J♣)
+    startRound(room);
+    return;
+  }
   room.boaster = (room.boaster + 1) % 4;
   room.dealer = (room.boaster + 2) % 4;
   room.roundNum++;
@@ -247,8 +328,12 @@ function advanceRound(room) {
 function publicState(room, viewerIndex) {
   return {
     phase: room.phase,
+    mode: room.mode || 'hfaly',
+    maxPlayers: room.maxPlayers || 4,
     roundNum: room.roundNum,
-    boaster: room.boaster,
+    // Хрестовець: до кінця скидання хвалящий (J♣) — таємниця
+    boaster: (room.mode === 'khrest' && room.phase === 'discard') ? null : room.boaster,
+    discardDone: room.discardDone || [],
     dealer: room.dealer,
     players: room.players.map(p => ({ name: p.name, index: p.index })),
     scores: room.scores,
@@ -269,4 +354,5 @@ function publicState(room, viewerIndex) {
 module.exports = {
   createRoom, startRound, chooseTrump, showNinthCard,
   confirmTrumpFromLast, playCard, endRound, advanceRound, publicState,
+  discardThree,
 };

@@ -1,6 +1,6 @@
 // ─── Петля ходів ботів. init() викликається з server.js ────────────────
 const { rooms, resetBaseRoom } = require('./rooms');
-const { chooseTrump, confirmTrumpFromLast, playCard, endRound, advanceRound } = require('./game');
+const { chooseTrump, confirmTrumpFromLast, playCard, endRound, advanceRound, discardThree } = require('./game');
 const { botChooseTrump, botChooseCard } = require('./bot-ai');
 const { BOT_THINK_MS } = require('./config');
 
@@ -30,6 +30,31 @@ function _step(roomId, depth) {
   if (!room) return;
 
   const phase = room.phase;
+
+  // ── Хрестовець: боти скидають по 3 найслабші карти ────────────
+  if (phase === 'discard') {
+    const bot = room.players.find(p => p.isBot && !room.discardDone.includes(p.index));
+    if (!bot) return; // всі боти скинули — чекаємо людей
+    setTimeout(() => {
+      const r = rooms.get(roomId);
+      if (!r || r.phase !== 'discard') { _step(roomId, depth + 1); return; }
+      const b = r.players.find(p => p.isBot && !r.discardDone.includes(p.index));
+      if (!b) return;
+      const RANK_P = { '6': 1, '7': 2, '8': 3, '9': 4, '10': 5, 'Q': 6, 'K': 7, 'A': 8, 'J': 20 };
+      // валети — сила, їх тримаємо; J♣ скидати заборонено правилами
+      let picks = [...r.hands[b.index]]
+        .filter(c => c.id !== 'J♣')
+        .sort((a, c) => (RANK_P[a.rank] || 0) - (RANK_P[c.rank] || 0))
+        .slice(0, 3);
+      const res = discardThree(r, b.index, picks.map(c => c.id));
+      if (res.ok) {
+        broadcastState(r);
+        if (res.allDone) io.to(roomId).emit('discards_done', { boaster: r.boaster, name: r.players[r.boaster]?.name });
+      }
+      _step(roomId, depth + 1);
+    }, BOT_THINK_MS * 0.8);
+    return;
+  }
 
   // ── Бот обирає козир ──────────────────────────────────────────
   if (phase === 'choose_trump' || phase === 'show9') {
@@ -61,7 +86,9 @@ function _step(roomId, depth) {
 
       const hand = r.hands[idx];
       if (!hand || hand.length === 0) return;
-      const card = botChooseCard(hand, r.trick, r.trump, idx, (idx + 2) % 4);
+      // Хрестовець — кожен за себе (партнера немає, -1 вимикає командну логіку)
+      const partner = r.mode === 'khrest' ? -1 : (idx + 2) % 4;
+      const card = botChooseCard(hand, r.trick, r.trump, idx, partner);
       if (!card) return;
 
       const result = playCard(r, idx, card.id);

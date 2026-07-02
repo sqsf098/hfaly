@@ -1,7 +1,7 @@
 // ─── Socket.io: всі обробники подій від гравців ─────────────────────────
 const { rooms, socketToPlayer, resetBaseRoom } = require('./rooms');
 const { getWallet, saveWallets, playerWallets } = require('./wallets');
-const { createRoom, startRound, chooseTrump, showNinthCard, confirmTrumpFromLast, playCard, endRound, advanceRound, publicState } = require('./game');
+const { createRoom, startRound, chooseTrump, showNinthCard, confirmTrumpFromLast, playCard, endRound, advanceRound, publicState, discardThree } = require('./game');
 const { createBot } = require('./bot-ai');
 const { runBots } = require('./bots');
 const { openChest, claimQuest, economyState, addQuestProgress } = require('./economy');
@@ -36,6 +36,7 @@ function questProgress(room, playerIndex, type, amount = 1) {
 
 function broadcastState(room) {
   for (const player of room.players) {
+    if (player.isBot) continue; // ботам стан не потрібен; гравцю, що вийшов — тим паче
     const sock = io.sockets.sockets.get(player.socketId);
     if (sock) sock.emit('state', publicState(room, player.index));
   }
@@ -50,11 +51,10 @@ function safeOn(socket, event, handler) {
 }
 
 function tryStartGame(room) {
-  if (room.players.length !== 4) return;
-  room.boaster = 0;
-  room.dealer = 2;
+  if (room.players.length !== (room.maxPlayers || 4)) return;
+  if (room.mode !== 'khrest') { room.boaster = 0; room.dealer = 2; }
   room.roundNum = 1;
-  startRound(room);
+  startRound(room); // khrest сам ставить boaster (J♣) і фазу discard
   broadcastState(room);
   io.to(room.id).emit('game_started', { message: `Гра розпочалась! Банк: ${room.pot || 0} 💰` });
   setTimeout(() => runBots(room.id), 600);
@@ -64,11 +64,21 @@ function distributeWinnings(room) {
   if (room.payoutDone) return;
   room.payoutDone = true;
 
-  // Рахунок команди = рахунок будь-якого її гравця. МЕНШИЙ штраф → переможець.
-  const scoreA = room.scores[0];
-  const scoreB = room.scores[1];
-  const winTeam = scoreA <= scoreB ? [0, 2] : [1, 3];
-  const loseTeam = scoreA <= scoreB ? [1, 3] : [0, 2];
+  // хФали: рахунок команди = рахунок її гравця, МЕНШИЙ штраф → переможець.
+  // Хрестовець: програв той, хто набрав 24; двоє інших ділять банк.
+  let winTeam, loseTeam, scoreA, scoreB;
+  if (room.mode === 'khrest') {
+    const mx = Math.max(...room.scores);
+    const loser = room.scores.indexOf(mx);
+    winTeam = [0, 1, 2].filter(i => i !== loser);
+    loseTeam = [loser];
+    scoreA = room.scores[winTeam[0]]; scoreB = mx;
+  } else {
+    scoreA = room.scores[0];
+    scoreB = room.scores[1];
+    winTeam = scoreA <= scoreB ? [0, 2] : [1, 3];
+    loseTeam = scoreA <= scoreB ? [1, 3] : [0, 2];
+  }
   const pot = room.pot || 0;
   const share = Math.floor(pot / 2);
   const payouts = {};
@@ -228,34 +238,50 @@ function registerHandlers(serverIo) {
     });
 
     safeOn(socket, 'get_rooms', () => {
-      const list = [...rooms.values()].map(r => ({
-        id: r.id,
-        name: r.baseRoomConfig?.name || r.id,
-        emoji: r.baseRoomConfig?.emoji || '🃏',
-        deposit: r.deposit || 0,
-        minCoins: r.baseRoomConfig?.minCoins || 0,
-        color: r.baseRoomConfig?.color || '#888',
-        desc: r.baseRoomConfig?.desc || '',
-        players: r.players.length,
-        phase: r.phase,
-        isBaseRoom: r.isBaseRoom || false,
-        pot: r.pot || 0,
-        playerNames: r.players.map(p => p.name),
-      }));
+      // Лише живі набори: публічні кімнати, де ХТОСЬ чекає гравців.
+      // Порожніх заготовок немає — кімнати створюють самі гравці.
+      const list = [...rooms.values()]
+        .filter(r => r.isPublic !== false && r.phase === 'waiting' && r.players.length > 0)
+        .map(r => ({
+          id: r.id,
+          host: r.hostName || r.players[0]?.name || 'Гравець',
+          mode: r.mode || 'hfaly',
+          maxPlayers: r.maxPlayers || 4,
+          deposit: r.deposit || 0,
+          players: r.players.length,
+          pot: r.pot || 0,
+          playerNames: r.players.map(p => p.name),
+        }));
       socket.emit('rooms_list', list);
     });
 
-    safeOn(socket, 'join_room', ({ roomId, name, tgId, isPublic }) => {
+    // ── Хрестовець: гравець скидає 3 карти ─────────────────────
+    safeOn(socket, 'discard_cards', ({ cardIds }) => {
+      const meta = socketToPlayer.get(socket.id); if (!meta) return;
+      const room = rooms.get(meta.roomId); if (!room) return;
+      const res = discardThree(room, meta.playerIndex, cardIds);
+      if (!res.ok) { socket.emit('error', { message: res.error }); return; }
+      broadcastState(room);
+      if (res.allDone) {
+        io.to(room.id).emit('discards_done', { boaster: room.boaster, name: room.players[room.boaster]?.name });
+      }
+      setTimeout(() => runBots(room.id), 400);
+    });
+
+    safeOn(socket, 'join_room', ({ roomId, name, tgId, isPublic, deposit, mode }) => {
       tgId = uid(tgId); if (!tgId) return;
       const wallet = getWallet(tgId);
 
       let room = rooms.get(roomId);
       if (!room) {
-        room = createRoom(roomId);
+        // Кімнату створює ГРАВЕЦЬ: вона зветься його ім'ям, зі ставкою і режимом
+        const ALLOWED_DEPOSITS = [0, 50, 100, 200, 300, 500];
+        room = createRoom(roomId, mode === 'khrest' ? 'khrest' : 'hfaly');
         room.createdAt = Date.now();
-        room.deposit = 0;
+        room.deposit = ALLOWED_DEPOSITS.includes(+deposit) ? +deposit : 0;
         room.pot = 0;
         room.isPublic = isPublic !== false;
+        room.hostName = name || 'Гравець';
         rooms.set(roomId, room);
       }
 
@@ -272,7 +298,8 @@ function registerHandlers(serverIo) {
         return;
       }
 
-      if (room.players.length >= 4) { socket.emit('error', { message: 'Кімната заповнена (4/4)' }); return; }
+      const maxP = room.maxPlayers || 4;
+      if (room.players.length >= maxP) { socket.emit('error', { message: `Кімната заповнена (${maxP}/${maxP})` }); return; }
       if (room.phase !== 'waiting') { socket.emit('error', { message: 'Гра вже розпочалась' }); return; }
 
       if (room.deposit > 0) {
@@ -303,7 +330,7 @@ function registerHandlers(serverIo) {
       const room = rooms.get(roomId);
       if (!room) { socket.emit('error', { message: 'Кімната не знайдена' }); return; }
       if (room.phase !== 'waiting') { socket.emit('error', { message: 'Гра вже почалась' }); return; }
-      if (room.players.length >= 4) { socket.emit('error', { message: 'Кімната заповнена' }); return; }
+      if (room.players.length >= (room.maxPlayers || 4)) { socket.emit('error', { message: 'Кімната заповнена' }); return; }
 
       const botIdx = room.players.length;
       const botPlayer = createBot(botIdx);
@@ -439,6 +466,7 @@ function registerHandlers(serverIo) {
         // Гра йде — гравця замінює бот, гра продовжується
         player.isBot = true;
         player.online = false;
+        player.socketId = null; // старі стани більше не летять гравцю, що вийшов
         player.name = player.name.replace(' 🤖', '') + ' 🤖';
         socketToPlayer.delete(socket.id);
         socket.leave(meta.roomId);

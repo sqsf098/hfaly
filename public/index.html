@@ -8,7 +8,7 @@
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script src="https://unpkg.com/@tonconnect/ui@2/dist/tonconnect-ui.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;600;700;800;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css?v=3">
 
 </head>
 <body class="theme-fan fan-nav">
@@ -152,8 +152,8 @@
     <div class="coin-badge" onclick="switchTab('profile')"><span>💰</span><span id="roomsCoins">---</span></div>
   </div>
   <div class="content">
-    <div class="section-title">Столи зі ставкою</div>
-    <div class="rooms-grid" id="baseRoomsGrid"></div>
+    <div class="section-title">Відкриті столи</div>
+    <div class="table-list" id="baseRoomsGrid"></div>
     <div class="section-title">Своя гра</div>
     <button class="private-room-btn" onclick="openCreateRoom()"><span class="row-icon sm" data-icon="cards"></span> Створити кімнату</button>
     <button class="private-room-btn" onclick="openJoinRoom()"><span class="row-icon sm" data-icon="key"></span> Приєднатись за кодом</button>
@@ -293,7 +293,11 @@
     <div class="ui-card">
       <div class="settings-item">
         <div><div class="si-title">Звукові ефекти</div><div class="si-desc">Звук карт і ходів</div></div>
-        <div class="toggle-switch on" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div>
+        <div class="toggle-switch on" id="sfxToggle" onclick="toggleSound(this)"><div class="toggle-knob"></div></div>
+      </div>
+      <div class="settings-item">
+        <div><div class="si-title">Музика</div><div class="si-desc">Тихий фоновий ембіент</div></div>
+        <div class="toggle-switch on" id="musicToggle" onclick="toggleMusic(this)"><div class="toggle-knob"></div></div>
       </div>
       <div class="settings-item">
         <div><div class="si-title">Підсвітка карт</div><div class="si-desc">Показує допустимі ходи</div></div>
@@ -386,6 +390,7 @@
       </div>
     </div>
     <div class="cards-scroll" id="myHandCards"></div>
+    <div style="text-align:center"><button class="play-action-btn" id="discardBtn" onclick="submitDiscard()">Скинути 3 карти</button></div>
   </div>
 </div>
 
@@ -418,23 +423,30 @@
 <div class="modal-overlay" id="createRoomModal" onclick="if(event.target===this)this.classList.remove('show')">
   <div class="modal-box">
     <div class="modal-handle"></div>
-    <div class="modal-title">➕ Приватна кімната</div>
+    <div class="modal-title">Новий стіл</div>
+    <div class="input-group">
+      <label class="input-label">Гра</label>
+      <div class="toggle-row" id="modeRow">
+        <div class="toggle-opt active" onclick="setRoomMode(this,'hfaly')">хФали · 2v2</div>
+        <div class="toggle-opt" onclick="setRoomMode(this,'khrest')">♣ Хрестовець · 3</div>
+      </div>
+    </div>
     <div class="input-group">
       <label class="input-label">Тип</label>
-      <div class="toggle-row">
+      <div class="toggle-row" id="rtRow">
         <div class="toggle-opt active" onclick="setRoomType(this,'public')">🌍 Публічна</div>
         <div class="toggle-opt" onclick="setRoomType(this,'private')">🔒 Приватна</div>
       </div>
     </div>
     <div class="input-group">
-      <label class="input-label">Депозит (монети)</label>
-      <div class="toggle-row">
+      <label class="input-label">Ставка (монети)</label>
+      <div class="toggle-row" id="depRow">
         <div class="toggle-opt active" onclick="setDeposit(this,0)">Без ставки</div>
         <div class="toggle-opt" onclick="setDeposit(this,100)">100 💰</div>
         <div class="toggle-opt" onclick="setDeposit(this,300)">300 💰</div>
       </div>
     </div>
-    <button class="btn-gold" onclick="createPrivateRoom()">Створити</button>
+    <button class="btn-gold" onclick="createPrivateRoom()">Створити стіл</button>
   </div>
 </div>
 
@@ -558,14 +570,15 @@
   <div class="fan-wrap" id="fanWrap"></div>
 </div>
 
-<script src="js/core.js"></script>
-<script src="js/icons.js"></script>
-<script src="js/fan.js"></script>
-<script src="js/lobby.js"></script>
-<script src="js/economy.js"></script>
-<script src="js/ton.js"></script>
-<script src="js/net.js"></script>
-<script src="js/game-ui.js"></script>
-<script src="js/main.js"></script>
+<script src="js/core.js?v=3"></script>
+<script src="js/sound.js?v=3"></script>
+<script src="js/icons.js?v=3"></script>
+<script src="js/fan.js?v=3"></script>
+<script src="js/lobby.js?v=3"></script>
+<script src="js/economy.js?v=3"></script>
+<script src="js/ton.js?v=3"></script>
+<script src="js/net.js?v=3"></script>
+<script src="js/game-ui.js?v=3"></script>
+<script src="js/main.js?v=3"></script>
 </body>
 </html>
