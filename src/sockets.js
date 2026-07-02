@@ -8,6 +8,7 @@ const { openChest, claimQuest, economyState, addQuestProgress } = require('./eco
 const { linkWallet, unlinkWallet, syncNfts, requestMint, tonState } = require('./ton');
 const { socketAuthMiddleware, resolveTgId } = require('./auth');
 const { holdDeposit, releaseDeposit } = require('./escrow');
+const { BACK_SKIN_IDS, CARD_SKINS } = require('./skins');
 const { log } = require('./logger');
 
 let io = null;
@@ -199,6 +200,31 @@ function registerHandlers(serverIo) {
       const res = await requestMint(w, nftId);
       if (!res.ok) { socket.emit('error', { message: res.error }); return; }
       socket.emit('mint_tx', res);
+    });
+
+    // ── Колекція: одягнути сорочку або скін конкретної карти ─────
+    safeOn(socket, 'equip_skin', ({ tgId, kind, cardKey, skinId }) => {
+      const id = uid(tgId); if (!id) return;
+      const w = getWallet(id);
+      if (kind === 'back') {
+        if (!BACK_SKIN_IDS.includes(skinId) || !w.ownedBackSkins.includes(skinId)) {
+          socket.emit('error', { message: 'Сорочка не доступна' }); return;
+        }
+        w.backSkin = skinId;
+      } else if (kind === 'card') {
+        if (skinId === null || skinId === undefined) {
+          delete w.cardSkins[cardKey]; // зняти скін
+        } else {
+          const def = CARD_SKINS[skinId];
+          // скін має існувати, належати гравцю і відповідати САМЕ цій карті
+          if (!def || !w.ownedCardSkins.includes(skinId) || def.card !== cardKey) {
+            socket.emit('error', { message: 'Скін не доступний' }); return;
+          }
+          w.cardSkins[cardKey] = skinId;
+        }
+      } else return;
+      saveWallets();
+      socket.emit('wallet', w);
     });
 
     safeOn(socket, 'get_rooms', () => {

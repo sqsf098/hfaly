@@ -53,28 +53,45 @@
       <div class="hero-card" style="left:160px;transform:rotate(18deg);animation-delay:0.4s">K<br>♣</div>
     </div>
 
-    <div style="font-family:'Rubik',sans-serif;font-size:13px;color:var(--text2);letter-spacing:3px;text-transform:uppercase;margin-bottom:6px">Карткова гра</div>
-    <div style="font-size:12px;color:var(--text3);margin-bottom:24px">2 vs 2 · 4 гравці · Козирна</div>
+    <div style="font-family:'Rubik',sans-serif;font-size:13px;color:var(--text2);letter-spacing:3px;text-transform:uppercase;margin-bottom:4px">хФали · Карткова гра</div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:18px">2 vs 2 · 4 гравці · Козирна &nbsp;·&nbsp; Дурак — скоро</div>
 
-    <!-- Main action buttons -->
-    <button class="home-btn-primary" onclick="openCreateRoom()" id="btnNewGame">
-      <span style="font-size:18px">🃏</span>
-      <div>
-        <div style="font-size:15px;font-weight:700;letter-spacing:1px">Нова гра</div>
-        <div style="font-size:10px;opacity:0.7;margin-top:1px">Створи кімнату · запроси друзів</div>
+    <!-- Головна дія -->
+    <button class="quick-play-btn" onclick="quickPlayWithBots()" id="btnNewGame">
+      <span style="font-size:20px">▶</span>
+      <div style="text-align:left">
+        <div style="font-size:16px;font-weight:700;letter-spacing:1px">Швидка гра</div>
+        <div style="font-size:10px;opacity:0.6;margin-top:1px">Стіл знайдеться сам</div>
       </div>
     </button>
+  </div>
 
-    <button class="home-btn-secondary" onclick="openJoinRoom()">
-      <span style="font-size:16px">🔑</span>
-      <div style="font-size:14px;letter-spacing:1px">Приєднатись за кодом</div>
-    </button>
-
-    <button class="home-btn-secondary" onclick="quickPlayWithBots()">
-      <span style="font-size:16px">⚡</span>
-      <div style="font-size:14px;letter-spacing:1px">Швидка гра з ботами</div>
-    </button>
-
+  <!-- Меню (строгий грід, як у класичних карткових застосунках) -->
+  <div class="menu-grid" style="position:relative;z-index:2">
+    <div class="menu-tile" onclick="switchTab('rooms')">
+      <div class="mt-icon">🚪</div><div class="mt-label">Кімнати</div>
+      <div class="mt-sub">Знайти стіл</div>
+    </div>
+    <div class="menu-tile" onclick="openCreateRoom()">
+      <div class="mt-icon">🃏</div><div class="mt-label">Нова гра</div>
+      <div class="mt-sub">Запроси друзів</div>
+    </div>
+    <div class="menu-tile" onclick="openJoinRoom()">
+      <div class="mt-icon">🔑</div><div class="mt-label">За кодом</div>
+      <div class="mt-sub">Приватний стіл</div>
+    </div>
+    <div class="menu-tile" onclick="openChestsModal()">
+      <div class="mt-icon">🎁</div><div class="mt-label">Скрині</div>
+      <div class="mt-sub">Нагороди · квести</div>
+    </div>
+    <div class="menu-tile" onclick="switchTab('decks')">
+      <div class="mt-icon">🎴</div><div class="mt-label">Колекція</div>
+      <div class="mt-sub">Скіни та колоди</div>
+    </div>
+    <div class="menu-tile soon">
+      <div class="mt-icon">🏆</div><div class="mt-label">Турніри</div>
+      <div class="mt-sub">Скоро</div>
+    </div>
   </div>
 
   <!-- Stats strip -->
@@ -129,6 +146,20 @@
   </div>
 </div>
 
+<!-- ══ КІМНАТИ: пошук столу ══════════════════════════════════════════ -->
+<div class="screen" id="roomsScreen">
+  <div class="nav"><div class="nav-logo">Кімнати</div>
+    <div class="coin-badge" onclick="switchTab('profile')"><span>💰</span><span id="roomsCoins">---</span></div>
+  </div>
+  <div class="content">
+    <div class="section-title">Столи зі ставкою</div>
+    <div class="rooms-grid" id="baseRoomsGrid"></div>
+    <div class="section-title">Своя гра</div>
+    <button class="private-room-btn" onclick="openCreateRoom()">🃏 Створити кімнату</button>
+    <button class="private-room-btn" onclick="openJoinRoom()">🔑 Приєднатись за кодом</button>
+  </div>
+</div>
+
 <div class="screen" id="profileScreen">
   <div class="nav"><div class="nav-logo">Профіль</div><div class="coin-badge"><span>💰</span><span id="navCoins2">---</span></div></div>
   <div class="content">
@@ -176,8 +207,13 @@
 
 <!-- ══ DECKS ══════════════════════════════════════════════════════════ -->
 <div class="screen" id="decksScreen">
-  <div class="nav"><div class="nav-logo">Колоди</div></div>
+  <div class="nav"><div class="nav-logo">Колекція</div></div>
   <div class="content">
+    <div class="section-title">Сорочка карт</div>
+    <div id="backSkinsRow" class="back-skins-row"></div>
+    <div class="section-title">Скіни карт</div>
+    <div style="font-size:10px;color:var(--text3);margin:-6px 0 10px">Кастомний вигляд конкретної карти. Лише дизайн — значення не змінюється.</div>
+    <div id="cardSkinsList"></div>
     <div class="section-title">Стиль карт</div>
     <div class="decks-grid">
       <div class="deck-card selected" onclick="selectDeck(this,'classic')" data-deck="classic">
@@ -520,7 +556,6 @@
 <div id="fanNav">
   <div class="fan-title" id="fanTitle">Грати</div>
   <div class="fan-wrap" id="fanWrap"></div>
-  <div class="fan-hint">← гортай або тапни карту →</div>
 </div>
 
 <script src="js/core.js"></script>

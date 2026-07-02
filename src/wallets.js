@@ -25,6 +25,11 @@ function defaultWallet() {
     tonAddress: null,        // прив'язаний TON-гаманець (raw, напр. "0:abc...")
     tonVerified: false,      // чи пройшов TON Connect proof
     nftDecks: [],            // NFT-колоди, підтверджені on-chain володінням
+    // Колекція (косметика; стартовий набір — демо, рідкісне падатиме зі скринь)
+    backSkin: 'violet',                                   // активна сорочка
+    ownedBackSkins: ['violet', 'navy', 'gold', 'crimson'],
+    cardSkins: {},                                        // { 'A♠': 'AS_royal' }
+    ownedCardSkins: ['AS_royal', 'QH_rose', 'JC_joker'],
   };
 }
 

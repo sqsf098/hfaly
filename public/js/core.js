@@ -49,6 +49,36 @@ const DECK_META={
 // NFT-колоди рендеряться окремою секцією (ton.js), не у звичайній сітці
 const NFT_DECK_KEYS=['dragon','phoenix','tryzub'];
 
+// ── Колекція: сорочки (back) та скіни конкретних карт ─────────────
+// PNG-ready: додай {img:'/img/skins/xxx.png'} — рендер підхопить сам.
+const BACK_SKINS={
+  violet: {name:'Фіолет',  css:'linear-gradient(135deg,#9b6bff,#5a2f9e)', border:'rgba(157,107,255,0.6)'},
+  navy:   {name:'Класика', css:'linear-gradient(135deg,#2c3e6b,#141d33)', border:'rgba(120,150,220,0.5)'},
+  gold:   {name:'Золото',  css:'linear-gradient(135deg,#c9a84c,#6d5117)', border:'rgba(255,209,102,0.6)'},
+  crimson:{name:'Багрянець',css:'linear-gradient(135deg,#8a1e2e,#38080f)', border:'rgba(255,90,110,0.5)'},
+};
+const CARD_SKINS={
+  AS_royal:{name:'Королівський туз', card:'A♠', emoji:'👑', bg:'#12101f', color:'#ffd166'},
+  QH_rose: {name:'Дама-троянда',     card:'Q♥', emoji:'🌹', bg:'#fff5f6', color:'#c0392b'},
+  JC_joker:{name:'Валет-жартун',     card:'J♣', emoji:'🎭', bg:'#f4fff0', color:'#1b7a3a'},
+};
+let myWallet=null; // повний гаманець із сервера (скіни, стріки тощо)
+
+// Сорочка застосовується CSS-змінними — міняється всюди одразу (руки ботів,
+// анімації роздачі, відбій)
+function applyBackSkin(id){
+  const s=BACK_SKINS[id]||BACK_SKINS.violet;
+  const r=document.documentElement.style;
+  if(s.img){ r.setProperty('--back-bg',`url('${s.img}') center/cover no-repeat`); }
+  else { r.setProperty('--back-bg',s.css); }
+  r.setProperty('--back-border',s.border||'rgba(255,255,255,0.3)');
+}
+// Скін конкретної карти (лише вигляд, значення не змінюється)
+function cardSkinFor(card){
+  if(!myWallet||!myWallet.cardSkins) return null;
+  return CARD_SKINS[myWallet.cardSkins[card.rank+card.suit]]||null;
+}
+
 function $(id){return document.getElementById(id);}
 
 function showToast(msg,ms=2500){
@@ -95,8 +125,9 @@ function switchTab(tab){
   document.body.classList.remove('in-game');
   if(typeof syncFan==='function')syncFan(tab);
   if(tab==='profile')loadProfile();
-  if(tab==='decks'){renderDecks();renderTon();}
+  if(tab==='decks'){renderDecks();renderTon();if(typeof renderCollection==='function')renderCollection();}
   if(tab==='home'){loadRooms();updateCoinsUI();}
+  if(tab==='rooms'){loadRooms();const rc=$('roomsCoins');if(rc)rc.textContent=myCoins;}
 }
 
 function getMyName(){return myName||tg?.initDataUnsafe?.user?.first_name||params.get('name')||'Гравець';}

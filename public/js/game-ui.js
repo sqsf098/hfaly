@@ -67,11 +67,12 @@ function enableCardDrag(el, card){
     setDropZone(false); setDropActive(false);
     const play=isOverTable(e.clientY);
     if(ghost){ ghost.remove(); ghost=null; }
+    // ЗАВЖДИ повертаємо видимість: якщо сервер відхилить хід — стану не буде,
+    // перемальовки руки теж, і схована карта «зникала» назавжди (баг)
+    el.style.visibility='visible';
     if(play){
       try{ tg?.HapticFeedback?.impactOccurred?.('medium'); }catch(_){}
-      selectedCardId=card.id; submitPlay(); // рука перемалюється з нового стану сервера
-    } else {
-      el.style.visibility='visible'; // повертаємо в руку
+      selectedCardId=card.id; submitPlay();
     }
   }
 
@@ -103,20 +104,27 @@ function makeCard(card,opts={}){
   const th=DECK_THEMES[currentDeck];const isRed=SUIT_RED[card.suit];
   const el=document.createElement('div');
   el.className=`pcard ${opts.selected?'selected':''} ${opts.invalid?'invalid':''}`;
-  el.style.cssText=`background:${th.bg};border-color:${opts.selected?'var(--gold)':th.border}`;
   el.dataset.id=card.id;
-  const col=isRed?th.red:th.black;
+  // Скін конкретної карти (лише вигляд — значення без змін)
+  const sk=typeof cardSkinFor==='function'?cardSkinFor(card):null;
+  const bg=sk?(sk.img?`url('${sk.img}') center/cover, ${th.bg}`:sk.bg):th.bg;
+  const col=sk?(sk.color||(isRed?th.red:th.black)):(isRed?th.red:th.black);
+  el.style.cssText=`background:${bg};border-color:${opts.selected?'var(--gold)':(sk?'var(--gold-dim)':th.border)}`;
+  const center=sk&&!sk.img?(sk.emoji||card.suit):card.suit;
   el.innerHTML=`
     <div class="ct" style="color:${col}"><span>${card.rank}</span><span>${card.suit}</span></div>
-    <div class="cm" style="color:${col}">${card.suit}</div>
+    <div class="cm" style="color:${col}">${sk&&sk.img?'':center}</div>
     <div class="cb" style="color:${col}"><span>${card.rank}</span><span>${card.suit}</span></div>`;
   if(opts.onClick)el.addEventListener('click',opts.onClick);
   return el;
 }
 
 function makeCardHTML(card){
-  const th=DECK_THEMES[currentDeck];const isRed=SUIT_RED[card.suit];const col=isRed?th.red:th.black;
-  return `<div style="width:50px;height:72px;border-radius:7px;background:${th.bg};border:1.5px solid ${th.border};
+  const th=DECK_THEMES[currentDeck];const isRed=SUIT_RED[card.suit];
+  const sk=typeof cardSkinFor==='function'?cardSkinFor(card):null;
+  const bgH=sk?(sk.img?`url('${sk.img}') center/cover, ${th.bg}`:sk.bg):th.bg;
+  const col=sk?(sk.color||(isRed?th.red:th.black)):(isRed?th.red:th.black);
+  return `<div style="width:50px;height:72px;border-radius:7px;background:${bgH};border:1.5px solid ${sk?'var(--gold-dim)':th.border};
     display:flex;flex-direction:column;justify-content:space-between;padding:4px 4px 3px;flex-shrink:0;
     box-shadow:1px 1px 4px rgba(0,0,0,0.2)">
     <div style="font-size:13px;font-weight:800;color:${col};line-height:1.1">${card.rank}<br><span style="font-size:12px">${card.suit}</span></div>

@@ -148,3 +148,56 @@ function showChestReward(gained){
   ov.classList.add('show');
   if(gained.coins)floatCoin(gained.coins,window.innerWidth/2,window.innerHeight/3);
 }
+
+// ── Колекція: сорочки та скіни конкретних карт ────────────────────
+function renderCollection(){
+  const row=$('backSkinsRow');
+  if(row){
+    row.innerHTML='';
+    const owned=(myWallet&&myWallet.ownedBackSkins)||['violet'];
+    const equipped=(myWallet&&myWallet.backSkin)||'violet';
+    for(const [id,s] of Object.entries(BACK_SKINS)){
+      const has=owned.includes(id);
+      const d=document.createElement('div');
+      d.className='back-skin'+(id===equipped?' equipped':'')+(has?'':' locked');
+      const bg=s.img?`url('${s.img}') center/cover`:s.css;
+      d.innerHTML=`<div class="bs-card" style="background:${bg}"></div><div class="bs-name">${s.name}</div>`;
+      d.onclick=()=>{ if(!has){showToast('Ця сорочка випадає зі скринь 🎁',2200);return;} equipSkin('back',null,id); };
+      row.appendChild(d);
+    }
+  }
+  const list=$('cardSkinsList');
+  if(list){
+    list.innerHTML='';
+    const ownedC=(myWallet&&myWallet.ownedCardSkins)||[];
+    const equippedMap=(myWallet&&myWallet.cardSkins)||{};
+    for(const [id,s] of Object.entries(CARD_SKINS)){
+      const has=ownedC.includes(id);
+      const isOn=equippedMap[s.card]===id;
+      const red=SUIT_RED[s.card.slice(-1)];
+      const prev=s.img
+        ?`background:url('${s.img}') center/cover`
+        :`background:${s.bg};color:${s.color}`;
+      const d=document.createElement('div');
+      d.className='card-skin-row';
+      d.innerHTML=`
+        <div class="cs-preview" style="${prev}">${s.img?'':`<span style="font-size:10px">${s.card}</span><span style="font-size:20px">${s.emoji}</span>`}</div>
+        <div class="cs-info">
+          <div class="cs-name">${s.name}</div>
+          <div class="cs-sub">Карта: <b style="color:${red?'#ff8a97':'var(--text2)'}">${s.card}</b> · значення без змін</div>
+        </div>
+        <div class="cs-btn ${isOn?'on':''}">${has?(isOn?'✓ Одягнуто':'Одягнути'):'🔒 Зі скрині'}</div>`;
+      d.querySelector('.cs-btn').onclick=()=>{
+        if(!has){showToast('Цей скін випадає зі скринь 🎁',2200);return;}
+        equipSkin('card',s.card,isOn?null:id); // повторний тап — зняти
+      };
+      list.appendChild(d);
+    }
+  }
+}
+
+function equipSkin(kind,cardKey,skinId){
+  if(!socket)return;
+  socket.emit('equip_skin',{tgId:getMyTgId(),kind,cardKey,skinId});
+  try{ tg?.HapticFeedback?.selectionChanged?.(); }catch(e){}
+}

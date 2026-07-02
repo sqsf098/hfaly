@@ -1,10 +1,10 @@
 // ─── Оригінальна навігація: веер карт + перемикач тем ───
 const FAN_SECTIONS=[
-  {id:'home',     icon:'🃏', label:'Грати',   suit:'♠'},
-  {id:'decks',    icon:'🎴', label:'Колоди',  suit:'♥'},
-  {id:'chests',   icon:'🎁', label:'Скрині',  suit:'♦', modal:true},
-  {id:'profile',  icon:'👤', label:'Профіль', suit:'♣'},
-  {id:'settings', icon:'⚙️', label:'Ще',      suit:'★'},
+  {id:'home',     icon:'🃏', label:'Грати',    suit:'♠'},
+  {id:'rooms',    icon:'🚪', label:'Кімнати',  suit:'♦'},
+  {id:'decks',    icon:'🎴', label:'Колекція', suit:'♥'},
+  {id:'profile',  icon:'👤', label:'Профіль',  suit:'♣'},
+  {id:'settings', icon:'⚙️', label:'Ще',       suit:'★'},
 ];
 let fanActive=0;
 
@@ -51,7 +51,6 @@ function fanHaptic(){ try{ tg?.HapticFeedback?.selectionChanged?.(); }catch(e){}
 function fanSelect(i){
   const s=FAN_SECTIONS[i];
   fanHaptic();
-  if(s.modal){ if(s.id==='chests') openChestsModal(); return; } // модалка поверх поточного екрана
   fanActive=i; layoutFan();
   switchTab(s.id);
 }
@@ -61,8 +60,7 @@ function navigateFan(dir){
   const ni=fanActive+dir;
   if(ni<0||ni>=FAN_SECTIONS.length) return;
   fanActive=ni; layoutFan(); fanHaptic();
-  const s=FAN_SECTIONS[ni];
-  if(!s.modal) switchTab(s.id);
+  switchTab(FAN_SECTIONS[ni].id);
 }
 function initFanSwipe(){
   const nav=$('fanNav'); if(!nav||nav._swipe) return; nav._swipe=true;

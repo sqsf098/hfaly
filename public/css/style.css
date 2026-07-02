@@ -470,5 +470,51 @@ body.in-game #fanNav{display:none !important}
   background:linear-gradient(165deg,rgba(54,74,124,0.98),rgba(24,34,64,0.99));
   box-shadow:0 0 22px rgba(255,209,102,0.45),0 12px 26px rgba(0,0,0,0.55),inset 0 1px 0 var(--panel-top)}
 .fan-card.active .fc-icon{transform:scale(1.1)}
-.fan-hint{position:absolute;left:0;right:0;text-align:center;font-size:8px;color:var(--text3);
-  letter-spacing:0.5px;pointer-events:none;opacity:0.65;top:6px}
+
+/* ── Головне меню: строгий грід (стиль класичних карткових застосунків) ── */
+.quick-play-btn{width:100%;max-width:330px;display:flex;align-items:center;justify-content:center;gap:14px;
+  padding:16px 20px;border-radius:16px;cursor:pointer;font-family:'Rubik',sans-serif;color:var(--text);
+  background:linear-gradient(180deg,rgba(255,255,255,0.07),rgba(255,255,255,0.02));
+  border:1px solid var(--gold-dim);box-shadow:inset 0 1px 0 var(--panel-top),0 6px 16px rgba(0,0,0,0.3);
+  transition:transform 0.1s,border-color 0.15s;margin-bottom:4px}
+.quick-play-btn:active{transform:translateY(2px);border-color:var(--gold)}
+.quick-play-btn span:first-child{color:var(--gold2)}
+.menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;margin:14px 16px 0;
+  background:var(--border2);border:1px solid var(--border2);border-radius:16px;overflow:hidden}
+.menu-tile{background:rgba(14,20,38,0.82);padding:16px 10px 13px;text-align:center;cursor:pointer;
+  transition:background 0.15s}
+.menu-tile:active{background:rgba(30,42,74,0.9)}
+.menu-tile.soon{opacity:0.42;cursor:default}
+.mt-icon{font-size:22px;margin-bottom:5px;filter:grayscale(0.25);opacity:0.9}
+.mt-label{font-family:'Rubik',sans-serif;font-size:13px;font-weight:700;color:var(--text);letter-spacing:0.4px}
+.mt-sub{font-size:9px;color:var(--text3);margin-top:2px;letter-spacing:0.3px}
+
+/* ── Колекція: сорочки та скіни карт ────────────────────────────── */
+.back-skins-row{display:flex;gap:10px;overflow-x:auto;padding:2px 0 8px;margin-bottom:8px}
+.back-skins-row::-webkit-scrollbar{height:0}
+.back-skin{flex-shrink:0;width:64px;text-align:center;cursor:pointer}
+.back-skin .bs-card{width:52px;height:74px;margin:0 auto 5px;border-radius:9px;border:2px solid var(--border);
+  background-size:cover;background-position:center;box-shadow:0 4px 10px rgba(0,0,0,0.4);transition:transform 0.12s,border-color 0.15s,box-shadow 0.15s}
+.back-skin:active .bs-card{transform:scale(0.94)}
+.back-skin.equipped .bs-card{border-color:var(--gold);box-shadow:0 0 14px rgba(255,209,102,0.4)}
+.back-skin.locked{opacity:0.4}
+.back-skin .bs-name{font-size:9px;color:var(--text2);font-weight:700}
+.back-skin.equipped .bs-name{color:var(--gold2)}
+.card-skin-row{display:flex;align-items:center;gap:12px;background:linear-gradient(180deg,var(--bg3),var(--bg2));
+  border:1px solid var(--border);border-radius:14px;padding:10px 12px;margin-bottom:8px}
+.card-skin-row .cs-preview{width:44px;height:62px;border-radius:7px;flex-shrink:0;border:1.5px solid var(--border);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;
+  background-size:cover;background-position:center;box-shadow:0 3px 8px rgba(0,0,0,0.35)}
+.card-skin-row .cs-info{flex:1;min-width:0}
+.card-skin-row .cs-name{font-size:12px;font-weight:700;color:var(--text)}
+.card-skin-row .cs-sub{font-size:10px;color:var(--text3);margin-top:1px}
+.card-skin-row .cs-btn{flex-shrink:0;font-family:'Rubik',sans-serif;font-size:11px;font-weight:700;padding:7px 13px;
+  border-radius:10px;cursor:pointer;border:1px solid var(--border);color:var(--text2);background:rgba(255,255,255,0.04)}
+.card-skin-row .cs-btn.on{border-color:var(--gold);color:var(--gold2);background:rgba(255,209,102,0.1)}
+
+/* Сорочка (back skin) через CSS-змінні — застосовується всюди разом */
+:root{--back-bg:linear-gradient(135deg,#9b6bff,#5a2f9e);--back-border:rgba(157,107,255,0.6)}
+.card-back{background:var(--back-bg);border-color:var(--back-border)}
+.opp-card-back{background:var(--back-bg);border-color:var(--back-border)}
+.flying-card{background:var(--back-bg);border-color:var(--back-border)}
+.discard-card{background:var(--back-bg);border-color:var(--back-border)}

@@ -15,3 +15,4 @@ rooms.json
 
 # Дані гравців — ніколи не комітити
 data/
+cloudflared.exe

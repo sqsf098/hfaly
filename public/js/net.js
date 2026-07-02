@@ -7,11 +7,14 @@ function connectSocket(){
   socket.on('connect_error',(e)=>{ if(e&&e.message&&e.message.indexOf('Telegram')>=0) showToast('⚠️ Відкрий гру через Telegram',4000); });
 
   socket.on('wallet',(w)=>{
+    myWallet=w; // повний гаманець: скіни, сорочка, колекція
     myCoins=w.coins;
     if(w.gems!=null)myGems=w.gems;
     myStats.wins=w.wins||myStats.wins;
     myStats.games=w.gamesPlayed||myStats.games;
     updateCoinsUI();
+    applyBackSkin(w.backSkin);
+    if(document.getElementById('decksScreen').classList.contains('active'))renderCollection();
   });
 
   // ── Економіка: скрині + квести ──────────────────────────────────
@@ -86,7 +89,11 @@ function connectSocket(){
   socket.on('my_room', (info)=>renderReturnBanner(info));
 
   socket.on('player_disconnected',({name})=>showToast('❌ '+name+' відключився',3000));
-  socket.on('error',({message})=>showToast('⚠️ '+message,3000));
+  socket.on('error',({message})=>{
+    showToast('⚠️ '+message,3000);
+    // страховка від «зниклих карт»: після відмови сервера перемальовуємо руку
+    if(gameState && gameState.phase==='play') renderGame(gameState);
+  });
 
   // Request wallet & rooms after connect
   setTimeout(()=>{
