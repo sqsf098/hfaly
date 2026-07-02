@@ -1,0 +1,14 @@
+node_modules/
+.env
+.env.local
+*.log
+dist/
+build/
+.DS_Store
+wallets.json
+rooms.json
+*.swp
+*.swo
+*~
+.vscode/
+.idea/

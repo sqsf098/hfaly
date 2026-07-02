@@ -1,0 +1,6 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "hfaly-dev", "runtimeExecutable": "node", "runtimeArgs": ["dev-noboat.js"], "port": 3000 }
+  ]
+}

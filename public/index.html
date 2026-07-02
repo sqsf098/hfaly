@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>хФали</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script src="https://unpkg.com/@tonconnect/ui@2/dist/tonconnect-ui.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;600;700;800;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+
+</head>
+<body class="theme-fan fan-nav">
+
+<!-- ══ LOBBY / HOME ══════════════════════════════════════════════════ -->
+<div class="screen active" id="homeScreen">
+
+  <!-- Animated background particles -->
+  <canvas id="bgCanvas" style="position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.4"></canvas>
+
+  <!-- Header -->
+  <div style="position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;flex-shrink:0">
+    <div style="font-family:'Rubik',sans-serif;font-size:20px;font-weight:900;color:var(--gold);letter-spacing:3px;text-shadow:0 0 20px rgba(201,168,76,0.4)">хФали</div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <div class="coin-badge" onclick="openChestsModal()" style="border-color:rgba(120,180,255,0.35)">
+        <span>💎</span><span id="navGems">0</span>
+      </div>
+      <div class="coin-badge" onclick="switchTab('profile')">
+        <span>💰</span><span id="navCoins">---</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Return to game banner -->
+  <div id="returnBanner" style="display:none;position:relative;z-index:2;margin:4px 16px 8px;background:rgba(39,174,96,0.1);border:1px solid rgba(39,174,96,0.35);border-radius:12px;padding:10px 14px;align-items:center;justify-content:space-between;gap:10px">
+    <div id="returnBannerText" style="flex:1"></div>
+    <div style="display:flex;gap:6px;flex-shrink:0">
+      <div onclick="returnToMyRoom()" style="font-family:'Rubik',sans-serif;font-size:12px;color:#fff;background:var(--green2,#27ae60);padding:7px 14px;border-radius:8px;cursor:pointer">▶ Зайти</div>
+      <div onclick="leaveMyRoomFromBanner()" style="font-size:12px;color:var(--text3);border:1px solid var(--border2);padding:7px 10px;border-radius:8px;cursor:pointer">Вийти</div>
+    </div>
+  </div>
+
+  <!-- Hero section -->
+  <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;padding:8px 20px 0;text-align:center" id="heroSection">
+
+    <!-- Animated cards preview -->
+    <div id="heroCards" style="position:relative;height:100px;width:240px;margin-bottom:16px">
+      <div class="hero-card" style="left:0;transform:rotate(-18deg);animation-delay:0s">A<br>♠</div>
+      <div class="hero-card" style="left:40px;transform:rotate(-9deg);animation-delay:0.1s">K<br>♥</div>
+      <div class="hero-card red" style="left:80px;transform:rotate(0deg);animation-delay:0.2s">🃏</div>
+      <div class="hero-card" style="left:120px;transform:rotate(9deg);animation-delay:0.3s">A<br>♦</div>
+      <div class="hero-card" style="left:160px;transform:rotate(18deg);animation-delay:0.4s">K<br>♣</div>
+    </div>
+
+    <div style="font-family:'Rubik',sans-serif;font-size:13px;color:var(--text2);letter-spacing:3px;text-transform:uppercase;margin-bottom:6px">Карткова гра</div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:24px">2 vs 2 · 4 гравці · Козирна</div>
+
+    <!-- Main action buttons -->
+    <button class="home-btn-primary" onclick="openCreateRoom()" id="btnNewGame">
+      <span style="font-size:18px">🃏</span>
+      <div>
+        <div style="font-size:15px;font-weight:700;letter-spacing:1px">Нова гра</div>
+        <div style="font-size:10px;opacity:0.7;margin-top:1px">Створи кімнату · запроси друзів</div>
+      </div>
+    </button>
+
+    <button class="home-btn-secondary" onclick="openJoinRoom()">
+      <span style="font-size:16px">🔑</span>
+      <div style="font-size:14px;letter-spacing:1px">Приєднатись за кодом</div>
+    </button>
+
+    <button class="home-btn-secondary" onclick="quickPlayWithBots()">
+      <span style="font-size:16px">⚡</span>
+      <div style="font-size:14px;letter-spacing:1px">Швидка гра з ботами</div>
+    </button>
+
+  </div>
+
+  <!-- Stats strip -->
+  <div style="position:relative;z-index:2;margin:16px 16px 0;background:rgba(0,0,0,0.3);border:1px solid var(--border2);border-radius:12px;padding:12px 16px;display:flex;justify-content:space-around">
+    <div style="text-align:center">
+      <div style="font-family:'Rubik',sans-serif;font-size:18px;font-weight:700;color:var(--gold)" id="hs_coins">---</div>
+      <div style="font-size:10px;color:var(--text3);letter-spacing:1px;margin-top:2px">МОНЕТИ</div>
+    </div>
+    <div style="width:1px;background:var(--border2)"></div>
+    <div style="text-align:center">
+      <div style="font-family:'Rubik',sans-serif;font-size:18px;font-weight:700;color:var(--text)" id="hs_games">0</div>
+      <div style="font-size:10px;color:var(--text3);letter-spacing:1px;margin-top:2px">ІГОР</div>
+    </div>
+    <div style="width:1px;background:var(--border2)"></div>
+    <div style="text-align:center">
+      <div style="font-family:'Rubik',sans-serif;font-size:18px;font-weight:700;color:var(--green2)" id="hs_wr">0%</div>
+      <div style="font-size:10px;color:var(--text3);letter-spacing:1px;margin-top:2px">ВІНРЕЙТ</div>
+    </div>
+  </div>
+
+  <!-- Daily bonus -->
+  <div style="position:relative;z-index:2;margin:10px 16px 0;background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.15);border-radius:12px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="claimDaily()">
+    <div style="display:flex;align-items:center;gap:10px">
+      <span style="font-size:22px">🎁</span>
+      <div>
+        <div style="font-size:12px;color:var(--text);font-weight:600">Щоденна нагорода</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:1px">+100 монет кожен день</div>
+      </div>
+    </div>
+    <div style="font-family:'Rubik',sans-serif;font-size:13px;color:var(--gold);background:rgba(201,168,76,0.15);padding:5px 12px;border-radius:8px;border:1px solid var(--border)">Взяти</div>
+  </div>
+
+  <!-- Chests & quests -->
+  <div style="position:relative;z-index:2;margin:10px 16px 0;background:rgba(120,180,255,0.06);border:1px solid rgba(120,180,255,0.15);border-radius:12px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="openChestsModal()">
+    <div style="display:flex;align-items:center;gap:10px">
+      <span style="font-size:22px">🎁</span>
+      <div>
+        <div style="font-size:12px;color:var(--text);font-weight:600">Скрині та завдання</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:1px">Відкривай скрині · виконуй квести</div>
+      </div>
+    </div>
+    <div id="questBadge" style="font-family:'Rubik',sans-serif;font-size:13px;color:#7db4ff;background:rgba(120,180,255,0.15);padding:5px 12px;border-radius:8px;border:1px solid rgba(120,180,255,0.25)">Відкрити</div>
+  </div>
+
+  <div style="flex:1"></div>
+
+  <div class="tab-bar" style="position:relative">
+    <div class="tab active" onclick="switchTab('home')"><div class="tab-icon">🃏</div><div class="tab-label">Грати</div></div>
+    <div class="tab" onclick="switchTab('profile')"><div class="tab-icon">👤</div><div class="tab-label">Профіль</div></div>
+    <div class="tab" onclick="switchTab('decks')"><div class="tab-icon">🎴</div><div class="tab-label">Колоди</div></div>
+    <div class="tab" onclick="switchTab('settings')"><div class="tab-icon">⚙️</div><div class="tab-label">Налашт.</div></div>
+  </div>
+</div>
+
+<div class="screen" id="profileScreen">
+  <div class="nav"><div class="nav-logo">Профіль</div><div class="coin-badge"><span>💰</span><span id="navCoins2">---</span></div></div>
+  <div class="content">
+    <div class="profile-hero">
+      <div class="avatar-ring"><div class="avatar-inner" id="avatarLetter">?</div></div>
+      <div class="profile-name-big" id="profileName">...</div>
+      <div class="level-badge">⭐ Рівень 1 — Новачок</div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-box"><div class="stat-val" id="pWins">0</div><div class="stat-lbl">Перемог</div></div>
+      <div class="stat-box"><div class="stat-val" id="pGames">0</div><div class="stat-lbl">Ігор</div></div>
+      <div class="stat-box"><div class="stat-val" id="pWr">0%</div><div class="stat-lbl">Вінрейт</div></div>
+    </div>
+    <div class="ui-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+        <span style="font-size:10px;color:var(--text3);letter-spacing:1px">ДОСВІД</span>
+        <span style="font-size:10px;color:var(--gold)">0 / 100 XP</span>
+      </div>
+      <div class="xp-bar-wrap"><div class="xp-bar-fill" style="width:0%"></div></div>
+      <div class="xp-labels"><span>Рівень 1</span><span>Рівень 2</span></div>
+    </div>
+    <div class="section-title">Досягнення</div>
+    <div class="ui-card"><div class="achievements">
+      <div class="ach silver">🃏 Перша гра</div>
+      <div class="ach silver">🔒 Заблоковано</div>
+      <div class="ach silver">🔒 Заблоковано</div>
+      <div class="ach silver">🔒 Заблоковано</div>
+    </div></div>
+    <div class="section-title">Нікнейм</div>
+    <div class="ui-card">
+      <div class="input-group">
+        <label class="input-label">Ім'я</label>
+        <input class="text-input" id="nicknameInput" placeholder="Твій нікнейм" maxlength="16">
+      </div>
+      <button class="btn-gold" onclick="saveName()">Зберегти</button>
+    </div>
+  </div>
+  <div class="tab-bar">
+    <div class="tab" onclick="switchTab('home')"><div class="tab-icon">🃏</div><div class="tab-label">Грати</div></div>
+    <div class="tab active" onclick="switchTab('profile')"><div class="tab-icon">👤</div><div class="tab-label">Профіль</div></div>
+    <div class="tab" onclick="switchTab('decks')"><div class="tab-icon">🎴</div><div class="tab-label">Колоди</div></div>
+    <div class="tab" onclick="switchTab('settings')"><div class="tab-icon">⚙️</div><div class="tab-label">Налашт.</div></div>
+  </div>
+</div>
+
+<!-- ══ DECKS ══════════════════════════════════════════════════════════ -->
+<div class="screen" id="decksScreen">
+  <div class="nav"><div class="nav-logo">Колоди</div></div>
+  <div class="content">
+    <div class="section-title">Стиль карт</div>
+    <div class="decks-grid">
+      <div class="deck-card selected" onclick="selectDeck(this,'classic')" data-deck="classic">
+        <div class="deck-check">✓</div>
+        <div class="deck-preview">
+          <div class="deck-mini" style="background:#fffef8;color:#c0392b;border-color:#ddd">♥</div>
+          <div class="deck-mini" style="background:#fffef8;color:#1a1a2e;border-color:#ddd">♠</div>
+          <div class="deck-mini" style="background:#fffef8;color:#c0392b;border-color:#ddd">♦</div>
+        </div>
+        <div class="deck-name">Класична</div><div class="deck-desc">Стандартна</div>
+      </div>
+      <div class="deck-card" onclick="selectDeck(this,'dark')" data-deck="dark">
+        <div class="deck-check">✓</div>
+        <div class="deck-preview">
+          <div class="deck-mini" style="background:#1a1a2e;color:#e74c3c;border-color:#333">♥</div>
+          <div class="deck-mini" style="background:#1a1a2e;color:#ecf0f1;border-color:#333">♠</div>
+          <div class="deck-mini" style="background:#1a1a2e;color:#e74c3c;border-color:#333">♦</div>
+        </div>
+        <div class="deck-name">Нічна</div><div class="deck-desc">Темний стиль</div>
+      </div>
+      <div class="deck-card" onclick="selectDeck(this,'gold')" data-deck="gold">
+        <div class="deck-check">✓</div>
+        <div class="deck-preview">
+          <div class="deck-mini" style="background:#2a1a00;color:#c9a84c;border-color:#5a4010">♥</div>
+          <div class="deck-mini" style="background:#2a1a00;color:#c9a84c;border-color:#5a4010">♠</div>
+          <div class="deck-mini" style="background:#2a1a00;color:#c9a84c;border-color:#5a4010">♦</div>
+        </div>
+        <div class="deck-name">Золота</div><div class="deck-desc">Преміум</div>
+      </div>
+      <div class="deck-card" onclick="selectDeck(this,'neon')" data-deck="neon">
+        <div class="deck-check">✓</div>
+        <div class="deck-preview">
+          <div class="deck-mini" style="background:#0a0015;color:#ff00ff;border-color:#440044">♥</div>
+          <div class="deck-mini" style="background:#0a0015;color:#00ffff;border-color:#004444">♠</div>
+          <div class="deck-mini" style="background:#0a0015;color:#ff00ff;border-color:#440044">♦</div>
+        </div>
+        <div class="deck-name">Неон</div><div class="deck-desc">Кіберпанк</div>
+      </div>
+    </div>
+
+    <!-- ══ NFT-колоди (TON) ══ -->
+    <div class="section-title" style="margin-top:18px">🔗 NFT-колоди <span id="tonNetBadge" style="font-size:9px;color:var(--text3);font-weight:400"></span></div>
+    <div class="ui-card">
+      <div id="tonWalletRow" style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+        <div style="flex:1">
+          <div style="font-size:12px;color:var(--text);font-weight:600">Гаманець TON</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:2px" id="tonAddrText">Не підключено</div>
+        </div>
+        <button class="btn-gold" id="tonConnectBtn" style="max-width:150px;padding:8px 14px;font-size:12px" onclick="tonConnectClick()">Підключити</button>
+      </div>
+    </div>
+    <div id="nftGrid" class="decks-grid" style="margin-top:10px"></div>
+    <div style="font-size:10px;color:var(--text3);margin-top:8px;text-align:center">Рідкісні колоди як NFT у мережі TON. Володіння перевіряється у блокчейні.</div>
+  </div>
+  <div class="tab-bar">
+    <div class="tab" onclick="switchTab('home')"><div class="tab-icon">🃏</div><div class="tab-label">Грати</div></div>
+    <div class="tab" onclick="switchTab('profile')"><div class="tab-icon">👤</div><div class="tab-label">Профіль</div></div>
+    <div class="tab active" onclick="switchTab('decks')"><div class="tab-icon">🎴</div><div class="tab-label">Колоди</div></div>
+    <div class="tab" onclick="switchTab('settings')"><div class="tab-icon">⚙️</div><div class="tab-label">Налашт.</div></div>
+  </div>
+</div>
+
+<!-- ══ SETTINGS ══════════════════════════════════════════════════════ -->
+<div class="screen" id="settingsScreen">
+  <div class="nav"><div class="nav-logo">Налаштування</div></div>
+  <div class="content">
+    <div class="section-title">Вигляд</div>
+    <div class="ui-card">
+      <div class="input-label">Інтерфейс</div>
+      <div class="toggle-row" id="themeRow">
+        <div class="toggle-opt" data-theme="fan" onclick="applyTheme('fan')">🎴 Оригінальний</div>
+        <div class="toggle-opt" data-theme="arcade" onclick="applyTheme('arcade')">🕹️ Аркадний</div>
+      </div>
+      <div style="font-size:10px;color:var(--text3)">«Оригінальний» — веер-навігація. «Аркадний» — класичні вкладки.</div>
+    </div>
+    <div class="section-title">Гра</div>
+    <div class="ui-card">
+      <div class="settings-item">
+        <div><div class="si-title">Звукові ефекти</div><div class="si-desc">Звук карт і ходів</div></div>
+        <div class="toggle-switch on" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div>
+      </div>
+      <div class="settings-item">
+        <div><div class="si-title">Підсвітка карт</div><div class="si-desc">Показує допустимі ходи</div></div>
+        <div class="toggle-switch on" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div>
+      </div>
+      <div class="settings-item">
+        <div><div class="si-title">Автохід</div><div class="si-desc">Якщо одна можлива карта</div></div>
+        <div class="toggle-switch" onclick="this.classList.toggle('on')"><div class="toggle-knob"></div></div>
+      </div>
+    </div>
+    <div class="section-title">Аккаунт</div>
+    <div class="ui-card">
+      <div class="settings-item"><div><div class="si-title">Версія</div><div class="si-desc">хФали v1.1.0</div></div></div>
+      <div class="settings-item" onclick="showToast('Щоденна нагорода: +100 монет! 🎁',2500);addCoinsLocal(100)" style="cursor:pointer">
+        <div><div class="si-title">🎁 Щоденна нагорода</div><div class="si-desc">+100 монет за вхід</div></div>
+        <div style="color:var(--gold);font-size:16px">›</div>
+      </div>
+    </div>
+  </div>
+  <div class="tab-bar">
+    <div class="tab" onclick="switchTab('home')"><div class="tab-icon">🃏</div><div class="tab-label">Грати</div></div>
+    <div class="tab" onclick="switchTab('profile')"><div class="tab-icon">👤</div><div class="tab-label">Профіль</div></div>
+    <div class="tab" onclick="switchTab('decks')"><div class="tab-icon">🎴</div><div class="tab-label">Колоди</div></div>
+    <div class="tab active" onclick="switchTab('settings')"><div class="tab-icon">⚙️</div><div class="tab-label">Налашт.</div></div>
+  </div>
+</div>
+
+<!-- ══ GAME SCREEN ════════════════════════════════════════════════════ -->
+<div class="screen" id="gameScreen">
+  <div class="game-header">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div onclick="confirmLeaveGame()" style="width:26px;height:26px;border-radius:50%;border:1px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:12px;color:rgba(255,255,255,0.6);cursor:pointer">✕</div>
+      <div class="gh-title">хФали</div>
+    </div>
+    <div class="gh-trump" id="ghTrump"></div>
+    <div class="gh-pot" id="ghPot"></div>
+  </div>
+  <div class="score-bar">
+    <div class="score-team a"><div class="score-val" id="scoreA">0</div><div class="score-names">🔵 <span id="scoreANames">А & А</span></div></div>
+    <div class="score-team b"><div class="score-val" id="scoreB">0</div><div class="score-names">🔴 <span id="scoreBNames">B & B</span></div></div>
+  </div>
+  <div class="timer-bar"><div class="timer-fill" id="timerFill" style="width:100%"></div></div>
+  <div class="table-area" id="tableArea">
+    <div class="felt-texture"></div><div class="table-border"></div>
+
+    <!-- Opponent TOP cards face-down -->
+    <div id="oppTop" style="position:absolute;top:8px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:3px;z-index:5">
+      <div class="opp-label" id="oppTopLabel"></div>
+      <div id="oppTopCards" style="display:flex;gap:-6px;position:relative;height:36px;width:120px"></div>
+    </div>
+
+    <!-- Opponent LEFT cards face-down -->
+    <div id="oppLeft" style="position:absolute;left:4px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:3px;z-index:5">
+      <div class="opp-label" id="oppLeftLabel"></div>
+      <div id="oppLeftCards" style="display:flex;flex-direction:column;gap:-4px;position:relative;width:28px;height:100px"></div>
+    </div>
+
+    <!-- Opponent RIGHT cards face-down -->
+    <div id="oppRight" style="position:absolute;right:4px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:3px;z-index:5">
+      <div class="opp-label" id="oppRightLabel"></div>
+      <div id="oppRightCards" style="display:flex;flex-direction:column;gap:-4px;position:relative;width:28px;height:100px"></div>
+    </div>
+
+    <!-- Discard pile (відбій) -->
+    <div id="discardPile" style="position:absolute;bottom:12px;right:12px;z-index:6">
+      <div id="discardStack" style="position:relative;width:36px;height:50px"></div>
+      <div id="discardCount" style="font-size:9px;color:var(--text3);text-align:center;margin-top:2px"></div>
+    </div>
+
+    <!-- Center trick area -->
+    <div class="trick-center">
+      <div class="trick-cards-row" id="trickCards"></div>
+    </div>
+
+    <div class="status-pill" id="statusPill">Очікування...</div>
+    <div class="log-toggle" onclick="toggleLog()">📋 Лог</div>
+    <div class="trick-log" id="trickLog"></div>
+    <div class="trick-review" id="trickReview">
+      <div class="trick-winner-label" id="trickWinnerLabel">🏆 Дачку взяв</div>
+      <div class="trick-review-cards" id="trickReviewCards"></div>
+      <button class="btn-gold" onclick="dismissTrickReview()" style="width:100%;padding:10px;font-size:14px">▶ Далі</button>
+    </div>
+  </div>
+  <div class="my-hand-area">
+    <div class="my-row">
+      <div class="my-name-tag" id="myNameTag">Ти</div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <div class="trick-counter" id="myTrickDots"></div>
+        <div class="tricks-mini" id="tricksMini"></div>
+      </div>
+    </div>
+    <div class="cards-scroll" id="myHandCards"></div>
+  </div>
+</div>
+
+<!-- ══ DEAL INTRO OVERLAY ═══════════════════════════════════════════ -->
+<div id="dealIntro">
+  <div class="deal-intro-title" id="dealIntroTitle">Визначаємо хвалящого...</div>
+  <div class="deal-card-row" id="dealIntroCards"></div>
+  <div style="font-size:12px;color:var(--text2);text-align:center;margin-top:8px" id="dealIntroSub">Роздача карт</div>
+</div>
+
+<!-- ══ WAITING ROOM ═══════════════════════════════════════════════════ -->
+<div class="waiting-screen" id="waitingRoom">
+  <div style="font-family:'Rubik',sans-serif;font-size:22px;color:var(--gold);letter-spacing:3px;margin-bottom:4px" id="waitingRoomName">Кімната</div>
+  <div class="waiting-room-info">
+    <div style="font-size:10px;color:var(--text3);letter-spacing:2px;margin-bottom:3px">КОД КІМНАТИ</div>
+    <div class="waiting-code" id="waitingCode">-----</div>
+    <div class="pot-display" id="waitingPot">0 💰 <span>Банк зростає з гравцями</span></div>
+  </div>
+  <div class="player-slots" id="waitingSlots"></div>
+  <div style="font-size:11px;color:var(--text3);margin-top:6px" id="waitingStatus">Чекаємо...</div>
+  <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;justify-content:center">
+    <button class="btn-gold" style="padding:10px 20px;font-size:13px" id="addBotBtn" onclick="addBot()">🤖 Додати бота</button>
+    <button class="btn-gold" style="padding:10px 20px;font-size:13px;background:rgba(201,168,76,0.2);color:var(--gold)" onclick="fillWithBots()">⚡ Заповнити ботами</button>
+    <button class="btn-outline" style="max-width:180px;padding:10px" onclick="leaveRoom()">← Вийти</button>
+  </div>
+  <div style="font-size:10px;color:var(--text3);margin-top:8px;text-align:center">Можна додати до 3 ботів</div>
+</div>
+
+<!-- ══ MODALS ══════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="createRoomModal" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title">➕ Приватна кімната</div>
+    <div class="input-group">
+      <label class="input-label">Тип</label>
+      <div class="toggle-row">
+        <div class="toggle-opt active" onclick="setRoomType(this,'public')">🌍 Публічна</div>
+        <div class="toggle-opt" onclick="setRoomType(this,'private')">🔒 Приватна</div>
+      </div>
+    </div>
+    <div class="input-group">
+      <label class="input-label">Депозит (монети)</label>
+      <div class="toggle-row">
+        <div class="toggle-opt active" onclick="setDeposit(this,0)">Без ставки</div>
+        <div class="toggle-opt" onclick="setDeposit(this,100)">100 💰</div>
+        <div class="toggle-opt" onclick="setDeposit(this,300)">300 💰</div>
+      </div>
+    </div>
+    <button class="btn-gold" onclick="createPrivateRoom()">Створити</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="joinRoomModal" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title">🔑 Приєднатись</div>
+    <div class="input-group">
+      <label class="input-label">Код кімнати</label>
+      <input class="text-input code" id="joinCodeInput" placeholder="XXXXXX" maxlength="8">
+    </div>
+    <button class="btn-gold" onclick="joinByCode()">Приєднатись</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="joinBaseRoomModal" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="jbrTitle">Приєднатись</div>
+    <div id="jbrInfo" style="text-align:center;margin-bottom:14px"></div>
+    <button class="btn-gold" id="jbrConfirmBtn" onclick="confirmJoinBaseRoom()">Зайти та внести депозит</button>
+    <button class="btn-outline" style="max-width:100%;padding:10px;margin-top:6px" onclick="document.getElementById('joinBaseRoomModal').classList.remove('show')">Скасувати</button>
+  </div>
+</div>
+
+<!-- ══ CHESTS & QUESTS MODAL ══════════════════════════════════════════ -->
+<div class="modal-overlay" id="chestsModal" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="modal-box" style="max-height:82vh;overflow-y:auto">
+    <div class="modal-handle"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+      <div class="modal-title" style="margin:0">🎁 Скрині та завдання</div>
+      <div style="display:flex;gap:6px;font-size:12px">
+        <span style="color:#7db4ff">💎 <b id="chGems">0</b></span>
+        <span style="color:var(--gold)">💰 <b id="chCoins">0</b></span>
+      </div>
+    </div>
+
+    <div class="section-title" style="margin-top:10px">Скрині</div>
+    <div id="chestsGrid" style="display:flex;flex-direction:column;gap:8px"></div>
+
+    <div class="section-title" style="margin-top:14px">Щоденні завдання</div>
+    <div id="questsList" style="display:flex;flex-direction:column;gap:8px"></div>
+
+    <button class="btn-outline" style="max-width:100%;padding:10px;margin-top:12px" onclick="document.getElementById('chestsModal').classList.remove('show')">Закрити</button>
+  </div>
+</div>
+
+<!-- ══ CHEST REWARD OVERLAY ═══════════════════════════════════════════ -->
+<div class="game-overlay" id="chestRewardOverlay">
+  <div class="go-box" style="text-align:center">
+    <div style="font-size:52px;margin-bottom:6px" id="chestRewardIcon">🎉</div>
+    <div class="go-title">Нагорода!</div>
+    <div id="chestRewardText" style="font-size:16px;color:var(--gold);font-family:'Rubik',sans-serif;margin:8px 0"></div>
+    <button class="btn-gold" style="max-width:100%;padding:10px;margin-top:6px" onclick="document.getElementById('chestRewardOverlay').classList.remove('show')">Забрати</button>
+  </div>
+</div>
+
+<!-- ══ GAME OVERLAYS ═══════════════════════════════════════════════════ -->
+<div class="game-overlay" id="trumpOverlay">
+  <div class="go-box">
+    <div class="go-title">🗣️ Ти хвалишся!</div>
+    <div style="font-size:11px;color:var(--text2);margin-bottom:8px">Твої 3 карти:</div>
+    <div id="trump3cards" style="display:flex;gap:6px;justify-content:center;margin-bottom:12px"></div>
+    <div style="font-size:11px;color:var(--text2);margin-bottom:6px">Обери козир</div>
+    <div class="suit-grid">
+      <div class="suit-pick black" onclick="pickTrump('♣')">♣</div>
+      <div class="suit-pick black" onclick="pickTrump('♠')">♠</div>
+      <div class="suit-pick red" onclick="pickTrump('♥')">♥</div>
+      <div class="suit-pick red" onclick="pickTrump('♦')">♦</div>
+    </div>
+    <button class="btn-outline" style="max-width:100%;padding:10px;margin-top:4px" onclick="goLastCard()">🃏 На останню</button>
+  </div>
+</div>
+
+<div class="game-overlay" id="show9Overlay">
+  <div class="go-box" style="text-align:center">
+    <div class="go-title">🃏 На останню!</div>
+    <div style="font-size:11px;color:var(--text2);margin-bottom:10px" id="ninthRevealSub">Відкрита карта визначає козир</div>
+    <div id="show9cards" style="display:flex;gap:8px;justify-content:center;margin-bottom:12px"></div>
+    <div style="font-size:16px;color:var(--gold);font-family:'Rubik',sans-serif" id="ninthTrumpLabel"></div>
+  </div>
+</div>
+
+<div class="game-overlay" id="roundEndOverlay">
+  <div class="go-box">
+    <div class="go-title">🏁 Раунд завершено</div>
+    <div id="roundSummaryText" style="font-size:12px;color:var(--text2);margin-bottom:4px"></div>
+    <div class="result-grid" id="roundResultGrid"></div>
+    <button class="btn-gold" style="margin-top:8px" onclick="nextRound()">▶ Далі</button>
+  </div>
+</div>
+
+<div class="game-overlay" id="gameFinishedOverlay">
+  <div class="win-box" id="winBox">
+    <div class="win-title" id="winTitle">🏆 ПЕРЕМОГА!</div>
+    <div class="win-amount" id="winAmount">+0 💰</div>
+    <div class="win-sub" id="winSub"></div>
+    <div style="margin-top:14px">
+      <button class="btn-gold" onclick="goToLobby()">← До лобі</button>
+    </div>
+  </div>
+</div>
+
+<div class="game-overlay" id="leaveConfirm">
+  <div class="go-box">
+    <div class="go-title">Вийти з гри?</div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:14px" id="leaveConfirmText">
+      Якщо гра вже йде — тебе замінить бот, депозит залишиться в банку.<br><br>
+      Якщо гра ще не почалась — депозит повернеться.
+    </div>
+    <button class="btn-gold" onclick="doLeaveGame()" style="background:var(--red,#c0392b);color:#fff;margin-bottom:8px">Так, вийти</button>
+    <button class="btn-outline" style="max-width:100%;padding:10px" onclick="cancelLeaveGame()">Залишитись</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ══ FAN NAVIGATOR (оригінальна навігація — веер карт) ══════════════ -->
+<div id="fanNav">
+  <div class="fan-title" id="fanTitle">Грати</div>
+  <div class="fan-wrap" id="fanWrap"></div>
+  <div class="fan-hint">← гортай або тапни карту →</div>
+</div>
+
+<script src="js/core.js"></script>
+<script src="js/fan.js"></script>
+<script src="js/lobby.js"></script>
+<script src="js/economy.js"></script>
+<script src="js/ton.js"></script>
+<script src="js/net.js"></script>
+<script src="js/game-ui.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
