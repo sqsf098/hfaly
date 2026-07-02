@@ -10,6 +10,17 @@ module.exports = {
   STARTING_COINS: 500,
   DAILY_BONUS: 100,
 
+  // ── Авторизація (Telegram initData) ─────────────────────────────
+  AUTH: {
+    // Вимагати підписаний Telegram initData для всіх дій із гаманцем.
+    // За замовчуванням: увімкнено в production, якщо є BOT_TOKEN.
+    // Перекрити вручну: REQUIRE_TG_AUTH=true|false у .env
+    REQUIRE: process.env.REQUIRE_TG_AUTH != null
+      ? process.env.REQUIRE_TG_AUTH === 'true'
+      : (!!process.env.BOT_TOKEN && process.env.NODE_ENV === 'production'),
+    MAX_AGE_SEC: 24 * 60 * 60, // підпис initData старший за добу — недійсний
+  },
+
   // ── Блокчейн (TON) для NFT-карт ──────────────────────────────────
   TON: {
     NETWORK: process.env.TON_NETWORK || 'testnet',        // testnet | mainnet

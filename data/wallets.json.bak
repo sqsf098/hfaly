@@ -1,0 +1,233 @@
+{
+ "805970785": {
+  "coins": 531,
+  "gems": 1,
+  "gamesPlayed": 0,
+  "wins": 0,
+  "totalWon": 0,
+  "totalLost": 0,
+  "ownedDecks": [
+   "classic",
+   "dark",
+   "gold",
+   "neon"
+  ],
+  "chests": {},
+  "quests": [
+   {
+    "id": "play3",
+    "type": "play_games",
+    "target": 3,
+    "text": "Зіграй 3 гри",
+    "reward": {
+     "coins": 150
+    },
+    "progress": 0,
+    "done": false,
+    "claimed": false
+   },
+   {
+    "id": "win1",
+    "type": "win_game",
+    "target": 1,
+    "text": "Виграй 1 гру",
+    "reward": {
+     "coins": 200,
+     "chest": "wood"
+    },
+    "progress": 0,
+    "done": false,
+    "claimed": false
+   },
+   {
+    "id": "trump5",
+    "type": "choose_trump",
+    "target": 5,
+    "text": "Обери козир 5 разів",
+    "reward": {
+     "coins": 80
+    },
+    "progress": 1,
+    "done": false,
+    "claimed": false
+   }
+  ],
+  "questDay": "2026-07-01",
+  "freeChestAt": 1782950240796,
+  "tonAddress": null,
+  "tonVerified": false,
+  "nftDecks": []
+ },
+ "uj2ti6wcnz7": {
+  "coins": 427,
+  "gems": 0,
+  "gamesPlayed": 0,
+  "wins": 0,
+  "totalWon": 0,
+  "totalLost": 0,
+  "ownedDecks": [
+   "classic",
+   "dark",
+   "gold",
+   "neon"
+  ],
+  "chests": {},
+  "quests": [
+   {
+    "id": "play3",
+    "type": "play_games",
+    "target": 3,
+    "text": "Зіграй 3 гри",
+    "reward": {
+     "coins": 150
+    },
+    "progress": 0,
+    "done": false,
+    "claimed": false
+   },
+   {
+    "id": "tricks15",
+    "type": "take_tricks",
+    "target": 15,
+    "text": "Візьми 15 дачок",
+    "reward": {
+     "coins": 120
+    },
+    "progress": 0,
+    "done": false,
+    "claimed": false
+   },
+   {
+    "id": "win1",
+    "type": "win_game",
+    "target": 1,
+    "text": "Виграй 1 гру",
+    "reward": {
+     "coins": 200,
+     "chest": "wood"
+    },
+    "progress": 0,
+    "done": false,
+    "claimed": false
+   }
+  ],
+  "questDay": "2026-07-01",
+  "freeChestAt": 1782935516626
+ },
+ "fresh_1782921177674": {
+  "coins": 44,
+  "gems": 4,
+  "gamesPlayed": 0,
+  "wins": 0,
+  "totalWon": 0,
+  "totalLost": 0,
+  "ownedDecks": [
+   "classic",
+   "dark",
+   "gold",
+   "neon"
+  ],
+  "chests": {},
+  "quests": [
+   {
+    "id": "tricks15",
+    "type": "take_tricks",
+    "target": 15,
+    "text": "Візьми 15 дачок",
+    "reward": {
+     "coins": 120
+    },
+    "progress": 7,
+    "done": false,
+    "claimed": false
+   },
+   {
+    "id": "win2",
+    "type": "win_game",
+    "target": 2,
+    "text": "Виграй 2 гри",
+    "reward": {
+     "gems": 5
+    },
+    "progress": 0,
+    "done": false,
+    "claimed": false
+   },
+   {
+    "id": "cards40",
+    "type": "play_cards",
+    "target": 40,
+    "text": "Зіграй 40 карт",
+    "reward": {
+     "coins": 60
+    },
+    "progress": 40,
+    "done": true,
+    "claimed": true
+   }
+  ],
+  "questDay": "2026-07-01",
+  "freeChestAt": 1782935597542,
+  "tonAddress": null,
+  "tonVerified": false,
+  "nftDecks": []
+ },
+ "uzz71wks9dfi": {
+  "coins": 500,
+  "gems": 0,
+  "gamesPlayed": 0,
+  "wins": 0,
+  "totalWon": 0,
+  "totalLost": 0,
+  "ownedDecks": [
+   "classic",
+   "dark",
+   "gold",
+   "neon"
+  ],
+  "chests": {},
+  "quests": [
+   {
+    "id": "tricks15",
+    "type": "take_tricks",
+    "target": 15,
+    "text": "Візьми 15 дачок",
+    "reward": {
+     "coins": 120
+    },
+    "progress": 0,
+    "done": false,
+    "claimed": false
+   },
+   {
+    "id": "win2",
+    "type": "win_game",
+    "target": 2,
+    "text": "Виграй 2 гри",
+    "reward": {
+     "gems": 5
+    },
+    "progress": 0,
+    "done": false,
+    "claimed": false
+   },
+   {
+    "id": "trump5",
+    "type": "choose_trump",
+    "target": 5,
+    "text": "Обери козир 5 разів",
+    "reward": {
+     "coins": 80
+    },
+    "progress": 0,
+    "done": false,
+    "claimed": false
+   }
+  ],
+  "questDay": "2026-07-02",
+  "freeChestAt": 0,
+  "tonAddress": null,
+  "tonVerified": false,
+  "nftDecks": []
+ }
+}

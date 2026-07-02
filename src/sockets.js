@@ -6,6 +6,8 @@ const { createBot } = require('./bot-ai');
 const { runBots } = require('./bots');
 const { openChest, claimQuest, economyState, addQuestProgress } = require('./economy');
 const { linkWallet, unlinkWallet, syncNfts, requestMint, tonState } = require('./ton');
+const { socketAuthMiddleware, resolveTgId } = require('./auth');
+const { holdDeposit, releaseDeposit } = require('./escrow');
 const { log } = require('./logger');
 
 let io = null;
@@ -92,6 +94,11 @@ function distributeWinnings(room) {
     if (sock) sock.emit('wallet', w);
   }
 
+  // Гра завершена — депозити зіграні, закриваємо ескроу-записи
+  for (const tgId of room.playerTgIds || []) {
+    if (isReal(tgId)) releaseDeposit(tgId, room.id);
+  }
+
   saveWallets();
 
   // Квести: зіграв гру — усі реальні гравці; виграв — переможці
@@ -105,19 +112,33 @@ function distributeWinnings(room) {
 function registerHandlers(serverIo) {
   io = serverIo;
 
+  // Перевірка Telegram initData один раз при підключенні (див. auth.js)
+  io.use(socketAuthMiddleware);
+
   io.on('connection', (socket) => {
 
+    // Верифікований tgId із сокета; payload-ний tgId — лише як dev-fallback.
+    // null → авторизація обов'язкова, але її нема (відмовляємо).
+    function uid(payloadTgId) {
+      const id = resolveTgId(socket, payloadTgId);
+      if (!id) socket.emit('error', { message: 'Потрібна авторизація через Telegram' });
+      return id;
+    }
+
     safeOn(socket, 'get_wallet', ({ tgId }) => {
-      socket.emit('wallet', getWallet(String(tgId)));
+      const id = uid(tgId); if (!id) return;
+      socket.emit('wallet', getWallet(id));
     });
 
     // ── Економіка: скрині + квести ─────────────────────────────
     safeOn(socket, 'get_economy', ({ tgId }) => {
-      sendEconomy(socket, tgId);
+      const id = uid(tgId); if (!id) return;
+      sendEconomy(socket, id);
     });
 
     safeOn(socket, 'open_chest', ({ tgId, chestId }) => {
-      const w = getWallet(String(tgId));
+      const id = uid(tgId); if (!id) return;
+      const w = getWallet(id);
       const res = openChest(w, chestId);
       if (!res.ok) { socket.emit('error', { message: res.error }); return; }
       saveWallets();
@@ -127,7 +148,8 @@ function registerHandlers(serverIo) {
     });
 
     safeOn(socket, 'claim_quest', ({ tgId, questId }) => {
-      const w = getWallet(String(tgId));
+      const id = uid(tgId); if (!id) return;
+      const w = getWallet(id);
       const res = claimQuest(w, questId);
       if (!res.ok) { socket.emit('error', { message: res.error }); return; }
       saveWallets();
@@ -138,11 +160,13 @@ function registerHandlers(serverIo) {
 
     // ── TON / NFT-карти ────────────────────────────────────────
     safeOn(socket, 'get_ton', ({ tgId }) => {
-      socket.emit('ton_state', tonState(getWallet(String(tgId))));
+      const id = uid(tgId); if (!id) return;
+      socket.emit('ton_state', tonState(getWallet(id)));
     });
 
     safeOn(socket, 'link_wallet', ({ tgId, address, proof, publicKey }) => {
-      const w = getWallet(String(tgId));
+      const id = uid(tgId); if (!id) return;
+      const w = getWallet(id);
       const res = linkWallet(w, address, proof, publicKey);
       if (!res.ok) { socket.emit('error', { message: res.error }); return; }
       saveWallets();
@@ -152,14 +176,16 @@ function registerHandlers(serverIo) {
     });
 
     safeOn(socket, 'unlink_wallet', ({ tgId }) => {
-      const w = getWallet(String(tgId));
+      const id = uid(tgId); if (!id) return;
+      const w = getWallet(id);
       unlinkWallet(w);
       saveWallets();
       socket.emit('ton_state', tonState(w));
     });
 
     safeOn(socket, 'sync_nfts', async ({ tgId }) => {
-      const w = getWallet(String(tgId));
+      const id = uid(tgId); if (!id) return;
+      const w = getWallet(id);
       const res = await syncNfts(w);
       if (!res.ok) { socket.emit('error', { message: res.error }); return; }
       saveWallets();
@@ -168,7 +194,8 @@ function registerHandlers(serverIo) {
     });
 
     safeOn(socket, 'request_mint', async ({ tgId, nftId }) => {
-      const w = getWallet(String(tgId));
+      const id = uid(tgId); if (!id) return;
+      const w = getWallet(id);
       const res = await requestMint(w, nftId);
       if (!res.ok) { socket.emit('error', { message: res.error }); return; }
       socket.emit('mint_tx', res);
@@ -193,7 +220,7 @@ function registerHandlers(serverIo) {
     });
 
     safeOn(socket, 'join_room', ({ roomId, name, tgId, isPublic }) => {
-      tgId = String(tgId || 'anon_' + socket.id);
+      tgId = uid(tgId); if (!tgId) return;
       const wallet = getWallet(tgId);
 
       let room = rooms.get(roomId);
@@ -229,6 +256,7 @@ function registerHandlers(serverIo) {
         }
         wallet.coins -= room.deposit;
         room.pot = (room.pot || 0) + room.deposit;
+        holdDeposit(tgId, room.id, room.deposit); // на диск: рестарт сервера поверне
         saveWallets();
       }
 
@@ -362,6 +390,7 @@ function registerHandlers(serverIo) {
           const w = getWallet(player.tgId);
           w.coins += room.deposit;
           room.pot = Math.max(0, (room.pot || 0) - room.deposit);
+          releaseDeposit(player.tgId, room.id); // депозит повернено — ескроу закритий
           saveWallets();
           socket.emit('wallet', w);
         }
@@ -396,7 +425,7 @@ function registerHandlers(serverIo) {
 
     // ── Пошук активної кімнати гравця (для кнопки "Повернутись") ──
     safeOn(socket, 'find_my_room', ({ tgId }) => {
-      tgId = String(tgId);
+      tgId = uid(tgId); if (!tgId) return;
       for (const room of rooms.values()) {
         const p = room.players.find(pl => pl.tgId === tgId && !pl.isBot);
         if (p) {

@@ -14,9 +14,10 @@ const { createServer } = require('http');
 const { Server } = require('socket.io');
 const path = require('path');
 
-const { PORT, APP_URL } = require('./config');
+const { PORT, APP_URL, AUTH } = require('./config');
 const { log } = require('./logger');
-const { loadWallets, flushWallets } = require('./wallets');
+const { loadWallets, flushWallets, getWallet } = require('./wallets');
+const { loadEscrow, refundOrphans } = require('./escrow');
 const { initBaseRooms, startCleanupLoop } = require('./rooms');
 const sockets = require('./sockets');
 const bots = require('./bots');
@@ -66,6 +67,11 @@ app.get('/nft/:id.json', (req, res) => {
 
 // ── Ініціалізація ───────────────────────────────────────────────────────
 loadWallets();
+loadEscrow();
+// Кімнати не переживають рестарт — повертаємо «застряглі» депозити гравцям
+const refunded = refundOrphans(getWallet);
+if (refunded) { flushWallets(); log(`💸 Повернено ${refunded} депозитів після рестарту`); }
+log(`🔐 Telegram auth: ${AUTH.REQUIRE ? "обов'язковий" : 'вимкнений (dev), у production з BOT_TOKEN увімкнеться сам'}`);
 initBaseRooms();
 startCleanupLoop();
 sockets.registerHandlers(io);

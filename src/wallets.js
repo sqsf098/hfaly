@@ -2,6 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 const { STARTING_COINS } = require('./config');
+const { atomicWriteJSON, readJSONSafe } = require('./store');
 const { log } = require('./logger');
 
 const DATA_DIR = path.join(__dirname, '../data');
@@ -46,10 +47,10 @@ function getWallet(tgId) {
 
 function loadWallets() {
   try {
-    if (fs.existsSync(WALLETS_FILE)) {
-      const data = JSON.parse(fs.readFileSync(WALLETS_FILE, 'utf8'));
-      for (const [k, v] of Object.entries(data)) playerWallets.set(k, v);
-      log(`💾 Завантажено ${playerWallets.size} гаманців`);
+    const res = readJSONSafe(WALLETS_FILE); // якщо основний файл битий — читає .bak
+    if (res) {
+      for (const [k, v] of Object.entries(res.data)) playerWallets.set(k, v);
+      log(`💾 Завантажено ${playerWallets.size} гаманців${res.from.endsWith('.bak') ? ' (відновлено з бекапу!)' : ''}`);
     }
   } catch (e) { log('Помилка завантаження гаманців: ' + e.message); }
 }
@@ -65,8 +66,8 @@ function saveWallets() {
 
 function flushWallets() {
   try {
-    if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
-    fs.writeFileSync(WALLETS_FILE, JSON.stringify(Object.fromEntries(playerWallets), null, 1));
+    // Атомарний запис (tmp → rename) + .bak: обрив посеред запису не б'є файл
+    atomicWriteJSON(WALLETS_FILE, Object.fromEntries(playerWallets));
   } catch (e) { log('Помилка збереження гаманців: ' + e.message); }
 }
 

@@ -1,7 +1,10 @@
 // ─── З'єднання з сервером (Socket.io) ───
 function connectSocket(){
   if(socket)return;
-  socket=io({transports:['websocket','polling']});
+  // initData — підписані Telegram-дані; сервер верифікує їх і бере наш ID
+  // звідти (payload-ний tgId — лише dev-fallback поза Telegram)
+  socket=io({transports:['websocket','polling'],auth:{initData:(tg&&tg.initData)||''}});
+  socket.on('connect_error',(e)=>{ if(e&&e.message&&e.message.indexOf('Telegram')>=0) showToast('⚠️ Відкрий гру через Telegram',4000); });
 
   socket.on('wallet',(w)=>{
     myCoins=w.coins;
