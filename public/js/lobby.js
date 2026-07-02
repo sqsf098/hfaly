@@ -4,45 +4,33 @@ function loadRooms(){
   socket.emit('get_rooms');
 }
 
+// Кімнати списком — строгий стиль класичних карткових застосунків:
+// рядок = стіл (ставка · назва · гравці · дія), без кольорового шуму
 function renderRooms(list){
   const grid=$('baseRoomsGrid');
+  if(!grid)return;
   const baseRooms=list.filter(r=>r.isBaseRoom);
-  if(!baseRooms.length){grid.innerHTML='<div style="color:var(--text3);font-size:12px;text-align:center;grid-column:span 2;padding:12px">Завантаження...</div>';return;}
+  if(!baseRooms.length){grid.innerHTML='<div style="color:var(--text3);font-size:12px;text-align:center;padding:12px">Завантаження...</div>';return;}
+  grid.className='table-list';
   grid.innerHTML='';
   for(const room of baseRooms){
-    const isFull=room.players>=4;
     const isPlaying=room.phase!=='waiting';
-    const canAfford=myCoins>=room.deposit;
-    const locked=!canAfford;
-    const div=document.createElement('div');
-    div.className=`room-card ${locked?'locked':''} ${isFull&&!isPlaying?'full':''}`;
-    div.style.cssText=`border-color:${room.color}22`;
-    div.innerHTML=`
-      <div class="room-card-glow" style="background:radial-gradient(circle at 50% 0%,${room.color}15,transparent 70%)"></div>
-      ${room.minCoins>0?`<div class="room-min-badge">мін. ${room.minCoins} 💰</div>`:''}
-      <span class="room-emoji">${room.emoji}</span>
-      <div class="room-name" style="color:${room.color}">${room.name}</div>
-      <div class="room-desc">${room.desc}</div>
-      <div class="room-deposit">
-        <div class="deposit-val" style="color:${room.color}">${room.deposit}</div>
-        <div class="deposit-lbl">💰 депозит</div>
+    const locked=myCoins<room.deposit;
+    const row=document.createElement('div');
+    row.className=`table-row ${locked?'locked':''} ${isPlaying?'playing':''}`;
+    row.innerHTML=`
+      <div class="tr-stake"><div class="val">${room.deposit}</div><div class="lbl">ставка</div></div>
+      <div class="tr-info">
+        <div class="tr-name">${room.name}</div>
+        <div class="tr-sub">
+          <span class="tr-dots">${[0,1,2,3].map(i=>`<i class="${i<room.players?'on':''}"></i>`).join('')}</span>
+          ${room.players}/4${room.pot>0?` · банк ${room.pot}`:''}${room.minCoins>0?` · від ${room.minCoins} 💰`:''}
+        </div>
       </div>
-      <div class="room-pot">Банк: <span style="color:${room.color}">${room.pot} 💰</span></div>
-      <div class="room-players">
-        ${[0,1,2,3].map(i=>`<div class="player-dot ${i<room.players?'filled':''}"></div>`).join('')}
-        <span style="font-size:9px;color:var(--text3);margin-left:4px">${room.players}/4</span>
-      </div>
-      <div class="room-status ${isPlaying?'playing':room.players>0?'waiting':''}">
-        ${isPlaying?'Гра йде...':(room.players>0?`Чекають: ${room.players}/4`:'Вільно')}
-      </div>
-      ${locked?`<div style="font-size:10px;color:var(--red);margin-top:4px">Потрібно ${room.deposit} 💰</div>`:''}
-    `;
-    if(!locked&&!isPlaying){
-      div.onclick=()=>openJoinBaseRoom(room);
-    } else if(isPlaying){
-      div.onclick=()=>showToast('Гра вже розпочалась, чекай наступну кімнату',2000);
-    }
-    grid.appendChild(div);
+      <div class="tr-action">${isPlaying?'Гра йде':(locked?`Треба ${room.deposit}`:'Грати')}</div>`;
+    if(!locked&&!isPlaying) row.onclick=()=>openJoinBaseRoom(room);
+    else if(isPlaying) row.onclick=()=>showToast('Гра вже розпочалась, чекай наступну',2000);
+    grid.appendChild(row);
   }
 }
 
@@ -51,7 +39,7 @@ function openJoinBaseRoom(room){
   $('jbrTitle').textContent=`${room.emoji} ${room.name}`;
   $('jbrInfo').innerHTML=`
     <div style="margin-bottom:10px">
-      <div style="font-family:'Cinzel',serif;font-size:28px;color:${room.color};font-weight:900">${room.deposit} 💰</div>
+      <div style="font-family:'Rubik',sans-serif;font-size:28px;color:var(--gold2);font-weight:800">${room.deposit} 💰</div>
       <div style="font-size:11px;color:var(--text3)">депозит</div>
     </div>
     <div style="font-size:12px;color:var(--text2);margin-bottom:4px">Банк кімнати: <b style="color:${room.color}">${room.pot} 💰</b></div>

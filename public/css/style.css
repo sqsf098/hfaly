@@ -313,7 +313,8 @@ html,body{height:100%;overflow:hidden;color:var(--text);touch-action:manipulatio
 .pcard .ct{font-size:14px;font-weight:800;line-height:1;display:flex;flex-direction:column;align-items:flex-start;gap:0}
 .pcard .ct span{display:block;line-height:1.1}
 .pcard .cm{font-size:24px;text-align:center;line-height:1;flex:1;display:flex;align-items:center;justify-content:center}
-.pcard .cb{font-size:14px;font-weight:800;line-height:1;display:flex;flex-direction:column;align-items:flex-end;gap:0;transform:rotate(180deg)}
+/* flex-start, бо rotate(180deg) дзеркалить: індекс має лягти ВНИЗ-ПРАВОРУЧ (діагональ як у справжніх карт) */
+.pcard .cb{font-size:14px;font-weight:800;line-height:1;display:flex;flex-direction:column;align-items:flex-start;gap:0;transform:rotate(180deg)}
 .pcard .cb span{display:block;line-height:1.1}
 .play-action-btn{display:none;margin:6px auto 0;padding:11px 30px;border-radius:14px;border:none;
   background:linear-gradient(180deg,var(--gold2),var(--gold));color:#241300;font-family:'Rubik',sans-serif;font-size:15px;font-weight:800;letter-spacing:0.5px;cursor:pointer;
@@ -419,19 +420,18 @@ html,body{height:100%;overflow:hidden;color:var(--text);touch-action:manipulatio
    (перевизначає токени; вмикається класом body.theme-fan)
    ═══════════════════════════════════════════════════════════════════ */
 body.theme-fan{
-  --bg:#080b16;--bg2:#111a30;--bg3:#16223f;--bg4:#1f2f52;
-  --gold:#ffd166;--gold2:#ffe6a3;--gold-dim:#9c7220;
-  --violet:#9b6bff;--cyan:#33e6d0;--accent:#ff7ac0;
+  --bg:#0a0f1c;--bg2:#131c30;--bg3:#18243f;--bg4:#20304e;
+  --gold:#d9b96a;--gold2:#efd9a3;--gold-dim:#8a6f2e;
+  --violet:#8b7bd8;--cyan:#5bc4c9;--accent:#c98a5a;
   --green:#20b978;--green2:#33e0a0;--green-dim:#158055;
   --red:#ff5d73;--red-dim:#a5293a;
-  --text:#eaf2ff;--text2:#9fb0d0;--text3:#5f708f;
-  --border:rgba(140,180,255,0.18);--border2:rgba(140,180,255,0.07);
-  --panel-top:rgba(160,200,255,0.10);
+  --text:#eaf2ff;--text2:#9cadc9;--text3:#5c6c88;
+  --border:rgba(150,180,220,0.16);--border2:rgba(150,180,220,0.07);
+  --panel-top:rgba(170,200,240,0.09);
+  /* Спокійний, дорослий фон: один холодний відблиск замість трьох неонових */
   background:
-    radial-gradient(900px 620px at 12% -8%, rgba(51,230,208,0.22) 0%, transparent 55%),
-    radial-gradient(900px 700px at 100% 8%, rgba(255,122,192,0.20) 0%, transparent 52%),
-    radial-gradient(1000px 700px at 50% 118%, rgba(155,107,255,0.22) 0%, transparent 55%),
-    linear-gradient(175deg,#0b1020 0%,#070a14 70%,#05070f 100%);
+    radial-gradient(1000px 650px at 50% -12%, rgba(80,110,180,0.16) 0%, transparent 60%),
+    linear-gradient(175deg,#0d1424 0%,#090e1b 70%,#070b15 100%);
 }
 /* м'яке "зоряне" мерехтіння через ::before на body у fan-темі */
 body.theme-fan::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.5;
@@ -511,6 +511,39 @@ body.in-game #fanNav{display:none !important}
 .card-skin-row .cs-btn{flex-shrink:0;font-family:'Rubik',sans-serif;font-size:11px;font-weight:700;padding:7px 13px;
   border-radius:10px;cursor:pointer;border:1px solid var(--border);color:var(--text2);background:rgba(255,255,255,0.04)}
 .card-skin-row .cs-btn.on{border-color:var(--gold);color:var(--gold2);background:rgba(255,209,102,0.1)}
+
+/* ── Ігровий стіл у fan-темі: спокійне синьо-сіре сукно (як у класичних
+   карткових застосунках), без кислотного фіолету ─────────────────── */
+body.theme-fan #gameScreen{background:#0b111e}
+body.theme-fan .table-area{background:radial-gradient(ellipse at center,#3c4d69 0%,#2b3a52 55%,#1a2436 100%)}
+body.theme-fan .felt-texture{opacity:0.5}
+body.theme-fan .table-border{border-color:rgba(217,185,106,0.16);box-shadow:inset 0 0 60px rgba(10,16,30,0.5)}
+body.theme-fan .game-header{background:rgba(7,11,21,0.72)}
+body.theme-fan .my-hand-area{background:rgba(7,11,21,0.66)}
+body.theme-fan .score-bar{background:rgba(7,11,21,0.5)}
+body.theme-fan .opp-label{background:rgba(7,11,21,0.68)}
+body.theme-fan .status-pill{background:linear-gradient(180deg,rgba(60,77,105,0.85),rgba(26,36,54,0.9))}
+
+/* ── Кімнати списком (референс — класичний «Дурак»): рядок = стіл ── */
+.table-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.table-row{display:flex;align-items:center;gap:14px;padding:13px 14px;border-radius:14px;cursor:pointer;
+  background:linear-gradient(180deg,rgba(255,255,255,0.045),rgba(255,255,255,0.015));
+  border:1px solid var(--border2);transition:background 0.15s,border-color 0.15s}
+.table-row:active{background:rgba(255,255,255,0.07)}
+.table-row.locked{opacity:0.45;cursor:default}
+.table-row.playing{opacity:0.6;cursor:default}
+.tr-stake{flex-shrink:0;width:64px;text-align:center}
+.tr-stake .val{font-family:'Rubik',sans-serif;font-size:19px;font-weight:800;color:var(--gold2);line-height:1}
+.tr-stake .lbl{font-size:8px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.tr-info{flex:1;min-width:0}
+.tr-name{font-family:'Rubik',sans-serif;font-size:14px;font-weight:700;color:var(--text)}
+.tr-sub{font-size:10px;color:var(--text3);margin-top:2px;display:flex;align-items:center;gap:6px}
+.tr-dots{display:inline-flex;gap:3px}
+.tr-dots i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.14);font-style:normal}
+.tr-dots i.on{background:var(--gold)}
+.tr-action{flex-shrink:0;font-family:'Rubik',sans-serif;font-size:12px;font-weight:700;padding:8px 16px;border-radius:10px;
+  color:var(--gold2);border:1px solid var(--gold-dim);background:rgba(217,185,106,0.08)}
+.table-row.locked .tr-action,.table-row.playing .tr-action{color:var(--text3);border-color:var(--border2);background:transparent}
 
 /* Сорочка (back skin) через CSS-змінні — застосовується всюди разом */
 :root{--back-bg:linear-gradient(135deg,#9b6bff,#5a2f9e);--back-border:rgba(157,107,255,0.6)}

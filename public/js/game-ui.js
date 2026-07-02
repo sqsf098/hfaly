@@ -124,12 +124,14 @@ function makeCardHTML(card){
   const sk=typeof cardSkinFor==='function'?cardSkinFor(card):null;
   const bgH=sk?(sk.img?`url('${sk.img}') center/cover, ${th.bg}`:sk.bg):th.bg;
   const col=sk?(sk.color||(isRed?th.red:th.black)):(isRed?th.red:th.black);
-  return `<div style="width:50px;height:72px;border-radius:7px;background:${bgH};border:1.5px solid ${sk?'var(--gold-dim)':th.border};
-    display:flex;flex-direction:column;justify-content:space-between;padding:4px 4px 3px;flex-shrink:0;
-    box-shadow:1px 1px 4px rgba(0,0,0,0.2)">
-    <div style="font-size:13px;font-weight:800;color:${col};line-height:1.1">${card.rank}<br><span style="font-size:12px">${card.suit}</span></div>
-    <div style="font-size:20px;color:${col};text-align:center;line-height:1">${card.suit}</div>
-    <div style="font-size:13px;font-weight:800;color:${col};transform:rotate(180deg);text-align:right;line-height:1.1">${card.rank}<br><span style="font-size:12px">${card.suit}</span></div>
+  const center=sk?(sk.img?'':(sk.emoji||card.suit)):card.suit;
+  // Абсолютна розкладка: індекси по діагоналі (верх-ліво / низ-право,
+  // як у справжніх карт), масть строго по центру — нічого не «роз'їжджається»
+  return `<div style="position:relative;width:50px;height:72px;border-radius:7px;background:${bgH};
+    border:1.5px solid ${sk?'var(--gold-dim)':th.border};flex-shrink:0;box-shadow:1px 1px 4px rgba(0,0,0,0.2)">
+    <div style="position:absolute;top:3px;left:5px;font-size:12px;font-weight:800;color:${col};line-height:1.05;text-align:center">${card.rank}<br><span style="font-size:11px">${card.suit}</span></div>
+    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:20px;color:${col}">${center}</div>
+    <div style="position:absolute;bottom:3px;right:5px;transform:rotate(180deg);font-size:12px;font-weight:800;color:${col};line-height:1.05;text-align:center">${card.rank}<br><span style="font-size:11px">${card.suit}</span></div>
   </div>`;
 }
 
