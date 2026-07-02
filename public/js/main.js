@@ -5,6 +5,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   loadProfile();
   updateCoinsUI();
   initParticles();
+  mountIcons(); // SVG-іконки в усі [data-icon]
   initTheme();
   if(!params.get('notc')) initTonConnect(); // ?notc — пропустити TON (dev/скриншоти)
   connectSocket();

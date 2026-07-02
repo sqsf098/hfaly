@@ -58,7 +58,7 @@
 
     <!-- Головна дія -->
     <button class="quick-play-btn" onclick="quickPlayWithBots()" id="btnNewGame">
-      <span style="font-size:20px">▶</span>
+      <span class="qp-icon" data-icon="play"></span>
       <div style="text-align:left">
         <div style="font-size:16px;font-weight:700;letter-spacing:1px">Швидка гра</div>
         <div style="font-size:10px;opacity:0.6;margin-top:1px">Стіл знайдеться сам</div>
@@ -69,27 +69,27 @@
   <!-- Меню (строгий грід, як у класичних карткових застосунках) -->
   <div class="menu-grid" style="position:relative;z-index:2">
     <div class="menu-tile" onclick="switchTab('rooms')">
-      <div class="mt-icon">🚪</div><div class="mt-label">Кімнати</div>
+      <div class="mt-icon" data-icon="door"></div><div class="mt-label">Кімнати</div>
       <div class="mt-sub">Знайти стіл</div>
     </div>
     <div class="menu-tile" onclick="openCreateRoom()">
-      <div class="mt-icon">🃏</div><div class="mt-label">Нова гра</div>
+      <div class="mt-icon" data-icon="cards"></div><div class="mt-label">Нова гра</div>
       <div class="mt-sub">Запроси друзів</div>
     </div>
     <div class="menu-tile" onclick="openJoinRoom()">
-      <div class="mt-icon">🔑</div><div class="mt-label">За кодом</div>
+      <div class="mt-icon" data-icon="key"></div><div class="mt-label">За кодом</div>
       <div class="mt-sub">Приватний стіл</div>
     </div>
     <div class="menu-tile" onclick="openChestsModal()">
-      <div class="mt-icon">🎁</div><div class="mt-label">Скрині</div>
+      <div class="mt-icon" data-icon="chest"></div><div class="mt-label">Скрині</div>
       <div class="mt-sub">Нагороди · квести</div>
     </div>
     <div class="menu-tile" onclick="switchTab('decks')">
-      <div class="mt-icon">🎴</div><div class="mt-label">Колекція</div>
+      <div class="mt-icon" data-icon="layers"></div><div class="mt-label">Колекція</div>
       <div class="mt-sub">Скіни та колоди</div>
     </div>
     <div class="menu-tile soon">
-      <div class="mt-icon">🏆</div><div class="mt-label">Турніри</div>
+      <div class="mt-icon" data-icon="trophy"></div><div class="mt-label">Турніри</div>
       <div class="mt-sub">Скоро</div>
     </div>
   </div>
@@ -115,7 +115,7 @@
   <!-- Daily bonus -->
   <div style="position:relative;z-index:2;margin:10px 16px 0;background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.15);border-radius:12px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="claimDaily()">
     <div style="display:flex;align-items:center;gap:10px">
-      <span style="font-size:22px">🎁</span>
+      <span class="row-icon" data-icon="gift" style="color:var(--gold2)"></span>
       <div>
         <div style="font-size:12px;color:var(--text);font-weight:600">Щоденна нагорода</div>
         <div style="font-size:10px;color:var(--text3);margin-top:1px">+100 монет кожен день</div>
@@ -127,7 +127,7 @@
   <!-- Chests & quests -->
   <div style="position:relative;z-index:2;margin:10px 16px 0;background:rgba(120,180,255,0.06);border:1px solid rgba(120,180,255,0.15);border-radius:12px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="openChestsModal()">
     <div style="display:flex;align-items:center;gap:10px">
-      <span style="font-size:22px">🎁</span>
+      <span class="row-icon" data-icon="chest" style="color:#7db4ff"></span>
       <div>
         <div style="font-size:12px;color:var(--text);font-weight:600">Скрині та завдання</div>
         <div style="font-size:10px;color:var(--text3);margin-top:1px">Відкривай скрині · виконуй квести</div>
@@ -155,8 +155,8 @@
     <div class="section-title">Столи зі ставкою</div>
     <div class="rooms-grid" id="baseRoomsGrid"></div>
     <div class="section-title">Своя гра</div>
-    <button class="private-room-btn" onclick="openCreateRoom()">🃏 Створити кімнату</button>
-    <button class="private-room-btn" onclick="openJoinRoom()">🔑 Приєднатись за кодом</button>
+    <button class="private-room-btn" onclick="openCreateRoom()"><span class="row-icon sm" data-icon="cards"></span> Створити кімнату</button>
+    <button class="private-room-btn" onclick="openJoinRoom()"><span class="row-icon sm" data-icon="key"></span> Приєднатись за кодом</button>
   </div>
 </div>
 
@@ -559,6 +559,7 @@
 </div>
 
 <script src="js/core.js"></script>
+<script src="js/icons.js"></script>
 <script src="js/fan.js"></script>
 <script src="js/lobby.js"></script>
 <script src="js/economy.js"></script>

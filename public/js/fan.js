@@ -1,10 +1,10 @@
 // ─── Оригінальна навігація: веер карт + перемикач тем ───
 const FAN_SECTIONS=[
-  {id:'home',     icon:'🃏', label:'Грати',    suit:'♠'},
-  {id:'rooms',    icon:'🚪', label:'Кімнати',  suit:'♦'},
-  {id:'decks',    icon:'🎴', label:'Колекція', suit:'♥'},
-  {id:'profile',  icon:'👤', label:'Профіль',  suit:'♣'},
-  {id:'settings', icon:'⚙️', label:'Ще',       suit:'★'},
+  {id:'home',     icon:'play',   label:'Грати',    suit:'♠'},
+  {id:'rooms',    icon:'door',   label:'Кімнати',  suit:'♦'},
+  {id:'decks',    icon:'layers', label:'Колекція', suit:'♥'},
+  {id:'profile',  icon:'user',   label:'Профіль',  suit:'♣'},
+  {id:'settings', icon:'gear',   label:'Ще',       suit:'★'},
 ];
 let fanActive=0;
 
@@ -15,7 +15,7 @@ function buildFanNav(){
     const c=document.createElement('div');
     c.className='fan-card'; c.dataset.i=i;
     c.innerHTML=`<span class="fc-suit">${s.suit}</span>
-      <span class="fc-icon">${s.icon}</span>
+      <span class="fc-icon">${iconSvg(s.icon)}</span>
       <span class="fc-label">${s.label}</span>
       <span class="fc-suit br">${s.suit}</span>`;
     c.onclick=()=>fanSelect(i);

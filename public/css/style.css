@@ -297,7 +297,9 @@ html,body{height:100%;overflow:hidden;color:var(--text);touch-action:manipulatio
 .my-name-tag.boaster{color:var(--gold2)}
 .tricks-mini{display:flex;gap:5px;font-size:9px}
 .tm-badge{background:rgba(255,203,61,0.14);color:var(--gold2);padding:2px 7px;border-radius:8px;font-weight:700}
-.cards-scroll{display:flex;gap:0;padding:6px 6px 8px;overflow-x:auto;overflow-y:visible;flex-shrink:0;-webkit-overflow-scrolling:touch;min-height:86px}
+/* overflow-x:auto примусово ріже вертикаль (visible→auto за спекою CSS),
+   тож даємо повну висоту: 20px зверху на підняту карту + 82px карта + низ */
+.cards-scroll{display:flex;gap:0;padding:20px 6px 10px;overflow-x:auto;overflow-y:hidden;flex-shrink:0;-webkit-overflow-scrolling:touch;min-height:112px;align-items:flex-start}
 .cards-scroll::-webkit-scrollbar{height:4px}
 .cards-scroll::-webkit-scrollbar-thumb{background:rgba(255,203,61,0.3);border-radius:2px}
 .pcard{flex-shrink:0;width:56px;height:82px;border-radius:10px;
@@ -464,7 +466,8 @@ body.in-game #fanNav{display:none !important}
 .fan-card:active{transition-duration:0.08s}
 .fan-card .fc-suit{position:absolute;top:5px;left:6px;font-size:9px;opacity:0.45}
 .fan-card .fc-suit.br{top:auto;left:auto;bottom:5px;right:6px;transform:rotate(180deg)}
-.fan-card .fc-icon{font-size:23px;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5))}
+.fan-card .fc-icon{color:var(--text2);filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5));transition:color 0.2s}
+.fan-card.active .fc-icon{color:var(--gold2)}
 .fan-card .fc-label{font-size:9px;font-weight:800;font-family:'Rubik',sans-serif;letter-spacing:0.2px}
 .fan-card.active{color:var(--text);border-color:var(--gold);
   background:linear-gradient(165deg,rgba(54,74,124,0.98),rgba(24,34,64,0.99));
@@ -485,7 +488,15 @@ body.in-game #fanNav{display:none !important}
   transition:background 0.15s}
 .menu-tile:active{background:rgba(30,42,74,0.9)}
 .menu-tile.soon{opacity:0.42;cursor:default}
-.mt-icon{font-size:22px;margin-bottom:5px;filter:grayscale(0.25);opacity:0.9}
+.mt-icon{margin-bottom:6px;color:var(--gold2);opacity:0.9}
+.mt-icon svg{width:22px;height:22px;display:block;margin:0 auto}
+.menu-tile.soon .mt-icon{color:var(--text3)}
+.qp-icon{color:var(--gold2);display:flex}
+.qp-icon svg{width:22px;height:22px}
+.row-icon{display:flex;flex-shrink:0}
+.row-icon svg{width:22px;height:22px}
+.row-icon.sm svg{width:17px;height:17px;vertical-align:-3px}
+.fc-icon svg{width:25px;height:25px;display:block}
 .mt-label{font-family:'Rubik',sans-serif;font-size:13px;font-weight:700;color:var(--text);letter-spacing:0.4px}
 .mt-sub{font-size:9px;color:var(--text3);margin-top:2px;letter-spacing:0.3px}
 
