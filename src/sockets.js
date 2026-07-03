@@ -8,7 +8,7 @@ const { openChest, claimQuest, economyState, addQuestProgress } = require('./eco
 const { linkWallet, unlinkWallet, syncNfts, requestMint, tonState } = require('./ton');
 const { socketAuthMiddleware, resolveTgId } = require('./auth');
 const { holdDeposit, releaseDeposit } = require('./escrow');
-const { BACK_SKIN_IDS, CARD_SKINS } = require('./skins');
+const { getBackSkins, getCardSkins } = require('./skins');
 const { log } = require('./logger');
 
 let io = null;
@@ -217,7 +217,7 @@ function registerHandlers(serverIo) {
       const id = uid(tgId); if (!id) return;
       const w = getWallet(id);
       if (kind === 'back') {
-        if (!BACK_SKIN_IDS.includes(skinId) || !w.ownedBackSkins.includes(skinId)) {
+        if (!getBackSkins()[skinId] || !w.ownedBackSkins.includes(skinId)) {
           socket.emit('error', { message: 'Сорочка не доступна' }); return;
         }
         w.backSkin = skinId;
@@ -225,7 +225,7 @@ function registerHandlers(serverIo) {
         if (skinId === null || skinId === undefined) {
           delete w.cardSkins[cardKey]; // зняти скін
         } else {
-          const def = CARD_SKINS[skinId];
+          const def = getCardSkins()[skinId];
           // скін має існувати, належати гравцю і відповідати САМЕ цій карті
           if (!def || !w.ownedCardSkins.includes(skinId) || def.card !== cardKey) {
             socket.emit('error', { message: 'Скін не доступний' }); return;
@@ -271,6 +271,7 @@ function registerHandlers(serverIo) {
     safeOn(socket, 'join_room', ({ roomId, name, tgId, isPublic, deposit, mode }) => {
       tgId = uid(tgId); if (!tgId) return;
       const wallet = getWallet(tgId);
+      if (name) wallet.name = String(name).slice(0, 32); // для адмін-панелі та лідербордів
 
       let room = rooms.get(roomId);
       if (!room) {

@@ -32,7 +32,7 @@ const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, { cors: { origin: '*' } });
 
-app.use(express.json());
+app.use(express.json({ limit: '8mb' })); // PNG-скіни приходять як dataURL
 app.use((req, res, next) => { res.setHeader('ngrok-skip-browser-warning', 'true'); next(); });
 // TON Connect manifest — генерується з APP_URL, щоб домен завжди збігався
 app.get('/tonconnect-manifest.json', (_, res) => {
@@ -51,7 +51,22 @@ app.get('/health', (_, res) => res.json({ ok: true }));
 // Ім'я бота для deep-link запрошень (t.me/<bot>?startapp=<roomId>).
 // Резолвиться з BOT_USERNAME або через getMe після старту бота (нижче).
 let botUsername = process.env.BOT_USERNAME || '';
-app.get('/appinfo', (_, res) => res.json({ botUsername }));
+app.get('/appinfo', (_, res) => res.json({ botUsername, groupLink: process.env.GROUP_LINK || '' }));
+
+// ── Скіни: публічний каталог (клієнт малює з нього) + адмін-панель ──
+const { loadSkins, getBackSkins, getCardSkins } = require('./skins');
+loadSkins();
+app.get('/api/skins', (_, res) => res.json({ backs: getBackSkins(), cards: getCardSkins() }));
+
+// ADMIN_KEY: в .env; якщо нема (dev) — згенеруємо і покажемо в консолі
+let ADMIN_KEY = process.env.ADMIN_KEY || '';
+if (!ADMIN_KEY && process.env.NODE_ENV !== 'production') {
+  ADMIN_KEY = 'dev-' + Math.random().toString(36).slice(2, 10);
+  log(`👑 ADMIN_KEY не задано — тимчасовий ключ: ${ADMIN_KEY} (додай ADMIN_KEY у .env для постійного)`);
+}
+const { createAdminRouter } = require('./admin');
+app.use('/api/admin', createAdminRouter({ io, adminKey: ADMIN_KEY }));
+app.get('/admin', (_, res) => res.sendFile(path.join(__dirname, '../public/admin.html')));
 
 // Метадані NFT-карт (TEP-64, off-chain JSON). Посилання зашивається в NFT.
 const { NFT_DECKS } = require('./ton');

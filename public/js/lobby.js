@@ -248,8 +248,15 @@ function leaveMyRoomFromBanner(){
 // ── GAME ──────────────────────────────────────────────────────────
 
 // ── Запрошення посиланням (прямий deep-link у Telegram) ───────────
-let appBotUsername='';
-fetch('/appinfo').then(r=>r.json()).then(d=>{appBotUsername=d.botUsername||'';}).catch(()=>{});
+let appBotUsername='', appGroupLink='';
+fetch('/appinfo').then(r=>r.json()).then(d=>{appBotUsername=d.botUsername||'';appGroupLink=d.groupLink||'';}).catch(()=>{});
+
+// Спільнота: вступ у Telegram-групу гри (GROUP_LINK у .env)
+function openCommunity(){
+  if(!appGroupLink){showToast('Групу скоро відкриємо! 👥',2500);return;}
+  if(tg&&tg.openTelegramLink){tg.openTelegramLink(appGroupLink);return;}
+  window.open(appGroupLink,'_blank');
+}
 
 function shareRoomLink(){
   if(!myRoomId){showToast('Спершу створи кімнату');return;}

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>хФали — Адмін</title>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0f1c;--bg2:#131c30;--bg3:#18243f;--gold:#d9b96a;--gold2:#efd9a3;
+  --text:#eaf2ff;--text2:#9cadc9;--text3:#5c6c88;--green:#33e0a0;--red:#ff5d73;
+  --border:rgba(150,180,220,0.16);--border2:rgba(150,180,220,0.07)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Nunito',sans-serif;background:linear-gradient(175deg,#0d1424,#070b15);color:var(--text);min-height:100vh}
+.wrap{max-width:960px;margin:0 auto;padding:20px 16px 60px}
+h1{font-family:'Rubik',sans-serif;font-size:20px;color:var(--gold2);letter-spacing:1px;margin-bottom:4px}
+.sub{font-size:12px;color:var(--text3);margin-bottom:18px}
+.tabs{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap}
+.tab{padding:9px 16px;border-radius:10px;border:1px solid var(--border2);background:rgba(255,255,255,0.03);
+  color:var(--text2);font-size:13px;font-weight:700;cursor:pointer;font-family:'Rubik',sans-serif}
+.tab.active{border-color:var(--gold);color:var(--gold2);background:rgba(217,185,106,0.08)}
+.panel{display:none}.panel.active{display:block}
+.card{background:linear-gradient(180deg,var(--bg3),var(--bg2));border:1px solid var(--border);
+  border-radius:14px;padding:16px;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.stat{text-align:center;padding:12px;background:rgba(0,0,0,0.25);border-radius:10px}
+.stat .v{font-family:'Rubik',sans-serif;font-size:22px;font-weight:800;color:var(--gold2)}
+.stat .l{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-top:3px}
+label{display:block;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin:10px 0 4px}
+input,select{width:100%;padding:10px 12px;border-radius:9px;border:1px solid var(--border);
+  background:rgba(0,0,0,0.3);color:var(--text);font-size:14px;font-family:'Nunito',sans-serif;outline:none}
+input:focus{border-color:var(--gold)}
+button{padding:10px 18px;border-radius:10px;border:none;background:linear-gradient(180deg,var(--gold2),var(--gold));
+  color:#241a05;font-weight:800;font-size:13px;cursor:pointer;font-family:'Rubik',sans-serif;margin-top:12px}
+button.ghost{background:rgba(255,255,255,0.05);color:var(--text2);border:1px solid var(--border)}
+button.danger{background:rgba(255,93,115,0.15);color:var(--red);border:1px solid rgba(255,93,115,0.3)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;text-align:left;padding:6px 8px;border-bottom:1px solid var(--border)}
+td{padding:8px;border-bottom:1px solid var(--border2)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.pill{display:inline-block;padding:2px 8px;border-radius:8px;font-size:10px;font-weight:700}
+.pill.ok{background:rgba(51,224,160,0.15);color:var(--green)}
+.pill.warn{background:rgba(217,185,106,0.15);color:var(--gold2)}
+#toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:var(--bg3);border:1px solid var(--gold);
+  border-radius:12px;padding:10px 20px;font-size:13px;opacity:0;transition:opacity .25s;pointer-events:none;z-index:99}
+#toast.show{opacity:1}
+.skin-prev{width:40px;height:56px;border-radius:6px;border:1px solid var(--border);background-size:cover;background-position:center;display:inline-block;vertical-align:middle}
+@media(max-width:600px){.row2,.row3{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>👑 хФали — Адмін-панель</h1>
+  <div class="sub">Ключ береться з ADMIN_KEY у .env (dev-ключ пишеться в консоль сервера при старті)</div>
+
+  <div class="card" id="loginCard">
+    <label>Ключ адміністратора</label>
+    <input id="keyInput" type="password" placeholder="ADMIN_KEY">
+    <button onclick="saveKey()">Увійти</button>
+  </div>
+
+  <div id="app" style="display:none">
+    <div class="tabs">
+      <div class="tab active" data-p="stats" onclick="openTab(this)">Огляд</div>
+      <div class="tab" data-p="players" onclick="openTab(this)">Гравці</div>
+      <div class="tab" data-p="skins" onclick="openTab(this)">Скіни</div>
+      <div class="tab" data-p="rooms" onclick="openTab(this)">Кімнати</div>
+      <div class="tab" data-p="tourn" onclick="openTab(this)">Турніри</div>
+    </div>
+
+    <!-- ОГЛЯД -->
+    <div class="panel active" id="p-stats">
+      <div class="card"><div class="grid" id="statsGrid"></div></div>
+      <div class="card"><b style="font-size:13px">Активні кімнати</b><div id="statsRooms" style="margin-top:8px;font-size:12px;color:var(--text2)"></div></div>
+    </div>
+
+    <!-- ГРАВЦІ -->
+    <div class="panel" id="p-players">
+      <div class="card">
+        <label>Пошук (ID або ім'я)</label>
+        <input id="playerQ" placeholder="напр. 12345 або Іван" oninput="loadPlayers()">
+        <div style="overflow-x:auto;margin-top:10px"><table id="playersTable"></table></div>
+      </div>
+      <div class="card">
+        <b style="font-size:13px">💰 Нарахувати / списати</b>
+        <div class="row3">
+          <div><label>Telegram ID</label><input id="grantId"></div>
+          <div><label>Монети (+/-)</label><input id="grantCoins" type="number" value="0"></div>
+          <div><label>Гемы (+/-)</label><input id="grantGems" type="number" value="0"></div>
+        </div>
+        <button onclick="grant()">Застосувати</button>
+      </div>
+      <div class="card">
+        <b style="font-size:13px">🎁 Видати скін гравцю</b>
+        <div class="row3">
+          <div><label>Telegram ID</label><input id="sgId"></div>
+          <div><label>Тип</label><select id="sgKind"><option value="back">Сорочка</option><option value="card">Скін карти</option></select></div>
+          <div><label>ID скіна</label><input id="sgSkin" placeholder="напр. dragon_back"></div>
+        </div>
+        <button onclick="skinGrant()">Видати</button>
+      </div>
+    </div>
+
+    <!-- СКІНИ -->
+    <div class="panel" id="p-skins">
+      <div class="card">
+        <b style="font-size:13px">➕ Новий скін (PNG)</b>
+        <div class="row3">
+          <div><label>Тип</label><select id="nsKind" onchange="document.getElementById('nsCardRow').style.display=this.value==='card'?'block':'none'">
+            <option value="back">Сорочка</option><option value="card">Скін карти</option></select></div>
+          <div><label>ID (латиниця)</label><input id="nsId" placeholder="dragon_back"></div>
+          <div><label>Назва</label><input id="nsName" placeholder="Дракон"></div>
+        </div>
+        <div id="nsCardRow" style="display:none"><label>Карта (напр. A♠, Q♥)</label><input id="nsCard" placeholder="A♠"></div>
+        <label>PNG-файл</label><input id="nsFile" type="file" accept="image/png,image/jpeg,image/webp">
+        <label style="display:flex;align-items:center;gap:8px;text-transform:none;font-size:13px;color:var(--text2)">
+          <input type="checkbox" id="nsAll" style="width:auto"> Видати всім гравцям одразу</label>
+        <button onclick="addSkinUI()">Додати скін</button>
+      </div>
+      <div class="card"><b style="font-size:13px">Каталог</b><div id="skinsList" style="margin-top:10px"></div></div>
+    </div>
+
+    <!-- КІМНАТИ -->
+    <div class="panel" id="p-rooms">
+      <div class="card"><div style="overflow-x:auto"><table id="roomsTable"></table></div></div>
+    </div>
+
+    <!-- ТУРНІРИ -->
+    <div class="panel" id="p-tourn">
+      <div class="card">
+        <b style="font-size:13px">🏆 Новий турнір (анонс, базова версія)</b>
+        <div class="row3">
+          <div><label>Назва</label><input id="tTitle" placeholder="Кубок хФали"></div>
+          <div><label>Старт (дата/час)</label><input id="tStart" type="datetime-local"></div>
+          <div><label>Ставка</label><input id="tDep" type="number" value="100"></div>
+        </div>
+        <div class="row2">
+          <div><label>Режим</label><select id="tMode"><option value="hfaly">хФали 2v2</option><option value="khrest">Хрестовець</option></select></div>
+          <div><label>Приз</label><input id="tPrize" placeholder="1000 💰 + скін Дракон"></div>
+        </div>
+        <button onclick="addTourn()">Створити</button>
+      </div>
+      <div class="card"><b style="font-size:13px">Заплановані</b><div id="tournList" style="margin-top:10px;font-size:13px;color:var(--text2)"></div></div>
+    </div>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script>
+let KEY=localStorage.getItem('hfaly_admin_key')||'';
+const $=id=>document.getElementById(id);
+function toast(t){const e=$('toast');e.textContent=t;e.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>e.classList.remove('show'),2600);}
+async function api(path,opts={}){
+  const res=await fetch('/api/admin'+path,{...opts,headers:{'Content-Type':'application/json','x-admin-key':KEY,...(opts.headers||{})}});
+  const data=await res.json().catch(()=>({}));
+  if(!res.ok){toast('⚠️ '+(data.error||res.status));throw new Error(data.error||res.status);}
+  return data;
+}
+function saveKey(){KEY=$('keyInput').value.trim();localStorage.setItem('hfaly_admin_key',KEY);boot();}
+async function boot(){
+  try{await api('/stats');}catch(e){$('loginCard').style.display='block';$('app').style.display='none';return;}
+  $('loginCard').style.display='none';$('app').style.display='block';
+  loadStats();loadPlayers();loadSkinsUI();loadRooms();loadTourn();
+}
+function openTab(el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');$('p-'+el.dataset.p).classList.add('active');
+  ({stats:loadStats,players:loadPlayers,skins:loadSkinsUI,rooms:loadRooms,tourn:loadTourn})[el.dataset.p]();
+}
+async function loadStats(){
+  const s=await api('/stats');
+  $('statsGrid').innerHTML=[['Гравців',s.players],['Монет в економіці',s.totalCoins],['Гемів',s.totalGems],['Зіграно ігор',s.totalGames],['Кімнат',s.rooms.length]]
+    .map(([l,v])=>`<div class="stat"><div class="v">${v}</div><div class="l">${l}</div></div>`).join('');
+  $('statsRooms').innerHTML=s.rooms.length?s.rooms.map(r=>`${r.id} · ${r.mode} · ${r.phase} · ${r.players} грав. · банк ${r.pot}`).join('<br>'):'Порожньо';
+}
+async function loadPlayers(){
+  const list=await api('/players?q='+encodeURIComponent($('playerQ')?.value||''));
+  $('playersTable').innerHTML='<tr><th>ID</th><th>Ім\'я</th><th>💰</th><th>💎</th><th>Ігор</th><th>Перемог</th><th></th></tr>'+
+    list.map(p=>`<tr><td>${p.tgId}</td><td>${p.name||'—'}</td><td>${p.coins}</td><td>${p.gems}</td><td>${p.games}</td><td>${p.wins}</td>
+      <td><button class="ghost" style="margin:0;padding:5px 10px" onclick="$('grantId').value='${p.tgId}';$('sgId').value='${p.tgId}';toast('ID підставлено у форми')">→</button></td></tr>`).join('');
+}
+async function grant(){
+  const r=await api('/grant',{method:'POST',body:JSON.stringify({tgId:$('grantId').value.trim(),coins:+$('grantCoins').value,gems:+$('grantGems').value})});
+  toast(`✅ Баланс: ${r.coins}💰 ${r.gems}💎`);loadPlayers();
+}
+async function skinGrant(){
+  await api('/skin-grant',{method:'POST',body:JSON.stringify({tgId:$('sgId').value.trim(),kind:$('sgKind').value,skinId:$('sgSkin').value.trim()})});
+  toast('✅ Скін видано');
+}
+async function loadSkinsUI(){
+  const s=await api('/skins');
+  const row=(kind,id,d)=>`<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border2)">
+    <span class="skin-prev" style="background:${d.img?`url('${d.img}') center/cover`:(d.css||d.bg||'#222')}"></span>
+    <div style="flex:1"><b style="font-size:13px">${d.name}</b>
+      <div style="font-size:11px;color:var(--text3)">${kind}/${id}${d.card?' · '+d.card:''}</div></div>
+    <button class="danger" style="margin:0;padding:5px 10px" onclick="delSkin('${kind}','${id}')">✕</button></div>`;
+  $('skinsList').innerHTML=Object.entries(s.backs).map(([id,d])=>row('back',id,d)).join('')+Object.entries(s.cards).map(([id,d])=>row('card',id,d)).join('');
+}
+async function delSkin(kind,id){ if(!confirm(`Видалити ${kind}/${id}?`))return; await api(`/skins/${kind}/${id}`,{method:'DELETE'});toast('🗑 Видалено');loadSkinsUI(); }
+function addSkinUI(){
+  const f=$('nsFile').files[0];
+  const send=(imgData)=>api('/skins',{method:'POST',body:JSON.stringify({
+    kind:$('nsKind').value,id:$('nsId').value.trim(),name:$('nsName').value.trim(),
+    card:$('nsCard').value.trim()||undefined,imgData,grantAll:$('nsAll').checked
+  })}).then(()=>{toast('✅ Скін додано');loadSkinsUI();});
+  if(f){const rd=new FileReader();rd.onload=()=>send(rd.result);rd.readAsDataURL(f);}
+  else toast('⚠️ Обери PNG-файл');
+}
+async function loadRooms(){
+  const list=await api('/rooms');
+  $('roomsTable').innerHTML='<tr><th>ID</th><th>Хост</th><th>Режим</th><th>Фаза</th><th>Гравці</th><th>Банк</th><th></th></tr>'+
+    (list.length?list.map(r=>`<tr><td>${r.id}</td><td>${r.host||'—'}</td><td>${r.mode}</td><td><span class="pill ${r.phase==='waiting'?'warn':'ok'}">${r.phase}</span></td>
+      <td>${r.players.map(p=>p.name).join(', ')||'—'}</td><td>${r.pot}</td>
+      <td><button class="danger" style="margin:0;padding:5px 10px" onclick="closeRoom('${r.id}')">Закрити</button></td></tr>`).join('')
+    :'<tr><td colspan="7" style="color:var(--text3)">Кімнат немає</td></tr>');
+}
+async function closeRoom(id){ if(!confirm(`Закрити ${id}? Депозити повернуться гравцям.`))return;
+  const r=await api('/rooms/close',{method:'POST',body:JSON.stringify({roomId:id})});toast(`✅ Закрито, повернень: ${r.refunded}`);loadRooms(); }
+async function loadTourn(){
+  const list=await api('/tournaments');
+  $('tournList').innerHTML=list.length?list.map(t=>`🏆 <b>${t.title}</b> · ${t.mode} · ставка ${t.deposit} · ${t.startAt?new Date(t.startAt).toLocaleString('uk'):'без дати'}${t.prize?' · приз: '+t.prize:''}`).join('<br>'):'Поки немає';
+}
+async function addTourn(){
+  await api('/tournaments',{method:'POST',body:JSON.stringify({title:$('tTitle').value.trim(),startAt:$('tStart').value?new Date($('tStart').value).getTime():null,deposit:+$('tDep').value,mode:$('tMode').value,prize:$('tPrize').value.trim()})});
+  toast('✅ Турнір створено');loadTourn();
+}
+if(KEY)boot();
+</script>
+</body>
+</html>

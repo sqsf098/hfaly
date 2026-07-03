@@ -13,6 +13,8 @@ const ICONS = {
   gear:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3.1"/><path d="M12 3.2v2.6M12 18.2v2.6M3.2 12h2.6M18.2 12h2.6M5.8 5.8l1.85 1.85M16.35 16.35l1.85 1.85M18.2 5.8l-1.85 1.85M7.65 16.35L5.8 18.2"/></svg>',
   gift:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="9.5" width="15" height="10.5" rx="2"/><path d="M12 9.5V20M4.5 14h15"/><path d="M12 9.5C8.5 9.5 7.2 7.6 8 6c.9-1.7 4-.4 4 3.5 0-3.9 3.1-5.2 4-3.5.8 1.6-.5 3.5-4 3.5z"/></svg>',
   bolt:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 5.5 13.5H11L10 21l7.5-10.5H12z"/></svg>',
+  users: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8.5" r="3.2"/><path d="M3.2 19.5c.9-3.2 3.3-4.8 5.8-4.8s4.9 1.6 5.8 4.8"/><path d="M15.5 5.6a3.2 3.2 0 0 1 0 5.8M17.6 14.9c1.7.6 3 1.9 3.6 4"/></svg>',
+  spade: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5c3.4 3.4 7.5 6.3 7.5 10a4.2 4.2 0 0 1-7 3.1c.2 1.7.8 3.3 2 4.9H9.5c1.2-1.6 1.8-3.2 2-4.9a4.2 4.2 0 0 1-7-3.1c0-3.7 4.1-6.6 7.5-10z"/></svg>',
 };
 
 function iconSvg(name){ return ICONS[name]||''; }

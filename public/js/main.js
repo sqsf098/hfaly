@@ -8,6 +8,11 @@ window.addEventListener('DOMContentLoaded',()=>{
   mountIcons(); // SVG-іконки в усі [data-icon]
   initAudio();  // звук/музика після першого дотику
   initTheme();
+  // Динамічний каталог скінів (адмін додає нові без оновлення коду)
+  fetch('/api/skins').then(r=>r.json()).then(s=>{
+    Object.assign(BACK_SKINS,s.backs||{});
+    Object.assign(CARD_SKINS,s.cards||{});
+  }).catch(()=>{});
   if(!params.get('notc')) initTonConnect(); // ?notc — пропустити TON (dev/скриншоти)
   connectSocket();
 
