@@ -28,6 +28,22 @@ function startBot() {
   let botUsername = process.env.BOT_USERNAME || '';
   if (!botUsername) bot.getMe().then(me => { botUsername = me.username; }).catch(() => {});
 
+  // Кнопка меню (☰ «Грати») оновлюється САМА на свіжий APP_URL при кожному
+  // старті — не треба лізти в BotFather після перезапуску тунеля.
+  // (Пряме посилання Mini App у /myapps БотFather оновити через API не можна.)
+  if (APP_URL && APP_URL.startsWith('https://')) {
+    const https = require('https');
+    const payload = JSON.stringify({ menu_button: { type: 'web_app', text: '🎮 Грати', web_app: { url: APP_URL } } });
+    const req = https.request({
+      host: 'api.telegram.org',
+      path: `/bot${BOT_TOKEN}/setChatMenuButton`,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(payload) },
+    }, (res) => { log(res.statusCode === 200 ? `📱 Кнопка меню бота → ${APP_URL}` : `⚠️ setChatMenuButton: HTTP ${res.statusCode}`); });
+    req.on('error', () => {});
+    req.end(payload);
+  }
+
   // Не спамимо однаковими помилками
   let lastPollErr = '';
   bot.on('polling_error', (err) => {
