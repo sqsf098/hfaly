@@ -62,14 +62,16 @@ function startBot() {
     room.hostName = userName; room.createdAt = Date.now();
     rooms.set(roomId, room);
 
-    const keyboard = [[{ text: '🎮 Увійти в гру', web_app: { url: gameUrl(userName, userId, roomId) } }]];
+    // Формат як у «старому» варіанті: Увійти / Поділитися / Код
+    const keyboard = [[{ text: '🃏 Увійти в гру', web_app: { url: gameUrl(userName, userId, roomId) } }]];
     if (botUsername) {
       const deep = `https://t.me/${botUsername}?start=join_${roomId}`;
       const share = `https://t.me/share/url?url=${encodeURIComponent(deep)}&text=${encodeURIComponent(`🃏 Заходь до мене в хФали! Стіл ${roomId}`)}`;
       keyboard.push([{ text: '📨 Поділитися кімнатою', url: share }]);
     }
+    keyboard.push([{ text: `Код: ${roomId}`, callback_data: `code_${roomId}` }]);
     await bot.sendMessage(chatId,
-      `🃏 Кімната *${roomId}* створена!\n\nНадішли друзям кнопкою нижче — вони отримають запрошення і зайдуть *одразу за стіл*, без коду.`,
+      `🎮 Кімната *${roomId}* створена!\n\nНадішли цей код друзям або кнопку нижче.\nПотрібно 4 гравці щоб почати.`,
       { parse_mode: 'Markdown', reply_markup: { inline_keyboard: keyboard } });
   }
 
@@ -130,6 +132,11 @@ function startBot() {
 
     if (query.data === 'newgame') {
       await sendNewGame(chatId, userId, query.from.first_name || 'Гравець');
+    }
+
+    if (query.data.startsWith('code_')) {
+      // тап по «Код: XXX» — показуємо код, щоб зручно продиктувати/переслати
+      await bot.sendMessage(chatId, `Код кімнати: \`${query.data.slice(5)}\`\nДруг вводить його в грі: Кімнати → За кодом`, { parse_mode: 'Markdown' });
     }
 
     if (query.data === 'balance') {
