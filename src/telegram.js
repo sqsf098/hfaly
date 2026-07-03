@@ -52,8 +52,9 @@ function startBot() {
   });
 
   // ── Нова гра: кімната створюється тут, КОД зашитий у посилання ──
-  // Ніхто нічого не вводить: «Увійти» відкриває Mini App одразу в кімнаті,
-  // «Поділитися» шле друзям deep-link t.me/<бот>?startapp=<код> (автовхід).
+  // Друг тапає посилання t.me/<бот>?start=join_<КОД> → бот шле йому
+  // «окно» з кнопкою «Увійти в гру» → кнопка закидає ОДРАЗУ за стіл.
+  // Працює з будь-яким поточним APP_URL — BotFather чіпати не треба.
   async function sendNewGame(chatId, userId, userName) {
     const roomId = Math.random().toString(36).slice(2, 8).toUpperCase();
     const room = createRoom(roomId);
@@ -63,22 +64,46 @@ function startBot() {
 
     const keyboard = [[{ text: '🎮 Увійти в гру', web_app: { url: gameUrl(userName, userId, roomId) } }]];
     if (botUsername) {
-      const deep = `https://t.me/${botUsername}?startapp=${roomId}`;
-      const share = `https://t.me/share/url?url=${encodeURIComponent(deep)}&text=${encodeURIComponent(`🃏 Заходь до мене в хФали! Стіл ${roomId} — тапни посилання і ти в грі`)}`;
+      const deep = `https://t.me/${botUsername}?start=join_${roomId}`;
+      const share = `https://t.me/share/url?url=${encodeURIComponent(deep)}&text=${encodeURIComponent(`🃏 Заходь до мене в хФали! Стіл ${roomId}`)}`;
       keyboard.push([{ text: '📨 Поділитися кімнатою', url: share }]);
     }
     await bot.sendMessage(chatId,
-      `🃏 Кімната *${roomId}* створена!\n\nНадішли друзям кнопкою нижче — посилання відкриває гру *одразу в кімнаті*, код вводити не треба.`,
+      `🃏 Кімната *${roomId}* створена!\n\nНадішли друзям кнопкою нижче — вони отримають запрошення і зайдуть *одразу за стіл*, без коду.`,
       { parse_mode: 'Markdown', reply_markup: { inline_keyboard: keyboard } });
   }
 
   bot.onText(/\/newgame/, (msg) =>
     sendNewGame(msg.chat.id, String(msg.from.id), msg.from.first_name || 'Гравець'));
 
-  bot.onText(/\/start/, async (msg) => {
+  // Запрошення: другу приходить окреме повідомлення з кнопкою прямо в стіл
+  async function sendJoinInvite(chatId, userId, userName, roomId) {
+    const room = rooms.get(roomId);
+    if (!room) {
+      await bot.sendMessage(chatId, `❌ Стіл *${roomId}* вже не існує (застарів або гру зіграно).\nСтвори новий: /newgame`, { parse_mode: 'Markdown' });
+      return;
+    }
+    const maxP = room.maxPlayers || 4;
+    await bot.sendMessage(chatId,
+      `🃏 Тебе запрошено до столу *${roomId}*!\n`
+      + (room.hostName ? `👤 Хост: *${room.hostName}*\n` : '')
+      + `👥 Гравців: *${room.players.length}/${maxP}*`
+      + (room.deposit ? ` · Ставка: *${room.deposit}* 💰` : '')
+      + `\n\nТисни кнопку — і ти одразу за столом 👇`,
+      { parse_mode: 'Markdown', reply_markup: { inline_keyboard: [[{ text: '🎮 Увійти в гру', web_app: { url: gameUrl(userName, userId, roomId) } }]] } });
+  }
+
+  bot.onText(/\/start(?:\s+(.+))?/, async (msg, match) => {
     const chatId = msg.chat.id;
     const userId = String(msg.from.id);
     const userName = msg.from.first_name || 'Гравець';
+
+    // Deep-link запрошення: /start join_<КОД>
+    const payload = (match && match[1] || '').trim();
+    if (payload.toLowerCase().startsWith('join_')) {
+      return sendJoinInvite(chatId, userId, userName, payload.slice(5).toUpperCase());
+    }
+
     const wallet = getWallet(userId);
     const isNew = wallet.gamesPlayed === 0;
 

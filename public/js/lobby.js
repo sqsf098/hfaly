@@ -260,10 +260,11 @@ function openCommunity(){
 
 function shareRoomLink(){
   if(!myRoomId){showToast('Спершу створи кімнату');return;}
-  const text='Заходь до мене в хФали! Стіл: '+myRoomId;
+  const text='🃏 Заходь до мене в хФали! Стіл: '+myRoomId;
   if(appBotUsername){
-    // t.me/<бот>?startapp=<код> — відкриває Mini App одразу в кімнаті
-    const link=`https://t.me/${appBotUsername}?startapp=${myRoomId}`;
+    // t.me/<бот>?start=join_<код> → бот шле другу кнопку «Увійти в гру»,
+    // яка закидає одразу за стіл. Працює без налаштувань у BotFather.
+    const link=`https://t.me/${appBotUsername}?start=join_${myRoomId}`;
     const share=`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(text)}`;
     if(tg&&tg.openTelegramLink){tg.openTelegramLink(share);return;}
     window.open(share,'_blank');
