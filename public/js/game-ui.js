@@ -29,8 +29,9 @@ function sortHand(hand, trump) {
 }
 
 function cardPower(card,trump){
+  if(card.rank==='6'&&card.suit===trump) return 45; // «мамка» — найсильніша, б'є валетів
   if(card.rank==='J') return {'♣':40,'♠':39,'♥':38,'♦':37}[card.suit]||0;
-  if(card.suit===trump) return {'6':36,'A':35,'K':34,'Q':33,'10':32,'9':31,'8':30,'7':29}[card.rank]||0;
+  if(card.suit===trump) return {'A':35,'K':34,'Q':33,'10':32,'9':31,'8':30,'7':29}[card.rank]||0;
   return {'A':14,'K':13,'Q':12,'10':10,'9':9,'8':8,'7':7,'6':6}[card.rank]||0;
 }
 

@@ -25,11 +25,13 @@ function shuffle(arr) {
 }
 
 function cardPower(card, trump) {
+  // «Мамка» — козирна 6 — НАЙСИЛЬНІША карта гри, б'є навіть валетів
+  if (card.rank === '6' && card.suit === trump) return 45;
   if (card.rank === JACK) {
     return { '♣': 40, '♠': 39, '♥': 38, '♦': 37 }[card.suit];
   }
   if (card.suit === trump) {
-    return { '6': 36, 'A': 35, 'K': 34, 'Q': 33, '10': 32, '9': 31, '8': 30, '7': 29 }[card.rank];
+    return { 'A': 35, 'K': 34, 'Q': 33, '10': 32, '9': 31, '8': 30, '7': 29 }[card.rank];
   }
   return { 'A': 14, 'K': 13, 'Q': 12, '10': 10, '9': 9, '8': 8, '7': 7, '6': 6 }[card.rank] ?? 0;
 }
