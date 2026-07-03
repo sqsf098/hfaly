@@ -547,6 +547,20 @@ body.theme-fan .score-bar{background:rgba(7,11,21,0.5)}
 body.theme-fan .opp-label{background:rgba(7,11,21,0.68)}
 body.theme-fan .status-pill{background:linear-gradient(180deg,rgba(60,77,105,0.85),rgba(26,36,54,0.9))}
 
+/* ── Оверлеї та очікування у fan-темі: строгий неві замість аркадного фіолету ── */
+body.theme-fan .waiting-screen{
+  background:radial-gradient(900px 600px at 50% -10%,rgba(80,110,180,0.16),transparent 60%),
+             linear-gradient(175deg,#0d1424 0%,#090e1b 70%,#070b15 100%)}
+body.theme-fan .win-box{
+  background:linear-gradient(165deg,#1d2b49,#101a2f);
+  border:1px solid var(--gold);box-shadow:0 0 30px rgba(217,185,106,0.18),0 20px 60px rgba(0,0,0,0.6)}
+body.theme-fan .go-box{border-radius:18px;border-top-color:var(--gold-dim)}
+body.theme-fan .game-overlay{background:rgba(5,8,16,0.82)}
+body.theme-fan #dealIntro{background:rgba(5,8,16,0.8)}
+body.theme-fan .balance-card{background:linear-gradient(140deg,#22345a 0%,#152238 100%)}
+body.theme-fan .waiting-code{text-shadow:none}
+body.theme-fan .pslot.filled{background:rgba(217,185,106,0.06)}
+
 /* ── Кімнати списком (референс — класичний «Дурак»): рядок = стіл ── */
 .table-list{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
 .table-row{display:flex;align-items:center;gap:14px;padding:13px 14px;border-radius:14px;cursor:pointer;

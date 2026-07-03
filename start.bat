@@ -1,10 +1,13 @@
 @echo off
+chcp 65001 >nul
 title hFaly - Game Server
 color 0A
 
-if not exist "ngrok.exe" (
-    echo ERROR: ngrok.exe not found!
-    pause & exit
+REM ── Cloudflare Tunnel замiсть ngrok: БЕЗ екрана "You are about to visit" ──
+
+if not exist "cloudflared.exe" (
+    echo Downloading cloudflared...
+    powershell -nop -c "iwr https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-windows-amd64.exe -OutFile cloudflared.exe"
 )
 
 if not exist "node_modules" (
@@ -12,34 +15,42 @@ if not exist "node_modules" (
     npm install
 )
 
-taskkill /f /im ngrok.exe >nul 2>&1
-timeout /t 1 /nobreak >nul
+REM Звiльняємо порт 3000 (iнакше EADDRINUSE: address already in use)
+powershell -nop -c "Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force -ErrorAction SilentlyContinue }"
+taskkill /f /im cloudflared.exe >nul 2>&1
+del tunnel.log >nul 2>&1
 
-echo [1/3] Starting ngrok...
-start /min "" ngrok.exe http 3000
-timeout /t 4 /nobreak >nul
+echo [1/3] Starting Cloudflare tunnel...
+start /min "" cmd /c "cloudflared.exe tunnel --url http://localhost:3000 --no-autoupdate > tunnel.log 2>&1"
 
-echo [2/3] Getting HTTPS address...
-for /f "delims=" %%i in ('powershell -command "(Invoke-WebRequest -Uri http://127.0.0.1:4040/api/tunnels -UseBasicParsing | ConvertFrom-Json).tunnels[0].public_url"') do set NGROK_URL=%%i
+echo [2/3] Waiting for HTTPS address...
+set TUNNEL_URL=
+for /l %%n in (1,1,30) do (
+    if not defined TUNNEL_URL (
+        timeout /t 1 /nobreak >nul
+        for /f "delims=" %%i in ('powershell -nop -c "try{(Select-String -Path tunnel.log -Pattern 'https://[a-z0-9-]+\.trycloudflare\.com').Matches.Value | Select-Object -First 1}catch{}"') do set TUNNEL_URL=%%i
+    )
+)
 
-if "%NGROK_URL%"=="" (
-    echo ERROR: Could not get ngrok URL.
+if not defined TUNNEL_URL (
+    echo ERROR: tunnel did not start. Check tunnel.log
     pause & exit
 )
 
-echo URL: %NGROK_URL%
-powershell -command "(Get-Content .env) -replace 'APP_URL=.*', 'APP_URL=%NGROK_URL%' | Set-Content .env"
+echo URL: %TUNNEL_URL%
+powershell -nop -c "(Get-Content .env) -replace 'APP_URL=.*', 'APP_URL=%TUNNEL_URL%' | Set-Content .env"
 
 echo [3/3] Starting game server with AUTO-RELOAD...
 echo.
 echo ================================
 echo  Server is running!
-echo  %NGROK_URL%
+echo  %TUNNEL_URL%
 echo.
-echo  AUTO-RELOAD: edit any file in
-echo  src/ - server restarts itself.
-echo  Edit public/ - just refresh
-echo  the page in Telegram.
+echo  Встав цей URL у BotFather:
+echo  /myapps ^> хФалi ^> Edit Web App URL
+echo  (URL новий пiсля кожного запуску)
+echo.
+echo  Без екрана-попередження ngrok!
 echo ================================
 echo.
 

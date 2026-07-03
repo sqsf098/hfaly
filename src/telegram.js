@@ -3,6 +3,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const { BOT_TOKEN, APP_URL, BASE_ROOMS, DAILY_BONUS } = require('./config');
 const { getWallet, saveWallets } = require('./wallets');
 const { rooms } = require('./rooms');
+const { createRoom } = require('./game');
 const { log } = require('./logger');
 
 function escMd(text) {
@@ -23,12 +24,40 @@ function startBot() {
 
   const bot = new TelegramBot(BOT_TOKEN, { polling: true });
 
+  // Ім'я бота — для deep-link запрошень t.me/<бот>?startapp=<код>
+  let botUsername = process.env.BOT_USERNAME || '';
+  if (!botUsername) bot.getMe().then(me => { botUsername = me.username; }).catch(() => {});
+
   // Не спамимо однаковими помилками
   let lastPollErr = '';
   bot.on('polling_error', (err) => {
     const msg = String(err?.message || err).slice(0, 120);
     if (msg !== lastPollErr) { log('TG polling: ' + msg); lastPollErr = msg; }
   });
+
+  // ── Нова гра: кімната створюється тут, КОД зашитий у посилання ──
+  // Ніхто нічого не вводить: «Увійти» відкриває Mini App одразу в кімнаті,
+  // «Поділитися» шле друзям deep-link t.me/<бот>?startapp=<код> (автовхід).
+  async function sendNewGame(chatId, userId, userName) {
+    const roomId = Math.random().toString(36).slice(2, 8).toUpperCase();
+    const room = createRoom(roomId);
+    room.deposit = 0; room.pot = 0; room.isPublic = true;
+    room.hostName = userName; room.createdAt = Date.now();
+    rooms.set(roomId, room);
+
+    const keyboard = [[{ text: '🎮 Увійти в гру', web_app: { url: gameUrl(userName, userId, roomId) } }]];
+    if (botUsername) {
+      const deep = `https://t.me/${botUsername}?startapp=${roomId}`;
+      const share = `https://t.me/share/url?url=${encodeURIComponent(deep)}&text=${encodeURIComponent(`🃏 Заходь до мене в хФали! Стіл ${roomId} — тапни посилання і ти в грі`)}`;
+      keyboard.push([{ text: '📨 Поділитися кімнатою', url: share }]);
+    }
+    await bot.sendMessage(chatId,
+      `🃏 Кімната *${roomId}* створена!\n\nНадішли друзям кнопкою нижче — посилання відкриває гру *одразу в кімнаті*, код вводити не треба.`,
+      { parse_mode: 'Markdown', reply_markup: { inline_keyboard: keyboard } });
+  }
+
+  bot.onText(/\/newgame/, (msg) =>
+    sendNewGame(msg.chat.id, String(msg.from.id), msg.from.first_name || 'Гравець'));
 
   bot.onText(/\/start/, async (msg) => {
     const chatId = msg.chat.id;
@@ -46,6 +75,7 @@ function startBot() {
       reply_markup: {
         inline_keyboard: [
           [{ text: '🎮 Відкрити гру', web_app: { url: gameUrl(userName, userId) } }],
+          [{ text: '🆕 Нова гра з друзями', callback_data: 'newgame' }],
           [{ text: '💰 Баланс', callback_data: 'balance' }, { text: '❓ Правила', callback_data: 'rules' }],
         ],
       },
@@ -56,6 +86,10 @@ function startBot() {
     const chatId = query.message.chat.id;
     const userId = String(query.from.id);
     await bot.answerCallbackQuery(query.id);
+
+    if (query.data === 'newgame') {
+      await sendNewGame(chatId, userId, query.from.first_name || 'Гравець');
+    }
 
     if (query.data === 'balance') {
       const w = getWallet(userId);
@@ -105,12 +139,13 @@ function startBot() {
 
   bot.onText(/\/help/, async (msg) => {
     await bot.sendMessage(msg.chat.id,
-      `🃏 *Команди*\n\n/start — Меню\n/balance — Баланс\n/join КОД — В кімнату\n/daily — \\+${DAILY_BONUS} монет\n/help — Довідка`,
+      `🃏 *Команди*\n\n/start — Меню\n/newgame — Кімната для друзів\n/balance — Баланс\n/join КОД — В кімнату\n/daily — \\+${DAILY_BONUS} монет\n/help — Довідка`,
       { parse_mode: 'MarkdownV2' });
   });
 
   bot.setMyCommands([
     { command: 'start', description: '🎮 Головне меню' },
+    { command: 'newgame', description: '🆕 Створити кімнату для друзів' },
     { command: 'balance', description: '💰 Мій баланс' },
     { command: 'daily', description: '🎁 Щоденна нагорода' },
     { command: 'help', description: '❓ Довідка' },
