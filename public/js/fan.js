@@ -26,9 +26,17 @@ function buildFanNav(){
 }
 
 function layoutFan(){
+  // Легкий віяр з ВЕЛИКИМ радіусом: ледь помітна дуга, карти не наїжджають,
+  // зони тапу чіткі. Активна — піднята, тримає свій нахил.
+  const center=(FAN_SECTIONS.length-1)/2;
   document.querySelectorAll('#fanWrap .fan-card').forEach(c=>{
-    c.classList.toggle('active',+c.dataset.i===fanActive);
-    c.style.transform=''; c.style.opacity=''; c.style.zIndex='';
+    const i=+c.dataset.i, pos=i-center;
+    const active=i===fanActive;
+    c.classList.toggle('active',active);
+    const rot=pos*5;                       // м'який нахил (великий радіус)
+    const dy=Math.abs(pos)*4 - (active?9:0); // дуга + підняття активної
+    c.style.transform=`rotate(${rot}deg) translateY(${dy}px)`;
+    c.style.zIndex=active?10:5-Math.abs(pos);
   });
   const t=$('fanTitle'); if(t) t.textContent=FAN_SECTIONS[fanActive].label;
 }

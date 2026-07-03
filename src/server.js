@@ -48,6 +48,11 @@ app.get('/tonconnect-manifest.json', (_, res) => {
 app.use(express.static(path.join(__dirname, '../public')));
 app.get('/health', (_, res) => res.json({ ok: true }));
 
+// Ім'я бота для deep-link запрошень (t.me/<bot>?startapp=<roomId>).
+// Резолвиться з BOT_USERNAME або через getMe після старту бота (нижче).
+let botUsername = process.env.BOT_USERNAME || '';
+app.get('/appinfo', (_, res) => res.json({ botUsername }));
+
 // Метадані NFT-карт (TEP-64, off-chain JSON). Посилання зашивається в NFT.
 const { NFT_DECKS } = require('./ton');
 app.get('/nft/:id.json', (req, res) => {
@@ -78,6 +83,10 @@ startCleanupLoop();
 sockets.registerHandlers(io);
 bots.init({ io, broadcastState: sockets.broadcastState });
 const bot = startBot();
+if (bot && !botUsername) {
+  bot.getMe().then(me => { botUsername = me.username; log(`🤖 Бот: @${botUsername} (deep-link запрошення активні)`); })
+    .catch(() => {});
+}
 
 // ── Graceful shutdown ───────────────────────────────────────────────────
 function shutdown(sig) {

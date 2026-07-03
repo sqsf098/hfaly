@@ -101,7 +101,26 @@ function toggleMusic(el){
 function initAudio(){
   const kick=()=>{ ac(); if(musicOn)startMusic(); document.removeEventListener('pointerdown',kick); };
   document.addEventListener('pointerdown',kick,{once:true});
-  // синхронізуємо перемикачі в налаштуваннях
+  syncMuteUI(); // перемикачі в налаштуваннях + кнопки 🔊 в грі та меню
+}
+
+// ── Швидке вимкнення всього звуку (кнопка в грі та в меню) ────────
+function isMuted(){ return !soundOn && !musicOn; }
+function toggleMuteAll(){
+  const mute=!isMuted(); // якщо хоч щось грає — вимикаємо все
+  soundOn=!mute; musicOn=!mute;
+  localStorage.setItem('hfaly_sound',soundOn?'1':'0');
+  localStorage.setItem('hfaly_music',musicOn?'1':'0');
+  if(musicOn)startMusic(); else stopMusic();
+  if(soundOn)sfx('click');
+  vibrate('selection');
+  syncMuteUI();
+}
+function syncMuteUI(){
+  document.querySelectorAll('.mute-btn').forEach(b=>{
+    b.textContent=isMuted()?'🔇':'🔊';
+    b.classList.toggle('muted',isMuted());
+  });
   const s=$('sfxToggle'); if(s)s.classList.toggle('on',soundOn);
   const m=$('musicToggle'); if(m)m.classList.toggle('on',musicOn);
 }

@@ -291,7 +291,9 @@ html,body{height:100%;overflow:hidden;color:var(--text);touch-action:manipulatio
   box-shadow:0 4px 12px rgba(0,0,0,0.3)}
 .my-hand-area{flex-shrink:0;background:rgba(10,6,28,0.5);border-top:1px solid var(--border);
   padding:8px 8px calc(10px + env(safe-area-inset-bottom))}
-.my-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.my-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:2px;min-height:22px}
+.my-row .tricks-mini{overflow-x:auto;flex-shrink:1;min-width:0}
+.my-row .tricks-mini::-webkit-scrollbar{height:0}
 .my-name-tag{font-size:11px;color:var(--text2);letter-spacing:0.3px;font-weight:700}
 .my-name-tag.active{color:var(--green2)}
 .my-name-tag.boaster{color:var(--gold2)}
@@ -299,11 +301,13 @@ html,body{height:100%;overflow:hidden;color:var(--text);touch-action:manipulatio
 .tm-badge{background:rgba(255,203,61,0.14);color:var(--gold2);padding:2px 7px;border-radius:8px;font-weight:700}
 /* overflow-x:auto примусово ріже вертикаль (visible→auto за спекою CSS),
    тож даємо повну висоту: 20px зверху на підняту карту + 82px карта + низ */
-.cards-scroll{display:flex;gap:0;padding:20px 6px 10px;overflow-x:auto;overflow-y:hidden;flex-shrink:0;-webkit-overflow-scrolling:touch;min-height:112px;align-items:flex-start}
+.cards-scroll{display:flex;gap:0;padding:20px 6px 10px;overflow-x:auto;overflow-y:hidden;flex-shrink:0;-webkit-overflow-scrolling:touch;min-height:112px;align-items:flex-start;
+  justify-content:flex-start;justify-content:safe center} /* по центру, якщо влазять; скрол — якщо ні */
 .cards-scroll::-webkit-scrollbar{height:4px}
 .cards-scroll::-webkit-scrollbar-thumb{background:rgba(255,203,61,0.3);border-radius:2px}
-.pcard{flex-shrink:0;width:56px;height:82px;border-radius:10px;
-  display:flex;flex-direction:column;justify-content:space-between;padding:5px 5px 4px;
+/* Абсолютна розкладка (як у карт на столі): кути по діагоналі, масть у центрі,
+   overflow:hidden — індекси НІКОЛИ не вилазять за межі карти */
+.pcard{flex-shrink:0;width:56px;height:82px;border-radius:10px;overflow:hidden;
   cursor:pointer;user-select:none;transition:transform 0.12s ease,box-shadow 0.12s,border-color 0.1s;
   border:2px solid #d8d0e8;background:#fffef8;margin-right:-18px;position:relative;box-shadow:0 3px 8px rgba(0,0,0,0.35)}
 .pcard:last-child{margin-right:0}
@@ -312,12 +316,14 @@ html,body{height:100%;overflow:hidden;color:var(--text);touch-action:manipulatio
 .pcard.invalid{opacity:0.28;cursor:not-allowed;filter:grayscale(0.6)}
 .pcard.playable{border-color:var(--green2) !important;box-shadow:0 0 14px rgba(55,214,127,0.6) !important}
 .pcard:active:not(.invalid):not(.selected){transform:translateY(-7px)}
-.pcard .ct{font-size:14px;font-weight:800;line-height:1;display:flex;flex-direction:column;align-items:flex-start;gap:0}
-.pcard .ct span{display:block;line-height:1.1}
-.pcard .cm{font-size:24px;text-align:center;line-height:1;flex:1;display:flex;align-items:center;justify-content:center}
-/* flex-start, бо rotate(180deg) дзеркалить: індекс має лягти ВНИЗ-ПРАВОРУЧ (діагональ як у справжніх карт) */
-.pcard .cb{font-size:14px;font-weight:800;line-height:1;display:flex;flex-direction:column;align-items:flex-start;gap:0;transform:rotate(180deg)}
-.pcard .cb span{display:block;line-height:1.1}
+.pcard .ct{position:absolute;top:4px;left:5px;font-size:12px;font-weight:800;line-height:1;display:flex;flex-direction:column;align-items:center;gap:0}
+.pcard .ct span{display:block;line-height:1.05}
+.pcard .ct span:last-child{font-size:11px}
+.pcard .cm{position:absolute;inset:0;font-size:23px;line-height:1;display:flex;align-items:center;justify-content:center}
+/* низ-право по діагоналі, як у справжніх карт; rotate — щоб читалось суперникові */
+.pcard .cb{position:absolute;bottom:4px;right:5px;font-size:12px;font-weight:800;line-height:1;display:flex;flex-direction:column;align-items:center;gap:0;transform:rotate(180deg)}
+.pcard .cb span{display:block;line-height:1.05}
+.pcard .cb span:last-child{font-size:11px}
 .play-action-btn{display:none;margin:6px auto 0;padding:11px 30px;border-radius:14px;border:none;
   background:linear-gradient(180deg,var(--gold2),var(--gold));color:#241300;font-family:'Rubik',sans-serif;font-size:15px;font-weight:800;letter-spacing:0.5px;cursor:pointer;
   box-shadow:0 5px 0 var(--gold-dim),0 8px 14px rgba(0,0,0,0.3)}
@@ -449,7 +455,7 @@ body.fan-nav .content{padding-bottom:calc(118px + env(safe-area-inset-bottom))}
 body.fan-nav #homeScreen{padding-bottom:calc(104px + env(safe-area-inset-bottom))}
 /* Рівний ряд карт-вкладок: нічого не перекривається, чіткі зони тапу */
 #fanNav{display:none;position:fixed;left:0;right:0;bottom:0;z-index:120;
-  padding:10px 8px calc(10px + env(safe-area-inset-bottom));
+  padding:16px 8px calc(10px + env(safe-area-inset-bottom));
   background:rgba(7,11,21,0.94);backdrop-filter:blur(14px);border-top:1px solid var(--border2)}
 body.fan-nav #fanNav{display:block}
 body.in-game #fanNav{display:none !important}
@@ -469,10 +475,10 @@ body.in-game #fanNav{display:none !important}
 .fan-card .fc-icon{color:var(--text2);filter:drop-shadow(0 2px 4px rgba(0,0,0,0.5));transition:color 0.2s}
 .fan-card.active .fc-icon{color:var(--gold2)}
 .fan-card .fc-label{font-size:9px;font-weight:800;font-family:'Rubik',sans-serif;letter-spacing:0.2px}
-.fan-card.active{color:var(--text);border-color:var(--gold);transform:translateY(-6px);
+.fan-card.active{color:var(--text);border-color:var(--gold);
   background:linear-gradient(165deg,rgba(54,74,124,0.98),rgba(24,34,64,0.99));
   box-shadow:0 0 18px rgba(217,185,106,0.35),0 8px 18px rgba(0,0,0,0.5),inset 0 1px 0 var(--panel-top)}
-.fan-card.active:active{transform:translateY(-6px) scale(0.96)}
+.fan-card{transform-origin:50% 120%} /* дуга від спільного центру знизу */
 .fan-card.active .fc-icon{transform:scale(1.1)}
 
 /* ── Головне меню: строгий грід (стиль класичних карткових застосунків) ── */
@@ -497,7 +503,12 @@ body.in-game #fanNav{display:none !important}
 .row-icon{display:flex;flex-shrink:0}
 .row-icon svg{width:22px;height:22px}
 .row-icon.sm svg{width:17px;height:17px;vertical-align:-3px}
-.fc-icon svg{width:25px;height:25px;display:block}
+.mute-btn{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:14px;cursor:pointer;border:1px solid var(--border2);background:rgba(255,255,255,0.04);
+  transition:opacity 0.15s;flex-shrink:0;user-select:none}
+.mute-btn.muted{opacity:0.5}
+.mute-btn:active{transform:scale(0.9)}
+.fc-icon svg{width:29px;height:29px;display:block}
 .mt-label{font-family:'Rubik',sans-serif;font-size:13px;font-weight:700;color:var(--text);letter-spacing:0.4px}
 .mt-sub{font-size:9px;color:var(--text3);margin-top:2px;letter-spacing:0.3px}
 

@@ -246,3 +246,23 @@ function leaveMyRoomFromBanner(){
 }
 
 // ── GAME ──────────────────────────────────────────────────────────
+
+// ── Запрошення посиланням (прямий deep-link у Telegram) ───────────
+let appBotUsername='';
+fetch('/appinfo').then(r=>r.json()).then(d=>{appBotUsername=d.botUsername||'';}).catch(()=>{});
+
+function shareRoomLink(){
+  if(!myRoomId){showToast('Спершу створи кімнату');return;}
+  const text='Заходь до мене в хФали! Стіл: '+myRoomId;
+  if(appBotUsername){
+    // t.me/<бот>?startapp=<код> — відкриває Mini App одразу в кімнаті
+    const link=`https://t.me/${appBotUsername}?startapp=${myRoomId}`;
+    const share=`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(text)}`;
+    if(tg&&tg.openTelegramLink){tg.openTelegramLink(share);return;}
+    window.open(share,'_blank');
+    return;
+  }
+  // Бот не сконфігурований (dev) — копіюємо код
+  try{navigator.clipboard.writeText(myRoomId);showToast('Код '+myRoomId+' скопійовано 📋',2500);}
+  catch(e){showToast('Код кімнати: '+myRoomId,3000);}
+}

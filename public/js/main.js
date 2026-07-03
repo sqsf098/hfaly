@@ -11,7 +11,8 @@ window.addEventListener('DOMContentLoaded',()=>{
   if(!params.get('notc')) initTonConnect(); // ?notc — пропустити TON (dev/скриншоти)
   connectSocket();
 
-  const room=params.get('room');
+  // Кімната з deep-link (t.me/<бот>?startapp=<код>) або з ?room= (браузер)
+  const room=params.get('room')||(tg&&tg.initDataUnsafe&&tg.initDataUnsafe.start_param)||null;
   if(room){
     const name=params.get('name')||tg?.initDataUnsafe?.user?.first_name||myName||'Гравець';
     if(name)myName=name;
