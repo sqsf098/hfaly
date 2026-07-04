@@ -337,7 +337,8 @@ function publicState(room, viewerIndex) {
     boaster: (room.mode === 'khrest' && room.phase === 'discard') ? null : room.boaster,
     discardDone: room.discardDone || [],
     dealer: room.dealer,
-    players: room.players.map(p => ({ name: p.name, index: p.index })),
+    // skins — щоб суперники бачили ТВОЮ сорочку і твої скіни карт у дачці
+    players: room.players.map(p => ({ name: p.name, index: p.index, skins: p.skins || null })),
     scores: room.scores,
     trump: room.trump,
     currentPlayer: room.currentPlayer,

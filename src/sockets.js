@@ -9,6 +9,7 @@ const { linkWallet, unlinkWallet, syncNfts, requestMint, tonState } = require('.
 const { socketAuthMiddleware, resolveTgId } = require('./auth');
 const { holdDeposit, releaseDeposit } = require('./escrow');
 const { getBackSkins, getCardSkins } = require('./skins');
+const { createSkinInvoice } = require('./payments');
 const { log } = require('./logger');
 
 let io = null;
@@ -212,6 +213,16 @@ function registerHandlers(serverIo) {
       socket.emit('mint_tx', res);
     });
 
+    // ── Магазин: купити скін за Telegram Stars ⭐ ────────────────
+    // Сервер створює інвойс (XTR), клієнт відкриває через openInvoice.
+    // Видача — у payments.js після successful_payment.
+    safeOn(socket, 'buy_skin', async ({ tgId, kind, skinId }) => {
+      const id = uid(tgId); if (!id) return;
+      const res = await createSkinInvoice(id, kind, skinId);
+      if (!res.ok) { socket.emit('error', { message: res.error }); return; }
+      socket.emit('invoice', { link: res.link, kind, skinId, stars: res.stars });
+    });
+
     // ── Колекція: одягнути сорочку або скін конкретної карти ─────
     safeOn(socket, 'equip_skin', ({ tgId, kind, cardKey, skinId }) => {
       const id = uid(tgId); if (!id) return;
@@ -235,6 +246,17 @@ function registerHandlers(serverIo) {
       } else return;
       saveWallets();
       socket.emit('wallet', w);
+      // Якщо гравець за столом — оновлюємо знімок скінів, щоб суперники
+      // одразу побачили нову сорочку/скіни
+      const meta = socketToPlayer.get(socket.id);
+      if (meta) {
+        const room = rooms.get(meta.roomId);
+        const p = room?.players?.[meta.playerIndex];
+        if (p) {
+          p.skins = { back: w.backSkin || 'violet', cards: w.cardSkins || {} };
+          broadcastState(room);
+        }
+      }
     });
 
     safeOn(socket, 'get_rooms', () => {
@@ -286,11 +308,15 @@ function registerHandlers(serverIo) {
         rooms.set(roomId, room);
       }
 
+      // Знімок скінів гравця — суперники бачать його сорочку та скіни карт
+      const skinsOf = (w) => ({ back: w.backSkin || 'violet', cards: w.cardSkins || {} });
+
       // Реконект гравця
       const existing = room.players.find(p => p.tgId === tgId || p.socketId === socket.id);
       if (existing) {
         existing.socketId = socket.id;
         existing.online = true;
+        existing.skins = skinsOf(wallet);
         socketToPlayer.set(socket.id, { roomId, playerIndex: existing.index });
         socket.join(roomId);
         socket.emit('joined', { playerIndex: existing.index, roomId, deposit: room.deposit });
@@ -315,7 +341,7 @@ function registerHandlers(serverIo) {
       }
 
       const playerIndex = room.players.length;
-      room.players.push({ id: socket.id, socketId: socket.id, name: name || `Гравець ${playerIndex + 1}`, tgId, index: playerIndex, online: true });
+      room.players.push({ id: socket.id, socketId: socket.id, name: name || `Гравець ${playerIndex + 1}`, tgId, index: playerIndex, online: true, skins: skinsOf(wallet) });
       room.playerTgIds = room.playerTgIds || [];
       room.playerTgIds[playerIndex] = tgId;
       socketToPlayer.set(socket.id, { roomId, playerIndex });

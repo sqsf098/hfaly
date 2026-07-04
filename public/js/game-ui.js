@@ -129,9 +129,13 @@ function makeCard(card,opts={}){
   return el;
 }
 
-function makeCardHTML(card){
+// ownerIdx/players задані → карта фарбується скіном ВЛАСНИКА (дачка);
+// без них — моїм скіном (моя рука, службові прев'ю)
+function makeCardHTML(card,ownerIdx,players){
   const th=DECK_THEMES[currentDeck];const isRed=SUIT_RED[card.suit];
-  const sk=typeof cardSkinFor==='function'?cardSkinFor(card):null;
+  const sk=(ownerIdx!=null&&typeof cardSkinForOwner==='function')
+    ?cardSkinForOwner(card,ownerIdx,players)
+    :(typeof cardSkinFor==='function'?cardSkinFor(card):null);
   const bgH=sk?(sk.img?`url('${sk.img}') center/cover, ${th.bg}`:sk.bg):th.bg;
   const col=sk?(sk.color||(isRed?th.red:th.black)):(isRed?th.red:th.black);
   const center=sk?(sk.img?'':(sk.emoji||card.suit)):card.suit;
@@ -176,7 +180,7 @@ function renderGame(state){
     slot.innerHTML=`<div class="trick-who" style="${isMe?'color:#00ff88;font-weight:700':''}">
       ${isMe?'▶ ':''}${(players[t.playerIndex]?.name||'?').slice(0,6)}
     </div>`;
-    slot.innerHTML+=makeCardHTML(t.card);
+    slot.innerHTML+=makeCardHTML(t.card,t.playerIndex,players);
     tc.appendChild(slot);
   }
   let msg='';
@@ -557,16 +561,19 @@ function renderOpponentCards(state) {
       + (isBoaster?' 🗣️':'')
       + (state.trickCount?.[idx]>0 ? ` (${state.trickCount[idx]})` : '');
 
-    // Cards face-down
+    // Cards face-down — сорочка САМЕ ЦЬОГО гравця (його скін бачать усі)
     container.innerHTML = '';
+    const bs = typeof backSkinOfPlayer==='function' ? backSkinOfPlayer(p) : null;
+    const bsBg = bs ? (bs.img?`url('${bs.img}') center/cover no-repeat`:bs.css) : '';
     const show = Math.min(cnt, pos.horiz ? 7 : 6);
     for(let i=0; i<show; i++) {
       const card = document.createElement('div');
       card.className = 'opp-card-back' + (pos.horiz?'':' horiz');
+      const skin = bsBg ? `;background:${bsBg};border-color:${bs.border||'rgba(255,255,255,0.3)'}` : '';
       if(pos.horiz) {
-        card.style.cssText = `position:absolute;left:${i*14}px;top:0;transform:rotate(${(i-show/2)*2}deg);z-index:${i}`;
+        card.style.cssText = `position:absolute;left:${i*14}px;top:0;transform:rotate(${(i-show/2)*2}deg);z-index:${i}${skin}`;
       } else {
-        card.style.cssText = `position:absolute;top:${i*12}px;left:0;transform:rotate(${(i%2===0?-2:2)}deg);z-index:${i}`;
+        card.style.cssText = `position:absolute;top:${i*12}px;left:0;transform:rotate(${(i%2===0?-2:2)}deg);z-index:${i}${skin}`;
       }
       container.appendChild(card);
     }

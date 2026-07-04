@@ -150,6 +150,15 @@ function showChestReward(gained){
 }
 
 // ── Колекція: сорочки та скіни конкретних карт ────────────────────
+const RARITY_UI={
+  common:{label:'Звичайний',color:'#9fb4c8'},
+  rare:  {label:'Рідкісний', color:'#5cb8ff'},
+  epic:  {label:'Епічний',   color:'#c98bff'},
+};
+function rarityBadge(s){
+  const r=s.rarity&&RARITY_UI[s.rarity];
+  return r?`<span style="color:${r.color};font-weight:700">${r.label}</span> · `:'';
+}
 function renderCollection(){
   const row=$('backSkinsRow');
   if(row){
@@ -158,11 +167,17 @@ function renderCollection(){
     const equipped=(myWallet&&myWallet.backSkin)||'violet';
     for(const [id,s] of Object.entries(BACK_SKINS)){
       const has=owned.includes(id);
+      const forSale=!has&&s.stars>0;
       const d=document.createElement('div');
       d.className='back-skin'+(id===equipped?' equipped':'')+(has?'':' locked');
       const bg=s.img?`url('${s.img}') center/cover`:s.css;
-      d.innerHTML=`<div class="bs-card" style="background:${bg}"></div><div class="bs-name">${s.name}</div>`;
-      d.onclick=()=>{ if(!has){showToast('Ця сорочка випадає зі скринь 🎁',2200);return;} equipSkin('back',null,id); };
+      d.innerHTML=`<div class="bs-card" style="background:${bg}"></div><div class="bs-name">${s.name}</div>`
+        +(forSale?`<div class="bs-name" style="color:var(--gold);font-weight:800">${s.stars} ⭐</div>`:'');
+      d.onclick=()=>{
+        if(has){ equipSkin('back',null,id); return; }
+        if(forSale){ buySkin('back',id,s); return; }
+        showToast('Ця сорочка випадає зі скринь 🎁',2200);
+      };
       row.appendChild(d);
     }
   }
@@ -173,6 +188,7 @@ function renderCollection(){
     const equippedMap=(myWallet&&myWallet.cardSkins)||{};
     for(const [id,s] of Object.entries(CARD_SKINS)){
       const has=ownedC.includes(id);
+      const forSale=!has&&s.stars>0;
       const isOn=equippedMap[s.card]===id;
       const red=SUIT_RED[s.card.slice(-1)];
       const prev=s.img
@@ -184,16 +200,26 @@ function renderCollection(){
         <div class="cs-preview" style="${prev}">${s.img?'':`<span style="font-size:10px">${s.card}</span><span style="font-size:20px">${s.emoji}</span>`}</div>
         <div class="cs-info">
           <div class="cs-name">${s.name}</div>
-          <div class="cs-sub">Карта: <b style="color:${red?'#ff8a97':'var(--text2)'}">${s.card}</b> · значення без змін</div>
+          <div class="cs-sub">${rarityBadge(s)}Карта: <b style="color:${red?'#ff8a97':'var(--text2)'}">${s.card}</b> · бачать усі за столом</div>
         </div>
-        <div class="cs-btn ${isOn?'on':''}">${has?(isOn?'✓ Одягнуто':'Одягнути'):'🔒 Зі скрині'}</div>`;
+        <div class="cs-btn ${isOn?'on':''}" ${forSale?'style="background:linear-gradient(135deg,#ffd166,#c9a227);color:#241a00;font-weight:800"':''}>
+          ${has?(isOn?'✓ Одягнуто':'Одягнути'):(forSale?`${s.stars} ⭐`:'🔒 Зі скрині')}</div>`;
       d.querySelector('.cs-btn').onclick=()=>{
-        if(!has){showToast('Цей скін випадає зі скринь 🎁',2200);return;}
-        equipSkin('card',s.card,isOn?null:id); // повторний тап — зняти
+        if(has){ equipSkin('card',s.card,isOn?null:id); return; } // повторний тап — зняти
+        if(forSale){ buySkin('card',id,s); return; }
+        showToast('Цей скін випадає зі скринь 🎁',2200);
       };
       list.appendChild(d);
     }
   }
+}
+
+// Покупка скіна за Telegram Stars: сервер створить інвойс → openInvoice
+function buySkin(kind,skinId,def){
+  if(!socket)return;
+  socket.emit('buy_skin',{tgId:getMyTgId(),kind,skinId});
+  showToast(`⭐ Рахунок на «${def.name}» (${def.stars} ⭐)...`,2000);
+  try{ tg?.HapticFeedback?.impactOccurred?.('light'); }catch(e){}
 }
 
 function equipSkin(kind,cardKey,skinId){

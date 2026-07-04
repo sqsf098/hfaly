@@ -23,6 +23,20 @@ function connectSocket(){
   socket.on('quest_claimed',({gained})=>{ showToast('🎉 '+rewardText(gained),2500); if(gained.coins)floatCoin(gained.coins,window.innerWidth/2,140); });
   socket.on('quest_done',({text})=>showToast('✅ Квест виконано: '+text,3000));
 
+  // ── Магазин: покупка скінів за Telegram Stars ⭐ ─────────────────
+  socket.on('invoice',({link})=>{
+    if(tg&&tg.openInvoice){
+      tg.openInvoice(link,(status)=>{
+        if(status==='paid'){ sfx('coin'); vibrate('success'); socket.emit('get_wallet',{tgId:getMyTgId()}); }
+        else if(status==='failed') showToast('⚠️ Оплата не пройшла',3000);
+      });
+    } else showToast('⚠️ Покупки працюють тільки в Telegram',3000);
+  });
+  socket.on('skin_purchased',({name})=>{
+    showToast('🎉 «'+name+'» тепер твій! Одягни в Колекції',3500);
+    socket.emit('get_wallet',{tgId:getMyTgId()});
+  });
+
   // ── TON / NFT ───────────────────────────────────────────────────
   socket.on('ton_state',(s)=>{ tonData=s; renderTon(); });
   socket.on('mint_tx',(res)=>onMintTx(res));

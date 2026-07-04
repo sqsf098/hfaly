@@ -103,6 +103,18 @@ if (bot && !botUsername) {
     .catch(() => {});
 }
 
+// ── Магазин: платежі Telegram Stars ⭐ (продаж скінів) ─────────────────
+const { initPayments } = require('./payments');
+initPayments(bot, (tgId, kind, skinId, def) => {
+  // покупець онлайн → миттєво шлемо оновлений гаманець + тост
+  for (const [, s] of io.sockets.sockets) {
+    if (String(s.data?.tgId) === String(tgId)) {
+      s.emit('wallet', getWallet(tgId));
+      s.emit('skin_purchased', { kind, skinId, name: def.name });
+    }
+  }
+});
+
 // ── Graceful shutdown ───────────────────────────────────────────────────
 function shutdown(sig) {
   log(`${sig} — зберігаю дані і вимикаюсь...`);

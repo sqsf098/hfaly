@@ -79,6 +79,18 @@ function cardSkinFor(card){
   if(!myWallet||!myWallet.cardSkins) return null;
   return CARD_SKINS[myWallet.cardSkins[card.rank+card.suit]]||null;
 }
+// Скін карти ЇЇ ВЛАСНИКА: в дачці карта суперника фарбується його скіном.
+// ownerIdx===myIndex → беремо з myWallet (найсвіжіше після equip)
+function cardSkinForOwner(card,ownerIdx,players){
+  if(typeof myIndex!=='undefined'&&ownerIdx===myIndex) return cardSkinFor(card);
+  const sk=players&&players[ownerIdx]&&players[ownerIdx].skins;
+  if(!sk||!sk.cards) return null;
+  return CARD_SKINS[sk.cards[card.rank+card.suit]]||null;
+}
+// Сорочка гравця за столом (для рук суперників)
+function backSkinOfPlayer(p){
+  return BACK_SKINS[p&&p.skins&&p.skins.back]||BACK_SKINS.violet;
+}
 
 function $(id){return document.getElementById(id);}
 
