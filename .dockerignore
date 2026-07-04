@@ -1,0 +1,13 @@
+node_modules
+.env
+data
+*.log
+tunnel.log
+cloudflared.exe
+ngrok.exe
+.git
+.claude
+DEPLOY.md
+start.bat
+start-tunnel.bat
+tools

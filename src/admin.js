@@ -116,6 +116,23 @@ function createAdminRouter({ io, adminKey }) {
     res.json({ ok: true });
   });
 
+  // Міграція: залити гаманці зі старого сервера (тіло = вміст wallets.json).
+  // Існуючі гравці НЕ перезаписуються, якщо в них уже більший прогрес.
+  r.post('/import-wallets', (req, res) => {
+    const data = req.body || {};
+    let imported = 0, skipped = 0;
+    for (const [id, w] of Object.entries(data)) {
+      if (!w || typeof w !== 'object') continue;
+      const existing = playerWallets.get(id);
+      if (existing && (existing.gamesPlayed || 0) >= (w.gamesPlayed || 0) && (existing.coins || 0) >= (w.coins || 0)) { skipped++; continue; }
+      playerWallets.set(id, w);
+      imported++;
+    }
+    flushWallets();
+    log(`👑 ADMIN: імпорт гаманців — ${imported} залито, ${skipped} пропущено`);
+    res.json({ ok: true, imported, skipped, total: playerWallets.size });
+  });
+
   // ── Кімнати ──────────────────────────────────────────────────
   r.get('/rooms', (_, res) => {
     res.json([...rooms.values()].map(rm => ({
