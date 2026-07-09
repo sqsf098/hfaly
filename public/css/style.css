@@ -658,8 +658,11 @@ body.in-game #chatToggle{display:flex}
 @keyframes durakPulse{0%,100%{opacity:0.55}50%{opacity:1}}
 
 /* ══ ФІКСИ ДИЗАЙНУ (v9) ═════════════════════════════════════════════ */
-/* Головний екран скролиться — нижні плитки меню більше не відрізаються */
-#homeScreen{overflow-y:auto;display:block}
+/* Головний екран скролиться — нижні плитки меню більше не відрізаються.
+   ВАЖЛИВО: лише .active — інакше ID-правило перебиває .screen{display:none}
+   і головний екран просвічує під усіма іншими (баг «накладання екранів») */
+#homeScreen{display:none}
+#homeScreen.active{overflow-y:auto;display:block}
 #homeScreen .tab-bar{position:sticky;bottom:0}
 
 /* Веер: прибрано суцільний фон-панель — легкий градієнт-підкладка знизу */
@@ -685,3 +688,12 @@ body.fan-nav #homeScreen{padding-bottom:calc(150px + env(safe-area-inset-bottom)
 body.fan-nav .screen .content{padding-bottom:calc(140px + env(safe-area-inset-bottom))}
 .pslot.me{outline:2px solid var(--gold);outline-offset:-2px}
 .pslot{cursor:pointer}
+
+/* Центральна hero-карта: монограма замість емодзі-джокера */
+.hero-card.logo{background:linear-gradient(150deg,#1c1636 0%,#141d33 55%,#0d0b1f 100%);
+  border-color:var(--gold-dim,#c9a84c);z-index:5;gap:3px;
+  box-shadow:0 0 18px rgba(201,168,76,0.35),2px 6px 16px rgba(0,0,0,0.5)}
+.hero-card.logo .hc-mono{font-family:'Rubik',sans-serif;font-size:22px;font-weight:900;
+  background:linear-gradient(180deg,#ffe9a8,#c9a84c);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,0.6));line-height:1}
+.hero-card.logo .hc-suits{font-size:8px;letter-spacing:2px;color:var(--gold-dim,#c9a84c);opacity:0.85}

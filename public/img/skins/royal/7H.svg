@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 300">
+  <defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#1b1533"/><stop offset="0.55" stop-color="#121a30"/><stop offset="1" stop-color="#0a081c"/>
+  </linearGradient>
+  <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#ffeaa8"/><stop offset="0.45" stop-color="#e3bf6a"/><stop offset="1" stop-color="#9c7420"/>
+  </linearGradient>
+  <linearGradient id="ruby" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#ff9aa4"/><stop offset="0.45" stop-color="#e25563"/><stop offset="1" stop-color="#7e1522"/>
+  </linearGradient>
+  <radialGradient id="glow" cx="0.5" cy="0.42" r="0.62">
+    <stop offset="0" stop-color="#2c2450"/><stop offset="1" stop-color="rgba(20,16,40,0)"/>
+  </radialGradient>
+  <linearGradient id="sheen" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="rgba(255,255,255,0.09)"/><stop offset="0.4" stop-color="rgba(255,255,255,0)"/>
+  </linearGradient>
+  <g id="flr">
+    <path d="M0 26 Q0 4 22 2 Q10 8 10 16 Q10 22 16 22 Q22 22 22 16 Q30 26 16 30 Q2 33 0 26Z"
+      fill="url(#gold)" opacity="0.9"/>
+    <circle cx="27" cy="5" r="2.2" fill="url(#gold)"/>
+  </g></defs>
+  
+  <rect x="4" y="4" width="202" height="292" rx="16" fill="url(#bg)" stroke="url(#gold)" stroke-width="2.5"/>
+  <rect x="0" y="0" width="210" height="300" rx="18" fill="none" stroke="#6b5420" stroke-width="1" opacity="0.8"/>
+  <rect x="11" y="11" width="188" height="278" rx="11" fill="none" stroke="url(#gold)" stroke-width="0.8" opacity="0.65"/>
+  <ellipse cx="105" cy="132" rx="92.4" ry="102.00000000000001" fill="url(#glow)"/>
+  <rect x="4" y="4" width="202" height="292" rx="16" fill="url(#sheen)"/>
+  <use href="#flr" transform="translate(13,13)"/>
+  <use href="#flr" transform="translate(197,13) scale(-1,1)"/>
+  <use href="#flr" transform="translate(13,287) scale(1,-1)"/>
+  <use href="#flr" transform="translate(197,287) scale(-1,-1)"/>
+    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
+    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
+      fill="url(#ruby)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♥</text>
+    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+      font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
+  
+    <g transform="translate(36,58)" text-anchor="middle">
+      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">7</text>
+      <text y="24" font-size="22" fill="url(#ruby)">♥</text>
+    </g>
+  
+    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
+      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">7</text>
+      <text y="24" font-size="22" fill="url(#ruby)">♥</text>
+    </g>
+</svg>

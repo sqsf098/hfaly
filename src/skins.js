@@ -72,6 +72,26 @@ const PREMIUM_CARDS = {
   N8D_spark:  { name: 'Іскра',          card: '8♦',  emoji: '✨', bg: '#1c1608', color: '#ffe9a0', rarity: 'common' },
 };
 
+// ── «Королівська колода» — 36 векторних карт (tools/gen-royal-deck.js) ──
+// Повна заміна вигляду колоди. Шістки (потенційні «мамки») — epic,
+// A/K/Q/J — rare, решта — common. Дроп зі скринь ВИМКНЕНО (ексклюзив:
+// тільки покупка/ринок) — див. noDrop у collections.js.
+const ROYAL_CARDS = (() => {
+  const suits = [['♠', 'S'], ['♣', 'C'], ['♥', 'H'], ['♦', 'D']];
+  const ranks = ['6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+  const out = {};
+  for (const [suit, key] of suits) {
+    for (const rank of ranks) {
+      const rarity = rank === '6' ? 'epic' : ['A', 'K', 'Q', 'J'].includes(rank) ? 'rare' : 'common';
+      out[`royal_${rank}${key}`] = {
+        name: `Роял ${rank}${suit}`, card: `${rank}${suit}`,
+        img: `/img/skins/royal/${rank}${key}.svg`, rarity,
+      };
+    }
+  }
+  return out;
+})();
+
 // Проставляє ціну ⭐ за rarity (якщо не задана явно полем stars)
 function withStars(defs) {
   const out = {};
@@ -93,7 +113,7 @@ function loadSkins() {
 function saveSkins() { atomicWriteJSON(CUSTOM_FILE, custom); }
 
 function getBackSkins() { return { ...BUILTIN_BACKS, ...withStars(PREMIUM_BACKS), ...withStars(custom.backs) }; }
-function getCardSkins() { return { ...BUILTIN_CARDS, ...withStars(PREMIUM_CARDS), ...withStars(custom.cards) }; }
+function getCardSkins() { return { ...BUILTIN_CARDS, ...withStars(PREMIUM_CARDS), ...withStars(ROYAL_CARDS), ...withStars(custom.cards) }; }
 
 // Товар для покупки за ⭐: існує, має ціну і ще не належить гравцю
 function getPurchasable(kind, id) {

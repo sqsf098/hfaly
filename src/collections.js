@@ -4,7 +4,24 @@
 const { getBackSkins, getCardSkins } = require('./skins');
 
 // items: { kind: 'card'|'back', id } — id зі skins.js
+// 36 предметів Королівської колоди — генеруються з тих самих правил, що skins.js
+const ROYAL_ITEMS = (() => {
+  const suits = ['S', 'C', 'H', 'D'];
+  const ranks = ['6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+  const items = [];
+  for (const s of suits) for (const r of ranks) items.push({ kind: 'card', id: `royal_${r}${s}` });
+  return items;
+})();
+
 const COLLECTIONS = {
+  royal: {
+    id: 'royal', name: 'Королівська колода', emoji: '👑', rarity: 'epic',
+    desc: 'Повна колода 36 карт: нічне золото, рубін і філігрань. Ексклюзив — зі скринь НЕ падає.',
+    color: '#ffd166',
+    priceStars: 2500, // окремо: 4×200 + 16×150 + 16×100 = 4800⭐
+    noDrop: true,     // тільки покупка або ринок — тримає цінність
+    items: ROYAL_ITEMS,
+  },
   legends: {
     id: 'legends', name: 'Легенди', emoji: '🐉', rarity: 'epic',
     desc: 'Мамки — найсильніші карти гри. Побачив дракона — тремти.',
@@ -106,10 +123,12 @@ function grantCollection(wallet, collId) {
   return granted;
 }
 
-// Скіни заданих рідкостей, яких у гравця ще НЕМАЄ (для дропу зі скринь)
+// Скіни заданих рідкостей, яких у гравця ще НЕМАЄ (для дропу зі скринь).
+// Колекції з noDrop (ексклюзиви за ⭐) зі скринь не падають.
 function unownedByRarity(wallet, rarities) {
   const out = [];
   for (const c of Object.values(COLLECTIONS)) {
+    if (c.noDrop) continue;
     for (const it of c.items) {
       if (ownsItem(wallet, it)) continue;
       const defs = it.kind === 'back' ? getBackSkins() : getCardSkins();
