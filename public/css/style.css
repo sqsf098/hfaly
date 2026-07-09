@@ -656,3 +656,32 @@ body.in-game #chatToggle{display:flex}
   font-size:10px;font-weight:800;color:var(--gold);background:rgba(255,209,102,0.12);
   border:2px dashed var(--gold-dim);border-radius:8px;animation:durakPulse 1.2s infinite}
 @keyframes durakPulse{0%,100%{opacity:0.55}50%{opacity:1}}
+
+/* ══ ФІКСИ ДИЗАЙНУ (v9) ═════════════════════════════════════════════ */
+/* Головний екран скролиться — нижні плитки меню більше не відрізаються */
+#homeScreen{overflow-y:auto;display:block}
+#homeScreen .tab-bar{position:sticky;bottom:0}
+
+/* Веер: прибрано суцільний фон-панель — легкий градієнт-підкладка знизу */
+#fanNav{background:linear-gradient(180deg,transparent 0%,rgba(7,11,21,0.55) 40%,rgba(7,11,21,0.92) 100%);
+  backdrop-filter:none;border-top:none}
+
+/* Козир у шапці стола: світлий чіп — темні масті (♠♣) читаються */
+.gh-trump{font-size:17px;font-weight:900;background:#f6f1e3;color:#141d33;
+  min-width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+  padding:0 7px;box-shadow:0 2px 6px rgba(0,0,0,0.35);border:1px solid rgba(255,255,255,0.25)}
+.gh-trump:empty{display:none}
+.gh-trump.red{color:#c0392b}
+
+/* Джокер у hero-картах — емодзі нормального розміру */
+.hero-card.red{font-size:24px}
+
+/* Статуси/лог: масті завжди в світлому чіпі, де фон темний */
+.suit-chip{display:inline-flex;align-items:center;justify-content:center;background:#f6f1e3;
+  border-radius:5px;min-width:16px;height:16px;font-size:11px;font-weight:900;color:#141d33;padding:0 3px}
+.suit-chip.red{color:#c0392b}
+/* контент не ховається під веером */
+body.fan-nav #homeScreen{padding-bottom:calc(150px + env(safe-area-inset-bottom))}
+body.fan-nav .screen .content{padding-bottom:calc(140px + env(safe-area-inset-bottom))}
+.pslot.me{outline:2px solid var(--gold);outline-offset:-2px}
+.pslot{cursor:pointer}

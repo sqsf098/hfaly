@@ -4,12 +4,12 @@ const { getWallet, saveWallets, playerWallets } = require('./wallets');
 const { createRoom, startRound, chooseTrump, showNinthCard, confirmTrumpFromLast, playCard, endRound, advanceRound, publicState, discardThree } = require('./game');
 const { createBot } = require('./bot-ai');
 const { runBots } = require('./bots');
-const { openChest, claimQuest, economyState, addQuestProgress } = require('./economy');
+const { openChest, claimQuest, economyState, addQuestProgress, exchangeGems } = require('./economy');
 const { linkWallet, unlinkWallet, syncNfts, requestMint, tonState } = require('./ton');
 const { socketAuthMiddleware, resolveTgId } = require('./auth');
 const { holdDeposit, releaseDeposit } = require('./escrow');
 const { getBackSkins, getCardSkins } = require('./skins');
-const { createSkinInvoice, createCollectionInvoice } = require('./payments');
+const { createSkinInvoice, createCollectionInvoice, createPackInvoice, STAR_PACKS } = require('./payments');
 const { collectionsState } = require('./collections');
 const market = require('./market');
 const durak = require('./durak');
@@ -56,8 +56,19 @@ function safeOn(socket, event, handler) {
   });
 }
 
-function tryStartGame(room) {
+function tryStartGame(room, force = false) {
   if (room.players.length !== (room.maxPlayers || 4)) return;
+  // хФали БЕЗ ботів: не стартуємо одразу — гравці розсідаються по командах
+  // (place = партнер навпроти), хост тисне «Старт». З ботами — як раніше.
+  const hasBots = room.players.some(p => p.isBot);
+  if (room.mode === 'hfaly' && !hasBots && !force) {
+    io.to(room.id).emit('room_ready', {
+      hostTgId: room.hostTgId || room.playerTgIds?.[0] || null,
+      message: 'Стіл повний! Розсідайтесь по командах — хост стартує гру.',
+    });
+    broadcastState(room);
+    return;
+  }
   if (room.mode === 'durak') {
     durak.startGame(room);
   } else {
@@ -273,6 +284,31 @@ function registerHandlers(serverIo) {
       socket.emit('invoice', { link: res.link, kind, skinId, stars: res.stars });
     });
 
+    // ── Банк: пакети за ⭐, обмін 💎→💰 ───────────────────────────
+    safeOn(socket, 'get_bank', () => {
+      socket.emit('bank', {
+        packs: Object.entries(STAR_PACKS).map(([id, p]) => ({ id, name: p.name, desc: p.desc, stars: p.stars, reward: p.reward })),
+      });
+    });
+
+    safeOn(socket, 'buy_pack', async ({ tgId, packId }) => {
+      const id = uid(tgId); if (!id) return;
+      const res = await createPackInvoice(id, packId);
+      if (!res.ok) { socket.emit('error', { message: res.error }); return; }
+      socket.emit('invoice', { link: res.link, packId, stars: res.stars });
+    });
+
+    safeOn(socket, 'exchange_gems', ({ tgId, packId }) => {
+      const id = uid(tgId); if (!id) return;
+      const w = getWallet(id);
+      const res = exchangeGems(w, packId);
+      if (!res.ok) { socket.emit('error', { message: res.error }); return; }
+      saveWallets();
+      socket.emit('exchanged', { gems: res.gems, coins: res.coins });
+      socket.emit('wallet', w);
+      socket.emit('economy', economyState(w));
+    });
+
     // ── Колекції: прогрес + покупка бандла за ⭐ ─────────────────
     safeOn(socket, 'get_collections', ({ tgId }) => {
       const id = uid(tgId); if (!id) return;
@@ -354,7 +390,7 @@ function registerHandlers(serverIo) {
       const meta = socketToPlayer.get(socket.id);
       if (meta) {
         const room = rooms.get(meta.roomId);
-        const p = room?.players?.[meta.playerIndex];
+        const p = room?.players?.find(pl => pl.index === meta.playerIndex);
         if (p) {
           p.skins = { back: w.backSkin || 'violet', cards: w.cardSkins || {} };
           broadcastState(room);
@@ -409,6 +445,7 @@ function registerHandlers(serverIo) {
         room.pot = 0;
         room.isPublic = isPublic !== false;
         room.hostName = name || 'Гравець';
+        room.hostTgId = tgId; // хост стартує гру, коли всі розсілись
         rooms.set(roomId, room);
       }
 
@@ -444,8 +481,12 @@ function registerHandlers(serverIo) {
         saveWallets();
       }
 
-      const playerIndex = room.players.length;
+      // перше ВІЛЬНЕ місце (після пересадок місця можуть бути не підряд)
+      const taken = new Set(room.players.map(p => p.index));
+      let playerIndex = 0;
+      while (taken.has(playerIndex)) playerIndex++;
       room.players.push({ id: socket.id, socketId: socket.id, name: name || `Гравець ${playerIndex + 1}`, tgId, index: playerIndex, online: true, skins: skinsOf(wallet) });
+      room.players.sort((a, b) => a.index - b.index);
       room.playerTgIds = room.playerTgIds || [];
       room.playerTgIds[playerIndex] = tgId;
       socketToPlayer.set(socket.id, { roomId, playerIndex });
@@ -457,15 +498,56 @@ function registerHandlers(serverIo) {
       tryStartGame(room);
     });
 
+    // ── Пересісти на вільне місце (обрати команду), поки waiting ──
+    // хФали: місця 0,2 = команда A; 1,3 = команда B (партнер — навпроти)
+    safeOn(socket, 'switch_seat', ({ seatIndex }) => {
+      const meta = socketToPlayer.get(socket.id); if (!meta) return;
+      const room = rooms.get(meta.roomId); if (!room) return;
+      if (room.phase !== 'waiting') { socket.emit('error', { message: 'Гра вже йде' }); return; }
+      const to = +seatIndex;
+      const maxP = room.maxPlayers || 4;
+      if (!(to >= 0 && to < maxP)) return;
+      const from = meta.playerIndex;
+      if (to === from) return;
+      if (room.players.some(p => p.index === to)) { socket.emit('error', { message: 'Місце зайняте' }); return; }
+      const p = room.players.find(pl => pl.index === from);
+      if (!p) return;
+      p.index = to;
+      meta.playerIndex = to;
+      // масив завжди відсортований за місцями — решта коду індексується як players[i]
+      room.players.sort((a, b) => a.index - b.index);
+      // playerTgIds — розріджений масив за місцями
+      room.playerTgIds = room.playerTgIds || [];
+      room.playerTgIds[to] = room.playerTgIds[from];
+      delete room.playerTgIds[from];
+      socket.emit('reindexed', { playerIndex: to });
+      broadcastState(room);
+    });
+
+    // ── Хост стартує гру, коли всі розсілись по командах ─────────
+    safeOn(socket, 'start_game', ({ tgId }) => {
+      const id = uid(tgId); if (!id) return;
+      const meta = socketToPlayer.get(socket.id); if (!meta) return;
+      const room = rooms.get(meta.roomId); if (!room) return;
+      if (room.phase !== 'waiting') return;
+      if (String(room.hostTgId) !== String(id)) { socket.emit('error', { message: 'Стартує хост стола' }); return; }
+      if (room.players.length !== (room.maxPlayers || 4)) { socket.emit('error', { message: 'Стіл ще не повний' }); return; }
+      tryStartGame(room, true); // force — розсадка завершена
+    });
+
     safeOn(socket, 'add_bot', ({ roomId }) => {
       const room = rooms.get(roomId);
       if (!room) { socket.emit('error', { message: 'Кімната не знайдена' }); return; }
       if (room.phase !== 'waiting') { socket.emit('error', { message: 'Гра вже почалась' }); return; }
       if (room.players.length >= (room.maxPlayers || 4)) { socket.emit('error', { message: 'Кімната заповнена' }); return; }
 
-      const botIdx = room.players.length;
+      // перше вільне місце (після пересадок)
+      const takenSeats = new Set(room.players.map(p => p.index));
+      let botIdx = 0;
+      while (takenSeats.has(botIdx)) botIdx++;
       const botPlayer = createBot(botIdx);
       room.players.push(botPlayer);
+      room.players.sort((a, b) => a.index - b.index);
       room.playerTgIds = room.playerTgIds || [];
       room.playerTgIds[botIdx] = botPlayer.tgId;
 
@@ -584,7 +666,8 @@ function registerHandlers(serverIo) {
       if (!room) { socketToPlayer.delete(socket.id); socket.emit('left_room'); return; }
 
       const idx = meta.playerIndex;
-      const player = room.players[idx];
+      // після пересадок позиція в масиві ≠ місце — шукаємо за .index
+      const player = room.players.find(pl => pl.index === idx);
       if (!player) { socketToPlayer.delete(socket.id); socket.emit('left_room'); return; }
 
       if (room.phase === 'waiting') {
@@ -597,9 +680,8 @@ function registerHandlers(serverIo) {
           saveWallets();
           socket.emit('wallet', w);
         }
-        // Видаляємо гравця і перенумеровуємо решту
-        room.players.splice(idx, 1);
-        if (room.playerTgIds) room.playerTgIds.splice(idx, 1);
+        // Видаляємо гравця і перенумеровуємо решту (місця ущільнюються)
+        room.players.splice(room.players.indexOf(player), 1);
         room.players.forEach((p, i) => {
           p.index = i;
           const m = socketToPlayer.get(p.socketId);
@@ -607,6 +689,7 @@ function registerHandlers(serverIo) {
           const s = io.sockets.sockets.get(p.socketId);
           if (s) s.emit('reindexed', { playerIndex: i });
         });
+        room.playerTgIds = room.players.map(p => p.tgId); // за новими місцями
         socketToPlayer.delete(socket.id);
         socket.leave(meta.roomId);
         socket.emit('left_room');
@@ -673,7 +756,7 @@ function registerHandlers(serverIo) {
       chatTimes.push(now);
       const clean = String(text || '').slice(0, 120).trim();
       if (!clean) return;
-      const p = room.players[meta.playerIndex];
+      const p = room.players.find(pl => pl.index === meta.playerIndex);
       io.to(room.id).emit('chat_msg', {
         playerIndex: meta.playerIndex,
         name: p?.name || 'Гравець',
@@ -704,7 +787,7 @@ function registerHandlers(serverIo) {
       if (meta) {
         const room = rooms.get(meta.roomId);
         if (room) {
-          const p = room.players[meta.playerIndex];
+          const p = room.players.find(pl => pl.index === meta.playerIndex);
           if (p) p.online = false;
           io.to(meta.roomId).emit('player_disconnected', { playerIndex: meta.playerIndex, name: p?.name });
         }

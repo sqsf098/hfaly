@@ -17,8 +17,10 @@ function connectSocket(){
     if(document.getElementById('decksScreen').classList.contains('active'))renderCollection();
   });
 
-  // ── Економіка: скрині + квести ──────────────────────────────────
-  socket.on('economy',(e)=>{ economyData=e; myGems=e.gems; updateCoinsUI(); renderEconomy(); });
+  // ── Економіка: скрині + квести + банк ───────────────────────────
+  socket.on('economy',(e)=>{ economyData=e; myGems=e.gems; updateCoinsUI(); renderEconomy(); if(typeof renderBank==='function')renderBank(); });
+  socket.on('bank',(b)=>{ bankData=b; renderBank(); });
+  socket.on('exchanged',({gems,coins})=>{ sfx('coin'); vibrate('success'); showToast(`🔁 ${gems} 💎 → +${coins} 💰`,3000); floatCoin(coins,window.innerWidth/2,180); });
   socket.on('chest_opened',({chestId,gained})=>{sfx('coin');vibrate('success');showChestReward(gained);});
   socket.on('quest_claimed',({gained})=>{ showToast('🎉 '+rewardText(gained),2500); if(gained.coins)floatCoin(gained.coins,window.innerWidth/2,140); });
   socket.on('quest_done',({text})=>showToast('✅ Квест виконано: '+text,3000));
@@ -90,6 +92,8 @@ function connectSocket(){
 
     showGameScreen();renderGame(state);
   });
+
+  socket.on('room_ready',({message})=>{ sfx('trump'); vibrate('medium'); showToast('🪑 '+message,3500); });
 
   socket.on('game_started',({message})=>{
     // Show deal intro animation FIRST, then game

@@ -12,12 +12,22 @@ let bot = null;          // інстанс node-telegram-bot-api
 let onGranted = null;    // (tgId, kind, skinId, def) → сокет-сповіщення покупцю
 
 function parsePayload(payload) {
-  // формати: skin:<kind>:<skinId>:<tgId> | coll:<collId>:<tgId>
+  // формати: skin:<kind>:<skinId>:<tgId> | coll:<collId>:<tgId> | pack:<packId>:<tgId>
   const p = String(payload || '').split(':');
   if (p[0] === 'skin' && p.length === 4) return { type: 'skin', kind: p[1], skinId: p[2], tgId: p[3] };
   if (p[0] === 'coll' && p.length === 3) return { type: 'coll', collId: p[1], tgId: p[2] };
+  if (p[0] === 'pack' && p.length === 3) return { type: 'pack', packId: p[1], tgId: p[2] };
   return null;
 }
+
+// ── Банк: пакети за Stars (гемы, скрині) ─────────────────────────────────
+// reward — формат grantReward з economy.js (gems / chest / coins)
+const STAR_PACKS = {
+  g20:  { name: '20 💎',  desc: 'Жменька гемів', stars: 100,  reward: { gems: 20 } },
+  g65:  { name: '65 💎',  desc: 'Мішечок гемів (+8% бонус)', stars: 300,  reward: { gems: 65 } },
+  g240: { name: '240 💎', desc: 'Скарбниця гемів (+20% бонус)', stars: 1000, reward: { gems: 240 } },
+  chest_gold: { name: 'Золота скриня', desc: 'Рідкісні та епічні карти всередині', stars: 50, reward: { chest: 'gold' } },
+};
 
 // Чи колекція вже зібрана повністю (тоді покупка бандла беззмістовна)
 function collectionComplete(wallet, coll) {
@@ -56,6 +66,25 @@ async function createSkinInvoice(tgId, kind, skinId) {
     return { ok: true, link, stars: def.stars };
   } catch (e) {
     log('⭐ createInvoiceLink: ' + e.message);
+    return { ok: false, error: 'Не вдалося створити рахунок' };
+  }
+}
+
+// Інвойс на пакет (гемы/скриня за ⭐)
+async function createPackInvoice(tgId, packId) {
+  if (!bot) return { ok: false, error: 'Платежі недоступні (бот вимкнено)' };
+  const pack = STAR_PACKS[packId];
+  if (!pack) return { ok: false, error: 'Пакет не знайдено' };
+  try {
+    const link = await bot.createInvoiceLink(
+      pack.name.slice(0, 32), pack.desc.slice(0, 255),
+      `pack:${packId}:${tgId}`,
+      '', 'XTR',
+      [{ label: pack.name.slice(0, 32), amount: pack.stars }],
+    );
+    return { ok: true, link, stars: pack.stars };
+  } catch (e) {
+    log('⭐ createPackInvoice: ' + e.message);
     return { ok: false, error: 'Не вдалося створити рахунок' };
   }
 }
@@ -114,6 +143,8 @@ function initPayments(botInstance, grantedCallback) {
       const coll = getCollections()[p.collId];
       if (!coll) { ok = false; error = 'Колекції не існує'; }
       else if (collectionComplete(getWallet(p.tgId), coll)) { ok = false; error = 'Колекція вже зібрана'; }
+    } else if (p.type === 'pack') {
+      if (!STAR_PACKS[p.packId]) { ok = false; error = 'Пакет більше не продається'; }
     }
     try {
       await bot.answerPreCheckoutQuery(q.id, ok, ok ? {} : { error_message: error });
@@ -126,6 +157,24 @@ function initPayments(botInstance, grantedCallback) {
     if (!sp) return;
     const p = parsePayload(sp.invoice_payload);
     if (!p) { log('⭐ Оплата з невідомим payload: ' + sp.invoice_payload); return; }
+
+    if (p.type === 'pack') {
+      const pack = STAR_PACKS[p.packId];
+      if (!pack) { log('⭐ Оплата невідомого пакета: ' + p.packId); return; }
+      const w = getWallet(p.tgId);
+      const { grantReward } = require('./economy');
+      const gained = grantReward(w, pack.reward);
+      w.purchases = w.purchases || [];
+      w.purchases.push({
+        pack: p.packId, stars: sp.total_amount,
+        chargeId: sp.telegram_payment_charge_id, at: Date.now(),
+      });
+      saveWallets();
+      log(`⭐ ПАКЕТ: ${p.tgId} купив ${p.packId} за ${sp.total_amount}⭐ (${sp.telegram_payment_charge_id})`);
+      bot.sendMessage(msg.chat.id, `✅ «${pack.name}» зараховано! Заглянь у гру 🎁`).catch(() => {});
+      if (onGranted) onGranted(p.tgId, 'pack', p.packId, { name: pack.name, gained });
+      return;
+    }
 
     if (p.type === 'coll') {
       const coll = getCollections()[p.collId];
@@ -156,4 +205,4 @@ function initPayments(botInstance, grantedCallback) {
   });
 }
 
-module.exports = { initPayments, createSkinInvoice, createCollectionInvoice, grantSkin };
+module.exports = { initPayments, createSkinInvoice, createCollectionInvoice, createPackInvoice, grantSkin, STAR_PACKS };

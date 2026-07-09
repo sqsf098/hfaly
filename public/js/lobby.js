@@ -99,13 +99,36 @@ function renderWaiting(state){
   $('waitingPot').innerHTML=`${pot} 💰 <span>Банк (${state.players.length}/${N} гравців)</span>`;
   $('waitingRoomName').textContent=(isKh?'♣ Хрестовець · ':isDur?'🎴 Дурак · ':'')+state.players.length+`/${N} гравців`;
   for(let i=0;i<N;i++){
-    const p=state.players?.[i];
+    // місце i: гравець шукається за .index (після пересадок порядок ≠ позиція)
+    const p=(state.players||[]).find(pl=>pl.index===i);
     const div=document.createElement('div');
-    div.className=`pslot ${tc[i]} ${p?'filled':''}`;
-    div.innerHTML=p?`<div>${p.name}${i===myIndex?' (ти)':''}</div><div class="pslot-team">${teamNames[i]}</div>`:`<div style="opacity:.4">Вільно</div><div class="pslot-team">${teamNames[i]}</div>`;
+    div.className=`pslot ${tc[i]} ${p?'filled':''}${i===myIndex?' me':''}`;
+    div.innerHTML=p
+      ?`<div>${p.name}${i===myIndex?' (ти)':''}</div><div class="pslot-team">${teamNames[i]}</div>`
+      :`<div style="opacity:.5">Вільно — тапни, щоб сісти</div><div class="pslot-team">${teamNames[i]}</div>`;
+    // пересісти на вільне місце (обрати команду/партнера)
+    if(!p&&myIndex!=null)div.onclick=()=>{socket.emit('switch_seat',{seatIndex:i});sfx('click');};
     slots.appendChild(div);
   }
-  $('waitingStatus').textContent=state.players.length===N?'Гра розпочинається!':(`${N-state.players.length} місць залишилось`);
+  // Повний стіл у хФали без ботів: стартує хост (розсадка по командах)
+  const full=state.players.length===N;
+  const hasBot=(state.players||[]).some(p=>/🤖/.test(p.name||''));
+  const iAmHost=state.hostTgId&&String(state.hostTgId)===String(getMyTgId());
+  let startBtn=$('startGameBtn');
+  if(!startBtn){
+    startBtn=document.createElement('button');
+    startBtn.id='startGameBtn';
+    startBtn.className='btn-gold';
+    startBtn.style.cssText='margin-top:10px;display:none';
+    startBtn.textContent='▶ Почати гру';
+    startBtn.onclick=()=>socket.emit('start_game',{tgId:getMyTgId()});
+    slots.parentElement.insertBefore(startBtn,slots.nextSibling);
+  }
+  const waitHost=state.mode==='hfaly'&&full&&!hasBot;
+  startBtn.style.display=waitHost&&iAmHost?'block':'none';
+  $('waitingStatus').textContent=full
+    ?(waitHost?(iAmHost?'Всі на місцях? Тисни «Почати гру»!':'Розсідайтесь! Хост стартує гру'):'Гра розпочинається!')
+    :(`${N-state.players.length} місць залишилось · тапни вільне місце, щоб обрати команду`);
 }
 
 function addBot(){

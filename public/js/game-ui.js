@@ -141,7 +141,7 @@ function renderDurak(state){
   const myTurnish=!finished&&!out.includes(myIndex);
 
   // Шапка: козир + колода
-  const tb=$('ghTrump');tb.textContent=trump||'';tb.style.color=SUIT_RED[trump]?'#e74c3c':'#f0f0f0';
+  const tb=$('ghTrump');tb.textContent=trump||'';tb.classList.toggle('red',!!SUIT_RED[trump]);
   $('ghPot').textContent=`Колода: ${deckLeft}${trumpCard?` · козир ${trumpCard.rank}${trumpCard.suit}`:''}`;
   const sb=document.querySelector('.score-bar'); if(sb)sb.style.display='none';
 
@@ -236,7 +236,7 @@ function renderGame(state){
   $('durakTakeBtn')?.classList.remove('show');
   $('durakPassBtn')?.classList.remove('show');
   const isMyTurn=currentPlayer===myIndex,iAmBoaster=boaster===myIndex;
-  const tb=$('ghTrump');tb.textContent=trump||'';tb.style.color=trump?(SUIT_RED[trump]?'#e74c3c':'#f0f0f0'):'';
+  const tb=$('ghTrump');tb.textContent=trump||'';tb.classList.toggle('red',!!(trump&&SUIT_RED[trump]));
   const pot=players.length*currentRoomDeposit;
   $('ghPot').textContent=pot>0?`Банк: ${pot} 💰`:`Раунд ${roundNum}`;
   // Хрестовець — кожен за себе: командна панель не потрібна,
@@ -621,10 +621,12 @@ function renderOpponentCards(state) {
   ];
 
   const N = state.maxPlayers||4;
-  // 3 гравці (Хрестовець): двоє суперників — ліворуч і праворуч, верх порожній
-  const offsets = N===3 ? [1,2] : [1,2,3];
-  const posMap  = N===3 ? [positions[1],positions[2]] : positions;
-  if(N===3){ const c=$('oppTopCards'),l=$('oppTopLabel'); if(c)c.innerHTML=''; if(l)l.innerHTML=''; }
+  // 2 гравці (Дурак 1v1): один суперник — зверху; 3: ліворуч+праворуч; 4: всі
+  const offsets = N===2 ? [1] : N===3 ? [1,2] : [1,2,3];
+  const posMap  = N===2 ? [positions[0]] : N===3 ? [positions[1],positions[2]] : positions;
+  for(const pos of positions){
+    if(!posMap.includes(pos)){ const c=$(pos.containerId),l=$(pos.labelId); if(c)c.innerHTML=''; if(l)l.innerHTML=''; }
+  }
 
   offsets.forEach((offset, ri) => {
     const idx = (myIndex + offset) % N;

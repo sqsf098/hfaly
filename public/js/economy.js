@@ -3,8 +3,10 @@
 function openChestsModal(){
   connectSocket();
   socket.emit('get_economy',{tgId:getMyTgId()});
+  socket.emit('get_bank');
   $('chestsModal').classList.add('show');
   renderEconomy();
+  renderBank();
 }
 
 // Людський опис винагороди {coins,gems,deck,chest}
@@ -309,6 +311,47 @@ function renderMarket(){
       socket.emit('market_buy',{tgId:getMyTgId(),listingId:l.id});
     };
     list.appendChild(row);
+  }
+}
+
+// ══ БАНК: гемы за ⭐, обмін 💎→💰, скриня за ⭐ ═══════════════════════
+let bankData=null;
+function renderBank(){
+  const packsEl=$('bankPacks');
+  if(packsEl){
+    packsEl.innerHTML='';
+    for(const p of (bankData&&bankData.packs)||[]){
+      const icon=p.reward.gems?'💎':p.reward.chest?'👑':'💰';
+      const d=document.createElement('div');
+      d.className='card-skin-row';
+      d.innerHTML=`
+        <div class="cs-preview" style="background:linear-gradient(135deg,#1f2b4d,#141d33);font-size:22px">${icon}</div>
+        <div class="cs-info"><div class="cs-name">${p.name}</div><div class="cs-sub">${p.desc}</div></div>
+        <div class="cs-btn" style="background:linear-gradient(135deg,#ffd166,#c9a227);color:#241a00;font-weight:800">${p.stars} ⭐</div>`;
+      d.querySelector('.cs-btn').onclick=()=>{
+        socket.emit('buy_pack',{tgId:getMyTgId(),packId:p.id});
+        showToast(`⭐ Рахунок: ${p.name} (${p.stars} ⭐)...`,2000);
+      };
+      packsEl.appendChild(d);
+    }
+  }
+  const exEl=$('bankExchange');
+  if(exEl){
+    exEl.innerHTML='';
+    for(const x of (economyData&&economyData.exchangePacks)||[]){
+      const can=(myGems||0)>=x.gems;
+      const d=document.createElement('div');
+      d.className='card-skin-row';
+      d.innerHTML=`
+        <div class="cs-preview" style="background:linear-gradient(135deg,#123a2b,#0b241c);font-size:18px">🔁</div>
+        <div class="cs-info"><div class="cs-name">${x.gems} 💎 → ${x.coins} 💰</div><div class="cs-sub">курс ${Math.round(x.coins/x.gems)} монет за гем</div></div>
+        <div class="cs-btn ${can?'on':''}" ${can?'':'style="opacity:.5"'}>Обміняти</div>`;
+      d.querySelector('.cs-btn').onclick=()=>{
+        if(!can){showToast('Недостатньо 💎 — купи пакет вище або відкривай скрині',2500);return;}
+        socket.emit('exchange_gems',{tgId:getMyTgId(),packId:x.id});
+      };
+      exEl.appendChild(d);
+    }
   }
 }
 

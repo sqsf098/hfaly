@@ -192,6 +192,23 @@ function grantReward(wallet, reward) {
   return gained;
 }
 
+// ── Обмін валют: гемы → монети (міст між преміум і грою) ───────────────────
+// Більший пакет — кращий курс. Продати монети НАЗАД не можна (захист економіки).
+const EXCHANGE_PACKS = {
+  x5:  { gems: 5,  coins: 600 },   // 120/💎
+  x20: { gems: 20, coins: 2600 },  // 130/💎
+  x50: { gems: 50, coins: 7000 },  // 140/💎
+};
+
+function exchangeGems(wallet, packId) {
+  const pack = EXCHANGE_PACKS[packId];
+  if (!pack) return { ok: false, error: 'Невідомий обмін' };
+  if ((wallet.gems || 0) < pack.gems) return { ok: false, error: 'Недостатньо 💎' };
+  wallet.gems -= pack.gems;
+  wallet.coins += pack.coins;
+  return { ok: true, gems: pack.gems, coins: pack.coins };
+}
+
 // Публічний зріз економіки для клієнта
 function economyState(wallet) {
   ensureDailyQuests(wallet);
@@ -206,11 +223,13 @@ function economyState(wallet) {
       id: c.id, name: c.name, emoji: c.emoji, color: c.color,
       free: !!c.free, cost: c.cost || null,
     })),
+    // Банк: обмін 💎→💰 (клієнт малює курси звідси)
+    exchangePacks: Object.entries(EXCHANGE_PACKS).map(([id, p]) => ({ id, ...p })),
   };
 }
 
 module.exports = {
-  CHESTS, QUEST_POOL, PREMIUM_DECKS,
+  CHESTS, QUEST_POOL, PREMIUM_DECKS, EXCHANGE_PACKS,
   ensureDailyQuests, addQuestProgress, claimQuest,
-  openChest, economyState, grantReward,
+  openChest, economyState, grantReward, exchangeGems,
 };
