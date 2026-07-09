@@ -78,7 +78,7 @@ function tryStartGame(room, force = false) {
   }
   broadcastState(room);
   io.to(room.id).emit('game_started', { message: `Гра розпочалась! Банк: ${room.pot || 0} 💰` });
-  setTimeout(() => runBots(room.id), 600);
+  setTimeout(() => runBots(room.id), 400);
 }
 
 // ── Дурак: виплата — програв лише «дурак», решта ділять банк ──────────
@@ -614,14 +614,14 @@ function registerHandlers(serverIo) {
           broadcastState(room);
           io.to(meta.roomId).emit('round_ended', { ...roundResult, scores: room.scores, players: room.players.map(p => p.name) });
           if (roundResult.gameOver) distributeWinnings(room); // хтось набрав 24 → кінець гри
-        }, 1500);
+        }, 1100);
       } else {
         setTimeout(() => {
           room.trick = [];
           room.currentPlayer = result.trickWinner;
           broadcastState(room);
           runBots(room.id);
-        }, 1200);
+        }, 850);
       }
     });
 
@@ -641,7 +641,7 @@ function registerHandlers(serverIo) {
       questProgress(room, idx, 'play_cards');
       broadcastState(room);
       if (res.auto?.gameOver) { durakPayout(room); return; }
-      setTimeout(() => runBots(room.id), 500); // боти реагують на хід людини
+      setTimeout(() => runBots(room.id), 350); // боти реагують на хід людини
     });
 
     safeOn(socket, 'next_round', () => {

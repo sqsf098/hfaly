@@ -697,3 +697,13 @@ body.fan-nav .screen .content{padding-bottom:calc(140px + env(safe-area-inset-bo
   background:linear-gradient(180deg,#ffe9a8,#c9a84c);-webkit-background-clip:text;background-clip:text;color:transparent;
   filter:drop-shadow(0 1px 2px rgba(0,0,0,0.6));line-height:1}
 .hero-card.logo .hc-suits{font-size:8px;letter-spacing:2px;color:var(--gold-dim,#c9a84c);opacity:0.85}
+
+/* ══ ПЛАВНІСТЬ (v11): карти «прилітають», рука реагує м'яко ═════════ */
+.trick-slot.fresh{animation:cardLand 0.3s cubic-bezier(.2,.9,.3,1.18)}
+@keyframes cardLand{from{transform:translateY(-30px) scale(1.14);opacity:0}to{transform:none;opacity:1}}
+.durak-pair .durak-cover{animation:coverLand 0.25s cubic-bezier(.2,.9,.3,1.15)}
+@keyframes coverLand{from{transform:rotate(8deg) translateY(-20px);opacity:0}to{transform:rotate(8deg);opacity:1}}
+.pcard{transition:transform 0.16s cubic-bezier(.2,.8,.3,1.1),box-shadow 0.16s,border-color 0.12s,opacity 0.16s}
+.pcard.playable:hover{transform:translateY(-8px)}
+.opp-card-back{transition:transform 0.25s ease}
+.status-pill,#statusPill{transition:opacity 0.2s}

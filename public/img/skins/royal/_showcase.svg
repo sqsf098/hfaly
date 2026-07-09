@@ -33,22 +33,13 @@
   <use href="#flr" transform="translate(13,287) scale(1,-1)"/>
   <use href="#flr" transform="translate(197,287) scale(-1,-1)"/><g transform="translate(105,60)" fill="url(#gold)">
     <path d="M0 -20 Q10 -8 6 2 Q14 -2 12 8 Q8 20 0 20 Q-8 20 -12 8 Q-14 -2 -6 2 Q-10 -8 0 -20Z" stroke="#6b5420" stroke-width="1"/></g>
-    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="url(#gold)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♠</text>
-    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <circle cx="105" cy="150" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="105" cy="150" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="150" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="url(#gold)" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">♠</text>
+    <text x="105" y="278" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
-  
-    <g transform="translate(36,58)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">6</text>
-      <text y="24" font-size="22" fill="url(#gold)">♠</text>
-    </g>
-  
-    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">6</text>
-      <text y="24" font-size="22" fill="url(#gold)">♠</text>
-    </g>
 </svg>
 <svg x="238" y="14" width="210" height="300" viewBox="0 0 210 300">
   <defs>
@@ -82,22 +73,13 @@
   <use href="#flr" transform="translate(197,13) scale(-1,1)"/>
   <use href="#flr" transform="translate(13,287) scale(1,-1)"/>
   <use href="#flr" transform="translate(197,287) scale(-1,-1)"/>
-    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="url(#gold)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♠</text>
-    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <circle cx="105" cy="150" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="105" cy="150" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="150" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="url(#gold)" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">♠</text>
+    <text x="105" y="278" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
-  
-    <g transform="translate(36,58)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">7</text>
-      <text y="24" font-size="22" fill="url(#gold)">♠</text>
-    </g>
-  
-    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">7</text>
-      <text y="24" font-size="22" fill="url(#gold)">♠</text>
-    </g>
 </svg>
 <svg x="462" y="14" width="210" height="300" viewBox="0 0 210 300">
   <defs>
@@ -131,22 +113,13 @@
   <use href="#flr" transform="translate(197,13) scale(-1,1)"/>
   <use href="#flr" transform="translate(13,287) scale(1,-1)"/>
   <use href="#flr" transform="translate(197,287) scale(-1,-1)"/>
-    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="url(#gold)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♠</text>
-    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <circle cx="105" cy="150" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="105" cy="150" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="150" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="url(#gold)" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">♠</text>
+    <text x="105" y="278" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
-  
-    <g transform="translate(36,58)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">8</text>
-      <text y="24" font-size="22" fill="url(#gold)">♠</text>
-    </g>
-  
-    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">8</text>
-      <text y="24" font-size="22" fill="url(#gold)">♠</text>
-    </g>
 </svg>
 <svg x="686" y="14" width="210" height="300" viewBox="0 0 210 300">
   <defs>
@@ -180,22 +153,13 @@
   <use href="#flr" transform="translate(197,13) scale(-1,1)"/>
   <use href="#flr" transform="translate(13,287) scale(1,-1)"/>
   <use href="#flr" transform="translate(197,287) scale(-1,-1)"/>
-    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="url(#gold)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♠</text>
-    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <circle cx="105" cy="150" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="105" cy="150" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="150" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="url(#gold)" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">♠</text>
+    <text x="105" y="278" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
-  
-    <g transform="translate(36,58)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">9</text>
-      <text y="24" font-size="22" fill="url(#gold)">♠</text>
-    </g>
-  
-    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">9</text>
-      <text y="24" font-size="22" fill="url(#gold)">♠</text>
-    </g>
 </svg>
 <svg x="910" y="14" width="210" height="300" viewBox="0 0 210 300">
   <defs>
@@ -229,22 +193,13 @@
   <use href="#flr" transform="translate(197,13) scale(-1,1)"/>
   <use href="#flr" transform="translate(13,287) scale(1,-1)"/>
   <use href="#flr" transform="translate(197,287) scale(-1,-1)"/>
-    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="url(#gold)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♠</text>
-    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <circle cx="105" cy="150" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="105" cy="150" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="150" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="url(#gold)" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">♠</text>
+    <text x="105" y="278" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
-  
-    <g transform="translate(36,58)" text-anchor="middle">
-      <text y="0" font-size="26" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">10</text>
-      <text y="24" font-size="22" fill="url(#gold)">♠</text>
-    </g>
-  
-    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
-      <text y="0" font-size="26" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">10</text>
-      <text y="24" font-size="22" fill="url(#gold)">♠</text>
-    </g>
 </svg>
 <svg x="1134" y="14" width="210" height="300" viewBox="0 0 210 300">
   <defs>
@@ -280,22 +235,13 @@
   <use href="#flr" transform="translate(197,287) scale(-1,-1)"/><g transform="translate(105,60)" stroke="url(#gold)" stroke-width="4.5" stroke-linecap="round">
     <line x1="-20" y1="-14" x2="20" y2="16"/><line x1="20" y1="-14" x2="-20" y2="16"/>
     <line x1="-24" y1="-6" x2="-12" y2="-14" stroke-width="3"/><line x1="24" y1="-6" x2="12" y2="-14" stroke-width="3"/></g>
-    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="url(#gold)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♠</text>
-    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <circle cx="105" cy="150" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="105" cy="150" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="150" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="url(#gold)" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">♠</text>
+    <text x="105" y="278" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
-  
-    <g transform="translate(36,58)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">J</text>
-      <text y="24" font-size="22" fill="url(#gold)">♠</text>
-    </g>
-  
-    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">J</text>
-      <text y="24" font-size="22" fill="url(#gold)">♠</text>
-    </g>
 </svg>
 <svg x="1358" y="14" width="210" height="300" viewBox="0 0 210 300">
   <defs>
@@ -331,22 +277,13 @@
   <use href="#flr" transform="translate(197,287) scale(-1,-1)"/><g transform="translate(105,62)" fill="url(#gold)">
     <path d="M-26 10 Q-30 -6 -18 -12 Q-6 -18 0 -8 Q6 -18 18 -12 Q30 -6 26 10 Q0 17 -26 10Z" stroke="#6b5420" stroke-width="1"/>
     <circle cx="0" cy="-14" r="3.2"/><circle cx="-21" cy="-14" r="2.4"/><circle cx="21" cy="-14" r="2.4"/></g>
-    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="url(#gold)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♠</text>
-    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <circle cx="105" cy="150" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="105" cy="150" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="150" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="url(#gold)" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">♠</text>
+    <text x="105" y="278" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
-  
-    <g transform="translate(36,58)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">Q</text>
-      <text y="24" font-size="22" fill="url(#gold)">♠</text>
-    </g>
-  
-    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">Q</text>
-      <text y="24" font-size="22" fill="url(#gold)">♠</text>
-    </g>
 </svg>
 <svg x="1582" y="14" width="210" height="300" viewBox="0 0 210 300">
   <defs>
@@ -383,22 +320,13 @@
     <path d="M-30 12 L-30 -8 L-16 4 L0 -16 L16 4 L30 -8 L30 12 Q0 20 -30 12Z" stroke="#6b5420" stroke-width="1"/>
     <circle cx="-30" cy="-11" r="3.4"/><circle cx="0" cy="-19" r="3.8"/><circle cx="30" cy="-11" r="3.4"/>
     <rect x="-30" y="13" width="60" height="4.5" rx="2"/></g>
-    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="url(#gold)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♠</text>
-    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <circle cx="105" cy="150" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="105" cy="150" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="150" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="url(#gold)" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">♠</text>
+    <text x="105" y="278" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
-  
-    <g transform="translate(36,58)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">K</text>
-      <text y="24" font-size="22" fill="url(#gold)">♠</text>
-    </g>
-  
-    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">K</text>
-      <text y="24" font-size="22" fill="url(#gold)">♠</text>
-    </g>
 </svg>
 <svg x="1806" y="14" width="210" height="300" viewBox="0 0 210 300">
   <defs>
@@ -433,22 +361,13 @@
   <use href="#flr" transform="translate(13,287) scale(1,-1)"/>
   <use href="#flr" transform="translate(197,287) scale(-1,-1)"/><g transform="translate(105,60)" fill="url(#gold)">
     <path d="M0 -20 L5 -6 L20 -6 L8 3 L13 18 L0 9 L-13 18 L-8 3 L-20 -6 L-5 -6 Z" stroke="#6b5420" stroke-width="1"/></g>
-    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="url(#gold)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♠</text>
-    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <circle cx="105" cy="150" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="105" cy="150" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="150" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="url(#gold)" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">♠</text>
+    <text x="105" y="278" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
-  
-    <g transform="translate(36,58)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">A</text>
-      <text y="24" font-size="22" fill="url(#gold)">♠</text>
-    </g>
-  
-    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">A</text>
-      <text y="24" font-size="22" fill="url(#gold)">♠</text>
-    </g>
 </svg>
 <svg x="14" y="328" width="210" height="300" viewBox="0 0 210 300">
   <defs>
@@ -483,22 +402,13 @@
   <use href="#flr" transform="translate(13,287) scale(1,-1)"/>
   <use href="#flr" transform="translate(197,287) scale(-1,-1)"/><g transform="translate(105,60)" fill="url(#gold)">
     <path d="M0 -20 Q10 -8 6 2 Q14 -2 12 8 Q8 20 0 20 Q-8 20 -12 8 Q-14 -2 -6 2 Q-10 -8 0 -20Z" stroke="#6b5420" stroke-width="1"/></g>
-    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="url(#gold)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♣</text>
-    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <circle cx="105" cy="150" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="105" cy="150" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="150" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="url(#gold)" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">♣</text>
+    <text x="105" y="278" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
-  
-    <g transform="translate(36,58)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">6</text>
-      <text y="24" font-size="22" fill="url(#gold)">♣</text>
-    </g>
-  
-    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">6</text>
-      <text y="24" font-size="22" fill="url(#gold)">♣</text>
-    </g>
 </svg>
 <svg x="238" y="328" width="210" height="300" viewBox="0 0 210 300">
   <defs>
@@ -532,22 +442,13 @@
   <use href="#flr" transform="translate(197,13) scale(-1,1)"/>
   <use href="#flr" transform="translate(13,287) scale(1,-1)"/>
   <use href="#flr" transform="translate(197,287) scale(-1,-1)"/>
-    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="url(#gold)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♣</text>
-    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <circle cx="105" cy="150" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="105" cy="150" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="150" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="url(#gold)" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">♣</text>
+    <text x="105" y="278" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
-  
-    <g transform="translate(36,58)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">7</text>
-      <text y="24" font-size="22" fill="url(#gold)">♣</text>
-    </g>
-  
-    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">7</text>
-      <text y="24" font-size="22" fill="url(#gold)">♣</text>
-    </g>
 </svg>
 <svg x="462" y="328" width="210" height="300" viewBox="0 0 210 300">
   <defs>
@@ -581,22 +482,13 @@
   <use href="#flr" transform="translate(197,13) scale(-1,1)"/>
   <use href="#flr" transform="translate(13,287) scale(1,-1)"/>
   <use href="#flr" transform="translate(197,287) scale(-1,-1)"/>
-    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="url(#gold)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♣</text>
-    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <circle cx="105" cy="150" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="105" cy="150" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="150" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="url(#gold)" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">♣</text>
+    <text x="105" y="278" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
-  
-    <g transform="translate(36,58)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">8</text>
-      <text y="24" font-size="22" fill="url(#gold)">♣</text>
-    </g>
-  
-    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">8</text>
-      <text y="24" font-size="22" fill="url(#gold)">♣</text>
-    </g>
 </svg>
 <svg x="686" y="328" width="210" height="300" viewBox="0 0 210 300">
   <defs>
@@ -630,22 +522,13 @@
   <use href="#flr" transform="translate(197,13) scale(-1,1)"/>
   <use href="#flr" transform="translate(13,287) scale(1,-1)"/>
   <use href="#flr" transform="translate(197,287) scale(-1,-1)"/>
-    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="url(#gold)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♣</text>
-    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <circle cx="105" cy="150" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="105" cy="150" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="150" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="url(#gold)" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">♣</text>
+    <text x="105" y="278" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
-  
-    <g transform="translate(36,58)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">9</text>
-      <text y="24" font-size="22" fill="url(#gold)">♣</text>
-    </g>
-  
-    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">9</text>
-      <text y="24" font-size="22" fill="url(#gold)">♣</text>
-    </g>
 </svg>
 <svg x="910" y="328" width="210" height="300" viewBox="0 0 210 300">
   <defs>
@@ -679,22 +562,13 @@
   <use href="#flr" transform="translate(197,13) scale(-1,1)"/>
   <use href="#flr" transform="translate(13,287) scale(1,-1)"/>
   <use href="#flr" transform="translate(197,287) scale(-1,-1)"/>
-    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="url(#gold)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♣</text>
-    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <circle cx="105" cy="150" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="105" cy="150" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="150" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="url(#gold)" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">♣</text>
+    <text x="105" y="278" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
-  
-    <g transform="translate(36,58)" text-anchor="middle">
-      <text y="0" font-size="26" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">10</text>
-      <text y="24" font-size="22" fill="url(#gold)">♣</text>
-    </g>
-  
-    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
-      <text y="0" font-size="26" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">10</text>
-      <text y="24" font-size="22" fill="url(#gold)">♣</text>
-    </g>
 </svg>
 <svg x="1134" y="328" width="210" height="300" viewBox="0 0 210 300">
   <defs>
@@ -730,22 +604,13 @@
   <use href="#flr" transform="translate(197,287) scale(-1,-1)"/><g transform="translate(105,60)" stroke="url(#gold)" stroke-width="4.5" stroke-linecap="round">
     <line x1="-20" y1="-14" x2="20" y2="16"/><line x1="20" y1="-14" x2="-20" y2="16"/>
     <line x1="-24" y1="-6" x2="-12" y2="-14" stroke-width="3"/><line x1="24" y1="-6" x2="12" y2="-14" stroke-width="3"/></g>
-    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="url(#gold)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♣</text>
-    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <circle cx="105" cy="150" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="105" cy="150" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="150" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="url(#gold)" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">♣</text>
+    <text x="105" y="278" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
-  
-    <g transform="translate(36,58)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">J</text>
-      <text y="24" font-size="22" fill="url(#gold)">♣</text>
-    </g>
-  
-    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">J</text>
-      <text y="24" font-size="22" fill="url(#gold)">♣</text>
-    </g>
 </svg>
 <svg x="1358" y="328" width="210" height="300" viewBox="0 0 210 300">
   <defs>
@@ -781,22 +646,13 @@
   <use href="#flr" transform="translate(197,287) scale(-1,-1)"/><g transform="translate(105,62)" fill="url(#gold)">
     <path d="M-26 10 Q-30 -6 -18 -12 Q-6 -18 0 -8 Q6 -18 18 -12 Q30 -6 26 10 Q0 17 -26 10Z" stroke="#6b5420" stroke-width="1"/>
     <circle cx="0" cy="-14" r="3.2"/><circle cx="-21" cy="-14" r="2.4"/><circle cx="21" cy="-14" r="2.4"/></g>
-    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="url(#gold)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♣</text>
-    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <circle cx="105" cy="150" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="105" cy="150" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="150" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="url(#gold)" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">♣</text>
+    <text x="105" y="278" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
-  
-    <g transform="translate(36,58)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">Q</text>
-      <text y="24" font-size="22" fill="url(#gold)">♣</text>
-    </g>
-  
-    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">Q</text>
-      <text y="24" font-size="22" fill="url(#gold)">♣</text>
-    </g>
 </svg>
 <svg x="1582" y="328" width="210" height="300" viewBox="0 0 210 300">
   <defs>
@@ -833,22 +689,13 @@
     <path d="M-30 12 L-30 -8 L-16 4 L0 -16 L16 4 L30 -8 L30 12 Q0 20 -30 12Z" stroke="#6b5420" stroke-width="1"/>
     <circle cx="-30" cy="-11" r="3.4"/><circle cx="0" cy="-19" r="3.8"/><circle cx="30" cy="-11" r="3.4"/>
     <rect x="-30" y="13" width="60" height="4.5" rx="2"/></g>
-    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="url(#gold)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♣</text>
-    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <circle cx="105" cy="150" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="105" cy="150" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="150" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="url(#gold)" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">♣</text>
+    <text x="105" y="278" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
-  
-    <g transform="translate(36,58)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">K</text>
-      <text y="24" font-size="22" fill="url(#gold)">♣</text>
-    </g>
-  
-    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">K</text>
-      <text y="24" font-size="22" fill="url(#gold)">♣</text>
-    </g>
 </svg>
 <svg x="1806" y="328" width="210" height="300" viewBox="0 0 210 300">
   <defs>
@@ -883,22 +730,13 @@
   <use href="#flr" transform="translate(13,287) scale(1,-1)"/>
   <use href="#flr" transform="translate(197,287) scale(-1,-1)"/><g transform="translate(105,60)" fill="url(#gold)">
     <path d="M0 -20 L5 -6 L20 -6 L8 3 L13 18 L0 9 L-13 18 L-8 3 L-20 -6 L-5 -6 Z" stroke="#6b5420" stroke-width="1"/></g>
-    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="url(#gold)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♣</text>
-    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <circle cx="105" cy="150" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="105" cy="150" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="150" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="url(#gold)" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">♣</text>
+    <text x="105" y="278" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
-  
-    <g transform="translate(36,58)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">A</text>
-      <text y="24" font-size="22" fill="url(#gold)">♣</text>
-    </g>
-  
-    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">A</text>
-      <text y="24" font-size="22" fill="url(#gold)">♣</text>
-    </g>
 </svg>
 <svg x="14" y="642" width="210" height="300" viewBox="0 0 210 300">
   <defs>
@@ -933,22 +771,13 @@
   <use href="#flr" transform="translate(13,287) scale(1,-1)"/>
   <use href="#flr" transform="translate(197,287) scale(-1,-1)"/><g transform="translate(105,60)" fill="url(#gold)">
     <path d="M0 -20 Q10 -8 6 2 Q14 -2 12 8 Q8 20 0 20 Q-8 20 -12 8 Q-14 -2 -6 2 Q-10 -8 0 -20Z" stroke="#6b5420" stroke-width="1"/></g>
-    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="url(#ruby)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♥</text>
-    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <circle cx="105" cy="150" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="105" cy="150" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="150" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="url(#ruby)" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">♥</text>
+    <text x="105" y="278" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
-  
-    <g transform="translate(36,58)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">6</text>
-      <text y="24" font-size="22" fill="url(#ruby)">♥</text>
-    </g>
-  
-    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">6</text>
-      <text y="24" font-size="22" fill="url(#ruby)">♥</text>
-    </g>
 </svg>
 <svg x="238" y="642" width="210" height="300" viewBox="0 0 210 300">
   <defs>
@@ -982,22 +811,13 @@
   <use href="#flr" transform="translate(197,13) scale(-1,1)"/>
   <use href="#flr" transform="translate(13,287) scale(1,-1)"/>
   <use href="#flr" transform="translate(197,287) scale(-1,-1)"/>
-    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="url(#ruby)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♥</text>
-    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <circle cx="105" cy="150" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="105" cy="150" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="150" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="url(#ruby)" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">♥</text>
+    <text x="105" y="278" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
-  
-    <g transform="translate(36,58)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">7</text>
-      <text y="24" font-size="22" fill="url(#ruby)">♥</text>
-    </g>
-  
-    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">7</text>
-      <text y="24" font-size="22" fill="url(#ruby)">♥</text>
-    </g>
 </svg>
 <svg x="462" y="642" width="210" height="300" viewBox="0 0 210 300">
   <defs>
@@ -1031,22 +851,13 @@
   <use href="#flr" transform="translate(197,13) scale(-1,1)"/>
   <use href="#flr" transform="translate(13,287) scale(1,-1)"/>
   <use href="#flr" transform="translate(197,287) scale(-1,-1)"/>
-    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="url(#ruby)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♥</text>
-    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <circle cx="105" cy="150" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="105" cy="150" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="150" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="url(#ruby)" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">♥</text>
+    <text x="105" y="278" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
-  
-    <g transform="translate(36,58)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">8</text>
-      <text y="24" font-size="22" fill="url(#ruby)">♥</text>
-    </g>
-  
-    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">8</text>
-      <text y="24" font-size="22" fill="url(#ruby)">♥</text>
-    </g>
 </svg>
 <svg x="686" y="642" width="210" height="300" viewBox="0 0 210 300">
   <defs>
@@ -1080,22 +891,13 @@
   <use href="#flr" transform="translate(197,13) scale(-1,1)"/>
   <use href="#flr" transform="translate(13,287) scale(1,-1)"/>
   <use href="#flr" transform="translate(197,287) scale(-1,-1)"/>
-    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="url(#ruby)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♥</text>
-    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <circle cx="105" cy="150" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="105" cy="150" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="150" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="url(#ruby)" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">♥</text>
+    <text x="105" y="278" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
-  
-    <g transform="translate(36,58)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">9</text>
-      <text y="24" font-size="22" fill="url(#ruby)">♥</text>
-    </g>
-  
-    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">9</text>
-      <text y="24" font-size="22" fill="url(#ruby)">♥</text>
-    </g>
 </svg>
 <svg x="910" y="642" width="210" height="300" viewBox="0 0 210 300">
   <defs>
@@ -1129,22 +931,13 @@
   <use href="#flr" transform="translate(197,13) scale(-1,1)"/>
   <use href="#flr" transform="translate(13,287) scale(1,-1)"/>
   <use href="#flr" transform="translate(197,287) scale(-1,-1)"/>
-    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="url(#ruby)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♥</text>
-    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <circle cx="105" cy="150" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="105" cy="150" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="150" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="url(#ruby)" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">♥</text>
+    <text x="105" y="278" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
-  
-    <g transform="translate(36,58)" text-anchor="middle">
-      <text y="0" font-size="26" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">10</text>
-      <text y="24" font-size="22" fill="url(#ruby)">♥</text>
-    </g>
-  
-    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
-      <text y="0" font-size="26" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">10</text>
-      <text y="24" font-size="22" fill="url(#ruby)">♥</text>
-    </g>
 </svg>
 <svg x="1134" y="642" width="210" height="300" viewBox="0 0 210 300">
   <defs>
@@ -1180,22 +973,13 @@
   <use href="#flr" transform="translate(197,287) scale(-1,-1)"/><g transform="translate(105,60)" stroke="url(#gold)" stroke-width="4.5" stroke-linecap="round">
     <line x1="-20" y1="-14" x2="20" y2="16"/><line x1="20" y1="-14" x2="-20" y2="16"/>
     <line x1="-24" y1="-6" x2="-12" y2="-14" stroke-width="3"/><line x1="24" y1="-6" x2="12" y2="-14" stroke-width="3"/></g>
-    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="url(#ruby)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♥</text>
-    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <circle cx="105" cy="150" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="105" cy="150" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="150" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="url(#ruby)" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">♥</text>
+    <text x="105" y="278" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
-  
-    <g transform="translate(36,58)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">J</text>
-      <text y="24" font-size="22" fill="url(#ruby)">♥</text>
-    </g>
-  
-    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">J</text>
-      <text y="24" font-size="22" fill="url(#ruby)">♥</text>
-    </g>
 </svg>
 <svg x="1358" y="642" width="210" height="300" viewBox="0 0 210 300">
   <defs>
@@ -1231,22 +1015,13 @@
   <use href="#flr" transform="translate(197,287) scale(-1,-1)"/><g transform="translate(105,62)" fill="url(#gold)">
     <path d="M-26 10 Q-30 -6 -18 -12 Q-6 -18 0 -8 Q6 -18 18 -12 Q30 -6 26 10 Q0 17 -26 10Z" stroke="#6b5420" stroke-width="1"/>
     <circle cx="0" cy="-14" r="3.2"/><circle cx="-21" cy="-14" r="2.4"/><circle cx="21" cy="-14" r="2.4"/></g>
-    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="url(#ruby)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♥</text>
-    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <circle cx="105" cy="150" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="105" cy="150" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="150" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="url(#ruby)" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">♥</text>
+    <text x="105" y="278" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
-  
-    <g transform="translate(36,58)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">Q</text>
-      <text y="24" font-size="22" fill="url(#ruby)">♥</text>
-    </g>
-  
-    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">Q</text>
-      <text y="24" font-size="22" fill="url(#ruby)">♥</text>
-    </g>
 </svg>
 <svg x="1582" y="642" width="210" height="300" viewBox="0 0 210 300">
   <defs>
@@ -1283,22 +1058,13 @@
     <path d="M-30 12 L-30 -8 L-16 4 L0 -16 L16 4 L30 -8 L30 12 Q0 20 -30 12Z" stroke="#6b5420" stroke-width="1"/>
     <circle cx="-30" cy="-11" r="3.4"/><circle cx="0" cy="-19" r="3.8"/><circle cx="30" cy="-11" r="3.4"/>
     <rect x="-30" y="13" width="60" height="4.5" rx="2"/></g>
-    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="url(#ruby)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♥</text>
-    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <circle cx="105" cy="150" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="105" cy="150" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="150" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="url(#ruby)" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">♥</text>
+    <text x="105" y="278" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
-  
-    <g transform="translate(36,58)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">K</text>
-      <text y="24" font-size="22" fill="url(#ruby)">♥</text>
-    </g>
-  
-    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">K</text>
-      <text y="24" font-size="22" fill="url(#ruby)">♥</text>
-    </g>
 </svg>
 <svg x="1806" y="642" width="210" height="300" viewBox="0 0 210 300">
   <defs>
@@ -1333,22 +1099,13 @@
   <use href="#flr" transform="translate(13,287) scale(1,-1)"/>
   <use href="#flr" transform="translate(197,287) scale(-1,-1)"/><g transform="translate(105,60)" fill="url(#gold)">
     <path d="M0 -20 L5 -6 L20 -6 L8 3 L13 18 L0 9 L-13 18 L-8 3 L-20 -6 L-5 -6 Z" stroke="#6b5420" stroke-width="1"/></g>
-    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="url(#ruby)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♥</text>
-    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <circle cx="105" cy="150" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="105" cy="150" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="150" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="url(#ruby)" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">♥</text>
+    <text x="105" y="278" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
-  
-    <g transform="translate(36,58)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">A</text>
-      <text y="24" font-size="22" fill="url(#ruby)">♥</text>
-    </g>
-  
-    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">A</text>
-      <text y="24" font-size="22" fill="url(#ruby)">♥</text>
-    </g>
 </svg>
 <svg x="14" y="956" width="210" height="300" viewBox="0 0 210 300">
   <defs>
@@ -1383,22 +1140,13 @@
   <use href="#flr" transform="translate(13,287) scale(1,-1)"/>
   <use href="#flr" transform="translate(197,287) scale(-1,-1)"/><g transform="translate(105,60)" fill="url(#gold)">
     <path d="M0 -20 Q10 -8 6 2 Q14 -2 12 8 Q8 20 0 20 Q-8 20 -12 8 Q-14 -2 -6 2 Q-10 -8 0 -20Z" stroke="#6b5420" stroke-width="1"/></g>
-    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="url(#ruby)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♦</text>
-    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <circle cx="105" cy="150" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="105" cy="150" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="150" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="url(#ruby)" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">♦</text>
+    <text x="105" y="278" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
-  
-    <g transform="translate(36,58)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">6</text>
-      <text y="24" font-size="22" fill="url(#ruby)">♦</text>
-    </g>
-  
-    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">6</text>
-      <text y="24" font-size="22" fill="url(#ruby)">♦</text>
-    </g>
 </svg>
 <svg x="238" y="956" width="210" height="300" viewBox="0 0 210 300">
   <defs>
@@ -1432,22 +1180,13 @@
   <use href="#flr" transform="translate(197,13) scale(-1,1)"/>
   <use href="#flr" transform="translate(13,287) scale(1,-1)"/>
   <use href="#flr" transform="translate(197,287) scale(-1,-1)"/>
-    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="url(#ruby)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♦</text>
-    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <circle cx="105" cy="150" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="105" cy="150" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="150" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="url(#ruby)" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">♦</text>
+    <text x="105" y="278" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
-  
-    <g transform="translate(36,58)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">7</text>
-      <text y="24" font-size="22" fill="url(#ruby)">♦</text>
-    </g>
-  
-    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">7</text>
-      <text y="24" font-size="22" fill="url(#ruby)">♦</text>
-    </g>
 </svg>
 <svg x="462" y="956" width="210" height="300" viewBox="0 0 210 300">
   <defs>
@@ -1481,22 +1220,13 @@
   <use href="#flr" transform="translate(197,13) scale(-1,1)"/>
   <use href="#flr" transform="translate(13,287) scale(1,-1)"/>
   <use href="#flr" transform="translate(197,287) scale(-1,-1)"/>
-    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="url(#ruby)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♦</text>
-    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <circle cx="105" cy="150" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="105" cy="150" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="150" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="url(#ruby)" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">♦</text>
+    <text x="105" y="278" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
-  
-    <g transform="translate(36,58)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">8</text>
-      <text y="24" font-size="22" fill="url(#ruby)">♦</text>
-    </g>
-  
-    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">8</text>
-      <text y="24" font-size="22" fill="url(#ruby)">♦</text>
-    </g>
 </svg>
 <svg x="686" y="956" width="210" height="300" viewBox="0 0 210 300">
   <defs>
@@ -1530,22 +1260,13 @@
   <use href="#flr" transform="translate(197,13) scale(-1,1)"/>
   <use href="#flr" transform="translate(13,287) scale(1,-1)"/>
   <use href="#flr" transform="translate(197,287) scale(-1,-1)"/>
-    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="url(#ruby)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♦</text>
-    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <circle cx="105" cy="150" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="105" cy="150" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="150" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="url(#ruby)" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">♦</text>
+    <text x="105" y="278" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
-  
-    <g transform="translate(36,58)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">9</text>
-      <text y="24" font-size="22" fill="url(#ruby)">♦</text>
-    </g>
-  
-    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">9</text>
-      <text y="24" font-size="22" fill="url(#ruby)">♦</text>
-    </g>
 </svg>
 <svg x="910" y="956" width="210" height="300" viewBox="0 0 210 300">
   <defs>
@@ -1579,22 +1300,13 @@
   <use href="#flr" transform="translate(197,13) scale(-1,1)"/>
   <use href="#flr" transform="translate(13,287) scale(1,-1)"/>
   <use href="#flr" transform="translate(197,287) scale(-1,-1)"/>
-    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="url(#ruby)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♦</text>
-    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <circle cx="105" cy="150" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="105" cy="150" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="150" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="url(#ruby)" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">♦</text>
+    <text x="105" y="278" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
-  
-    <g transform="translate(36,58)" text-anchor="middle">
-      <text y="0" font-size="26" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">10</text>
-      <text y="24" font-size="22" fill="url(#ruby)">♦</text>
-    </g>
-  
-    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
-      <text y="0" font-size="26" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">10</text>
-      <text y="24" font-size="22" fill="url(#ruby)">♦</text>
-    </g>
 </svg>
 <svg x="1134" y="956" width="210" height="300" viewBox="0 0 210 300">
   <defs>
@@ -1630,22 +1342,13 @@
   <use href="#flr" transform="translate(197,287) scale(-1,-1)"/><g transform="translate(105,60)" stroke="url(#gold)" stroke-width="4.5" stroke-linecap="round">
     <line x1="-20" y1="-14" x2="20" y2="16"/><line x1="20" y1="-14" x2="-20" y2="16"/>
     <line x1="-24" y1="-6" x2="-12" y2="-14" stroke-width="3"/><line x1="24" y1="-6" x2="12" y2="-14" stroke-width="3"/></g>
-    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="url(#ruby)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♦</text>
-    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <circle cx="105" cy="150" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="105" cy="150" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="150" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="url(#ruby)" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">♦</text>
+    <text x="105" y="278" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
-  
-    <g transform="translate(36,58)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">J</text>
-      <text y="24" font-size="22" fill="url(#ruby)">♦</text>
-    </g>
-  
-    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">J</text>
-      <text y="24" font-size="22" fill="url(#ruby)">♦</text>
-    </g>
 </svg>
 <svg x="1358" y="956" width="210" height="300" viewBox="0 0 210 300">
   <defs>
@@ -1681,22 +1384,13 @@
   <use href="#flr" transform="translate(197,287) scale(-1,-1)"/><g transform="translate(105,62)" fill="url(#gold)">
     <path d="M-26 10 Q-30 -6 -18 -12 Q-6 -18 0 -8 Q6 -18 18 -12 Q30 -6 26 10 Q0 17 -26 10Z" stroke="#6b5420" stroke-width="1"/>
     <circle cx="0" cy="-14" r="3.2"/><circle cx="-21" cy="-14" r="2.4"/><circle cx="21" cy="-14" r="2.4"/></g>
-    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="url(#ruby)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♦</text>
-    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <circle cx="105" cy="150" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="105" cy="150" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="150" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="url(#ruby)" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">♦</text>
+    <text x="105" y="278" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
-  
-    <g transform="translate(36,58)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">Q</text>
-      <text y="24" font-size="22" fill="url(#ruby)">♦</text>
-    </g>
-  
-    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">Q</text>
-      <text y="24" font-size="22" fill="url(#ruby)">♦</text>
-    </g>
 </svg>
 <svg x="1582" y="956" width="210" height="300" viewBox="0 0 210 300">
   <defs>
@@ -1733,22 +1427,13 @@
     <path d="M-30 12 L-30 -8 L-16 4 L0 -16 L16 4 L30 -8 L30 12 Q0 20 -30 12Z" stroke="#6b5420" stroke-width="1"/>
     <circle cx="-30" cy="-11" r="3.4"/><circle cx="0" cy="-19" r="3.8"/><circle cx="30" cy="-11" r="3.4"/>
     <rect x="-30" y="13" width="60" height="4.5" rx="2"/></g>
-    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="url(#ruby)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♦</text>
-    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <circle cx="105" cy="150" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="105" cy="150" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="150" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="url(#ruby)" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">♦</text>
+    <text x="105" y="278" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
-  
-    <g transform="translate(36,58)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">K</text>
-      <text y="24" font-size="22" fill="url(#ruby)">♦</text>
-    </g>
-  
-    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">K</text>
-      <text y="24" font-size="22" fill="url(#ruby)">♦</text>
-    </g>
 </svg>
 <svg x="1806" y="956" width="210" height="300" viewBox="0 0 210 300">
   <defs>
@@ -1783,21 +1468,12 @@
   <use href="#flr" transform="translate(13,287) scale(1,-1)"/>
   <use href="#flr" transform="translate(197,287) scale(-1,-1)"/><g transform="translate(105,60)" fill="url(#gold)">
     <path d="M0 -20 L5 -6 L20 -6 L8 3 L13 18 L0 9 L-13 18 L-8 3 L-20 -6 L-5 -6 Z" stroke="#6b5420" stroke-width="1"/></g>
-    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="url(#ruby)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♦</text>
-    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <circle cx="105" cy="150" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="105" cy="150" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="150" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="url(#ruby)" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">♦</text>
+    <text x="105" y="278" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
-  
-    <g transform="translate(36,58)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">A</text>
-      <text y="24" font-size="22" fill="url(#ruby)">♦</text>
-    </g>
-  
-    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#ruby)">A</text>
-      <text y="24" font-size="22" fill="url(#ruby)">♦</text>
-    </g>
 </svg>
 </svg>

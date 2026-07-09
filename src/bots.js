@@ -183,9 +183,9 @@ function _step(roomId, depth) {
               advanceRound(r3);
               broadcastState(r3);
               runBots(roomId);
-            }, 2000);
+            }, 1400);
           }
-        }, 1400);
+        }, 1050);
       } else {
         setTimeout(() => {
           const r2 = rooms.get(roomId);
@@ -194,7 +194,7 @@ function _step(roomId, depth) {
           r2.currentPlayer = result.trickWinner;
           broadcastState(r2);
           _step(roomId, depth + 1);
-        }, 1200);
+        }, 850);
       }
     }, BOT_THINK_MS);
   }

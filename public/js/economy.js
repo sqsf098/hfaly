@@ -196,7 +196,9 @@ function renderCollection(){
     list.innerHTML='';
     const ownedC=(myWallet&&myWallet.ownedCardSkins)||[];
     const equippedMap=(myWallet&&myWallet.cardSkins)||{};
-    for(const [id,s] of Object.entries(CARD_SKINS)){
+
+    // один рядок скіна (перевикористовується і в списку, і всередині пака)
+    const buildRow=(id,s)=>{
       const has=ownedC.includes(id);
       const forSale=!has&&s.stars>0;
       const isOn=equippedMap[s.card]===id;
@@ -223,7 +225,42 @@ function renderCollection(){
       };
       const sellBtn=d.querySelector('.cs-sell');
       if(sellBtn)sellBtn.onclick=(e)=>{e.stopPropagation();openSellModal('card',id,s);};
-      list.appendChild(d);
+      return d;
+    };
+
+    // Скіни з полем pack — згортаються в один рядок-«пак» (36 карт Роял тощо)
+    const packs={};
+    for(const [id,s] of Object.entries(CARD_SKINS)){
+      if(s.pack){ (packs[s.pack]=packs[s.pack]||[]).push([id,s]); continue; }
+      list.appendChild(buildRow(id,s));
+    }
+    const PACK_META={royal:{name:'Королівська колода',emoji:'👑',desc:'повна колода преміум-арту'}};
+    for(const [packId,entries] of Object.entries(packs)){
+      const meta=PACK_META[packId]||{name:packId,emoji:'🎴',desc:''};
+      const ownedCount=entries.filter(([id])=>ownedC.includes(id)).length;
+      const equippedCount=entries.filter(([id,s])=>equippedMap[s.card]===id).length;
+      const first=entries[0][1];
+      const head=document.createElement('div');
+      head.className='card-skin-row r-epic';
+      head.style.cursor='pointer';
+      head.innerHTML=`
+        <div class="cs-preview" style="background:url('${first.img}') center/cover"></div>
+        <div class="cs-info">
+          <div class="cs-name">${meta.emoji} ${meta.name}</div>
+          <div class="cs-sub">Пак · зібрано <b style="color:var(--gold)">${ownedCount}/${entries.length}</b>${equippedCount?` · одягнуто ${equippedCount}`:''} · ${meta.desc}</div>
+        </div>
+        <div class="cs-btn" id="packToggle_${packId}">▸ Відкрити</div>`;
+      const body=document.createElement('div');
+      body.style.cssText='display:none;margin:2px 0 6px 12px;border-left:2px solid var(--gold-dim);padding-left:8px';
+      for(const [id,s] of entries)body.appendChild(buildRow(id,s));
+      // одягнути/зняти ВСІ наявні карти пака одним тапом (довге натискання = відкрити)
+      head.onclick=()=>{
+        const open=body.style.display==='none';
+        body.style.display=open?'block':'none';
+        head.querySelector('.cs-btn').textContent=open?'▾ Згорнути':'▸ Відкрити';
+      };
+      list.appendChild(head);
+      list.appendChild(body);
     }
   }
 }

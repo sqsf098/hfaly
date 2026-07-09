@@ -42,6 +42,7 @@ function openRules(mode){
   const r=RULES[mode]||RULES.hfaly;
   $('rulesTitle').textContent=r.title;
   $('rulesBody').innerHTML=r.body;
+  document.querySelectorAll('#rulesTabs .toggle-opt').forEach(o=>o.classList.toggle('active',o.dataset.mode===mode));
   $('rulesOverlay').classList.add('show');
   try{ tg?.HapticFeedback?.selectionChanged?.(); }catch(e){}
 }

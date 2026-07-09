@@ -32,20 +32,11 @@
   <use href="#flr" transform="translate(13,287) scale(1,-1)"/>
   <use href="#flr" transform="translate(197,287) scale(-1,-1)"/><g transform="translate(105,60)" fill="url(#gold)">
     <path d="M0 -20 L5 -6 L20 -6 L8 3 L13 18 L0 9 L-13 18 L-8 3 L-20 -6 L-5 -6 Z" stroke="#6b5420" stroke-width="1"/></g>
-    <circle cx="105" cy="156" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="105" cy="156" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="105" y="156" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="url(#gold)" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">♠</text>
-    <text x="105" y="274" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <circle cx="105" cy="150" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="105" cy="150" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="105" y="150" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="url(#gold)" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">♠</text>
+    <text x="105" y="278" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>
-  
-    <g transform="translate(36,58)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">A</text>
-      <text y="24" font-size="22" fill="url(#gold)">♠</text>
-    </g>
-  
-    <g transform="translate(174,242) rotate(180)" text-anchor="middle">
-      <text y="0" font-size="30" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="url(#gold)">A</text>
-      <text y="24" font-size="22" fill="url(#gold)">♠</text>
-    </g>
 </svg>

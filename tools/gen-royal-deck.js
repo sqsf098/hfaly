@@ -72,32 +72,26 @@ const emblems = {
     <path d="M0 -20 Q10 -8 6 2 Q14 -2 12 8 Q8 20 0 20 Q-8 20 -12 8 Q-14 -2 -6 2 Q-10 -8 0 -20Z" stroke="#6b5420" stroke-width="1"/></g>`,
 };
 
+// ВАЖЛИВО: без кутових індексів! Ранг/масть малює ІГРОВИЙ РУШІЙ поверх
+// (чіткий текст у будь-якому розмірі). SVG — лише преміум-арт підкладка.
 function cardSVG({ rank, suit, red }) {
   const ink = red ? 'url(#ruby)' : 'url(#gold)';
   const emblem = emblems[rank] ? emblems[rank] : '';
-  const rankFS = rank === '10' ? 26 : 30;
-  // центральний медальйон: кільце + велика масть
+  // центральний медальйон: кільце + ВЕЛИКА масть (читається навіть у мініатюрі)
   const medallion = `
-    <circle cx="${W / 2}" cy="${H * 0.52}" r="58" fill="none" stroke="url(#gold)" stroke-width="1.2" opacity="0.55"/>
-    <circle cx="${W / 2}" cy="${H * 0.52}" r="64" fill="none" stroke="url(#gold)" stroke-width="0.6" opacity="0.35" stroke-dasharray="2 5"/>
-    <text x="${W / 2}" y="${H * 0.52}" font-size="86" text-anchor="middle" dominant-baseline="central"
-      fill="${ink}" style="filter:drop-shadow(0 2px 3px rgba(0,0,0,0.55))">${suit}</text>`;
+    <circle cx="${W / 2}" cy="${H * 0.5}" r="66" fill="none" stroke="url(#gold)" stroke-width="1.4" opacity="0.6"/>
+    <circle cx="${W / 2}" cy="${H * 0.5}" r="73" fill="none" stroke="url(#gold)" stroke-width="0.7" opacity="0.35" stroke-dasharray="2 5"/>
+    <text x="${W / 2}" y="${H * 0.5}" font-size="104" text-anchor="middle" dominant-baseline="central"
+      fill="${ink}" stroke="rgba(255,244,214,0.35)" stroke-width="1"
+      style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6))">${suit}</text>`;
   // нижній титул
   const title = `
-    <text x="${W / 2}" y="${H - 26}" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
+    <text x="${W / 2}" y="${H - 22}" font-size="13" text-anchor="middle" fill="url(#gold)" opacity="0.9"
       font-family="Georgia, 'Times New Roman', serif" letter-spacing="3">ROYAL</text>`;
-  // кутові індекси (верх-ліво / низ-право)
-  const idx = (x, y, rot) => `
-    <g transform="translate(${x},${y})${rot ? ' rotate(180)' : ''}" text-anchor="middle">
-      <text y="0" font-size="${rankFS}" font-weight="bold" font-family="Georgia, 'Times New Roman', serif" fill="${ink}">${rank}</text>
-      <text y="24" font-size="22" fill="${ink}">${suit}</text>
-    </g>`;
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}">
   <defs>${defs}</defs>
   ${frame}${corners}${emblem}${medallion}${title}
-  ${idx(36, 58, false)}
-  ${idx(W - 36, H - 58, true)}
 </svg>`;
 }
 

@@ -83,9 +83,14 @@ const ROYAL_CARDS = (() => {
   for (const [suit, key] of suits) {
     for (const rank of ranks) {
       const rarity = rank === '6' ? 'epic' : ['A', 'K', 'Q', 'J'].includes(rank) ? 'rare' : 'common';
+      const red = suit === '♥' || suit === '♦';
       out[`royal_${rank}${key}`] = {
         name: `Роял ${rank}${suit}`, card: `${rank}${suit}`,
         img: `/img/skins/royal/${rank}${key}.svg`, rarity,
+        // колір КУТОВИХ індексів, які рушій малює поверх арту:
+        // яскраве золото / світлий рубін — читається на темному тлі карти
+        color: red ? '#ff9aa4' : '#ffe9a8',
+        pack: 'royal', // у списку скінів згортається в один «пак»
       };
     }
   }

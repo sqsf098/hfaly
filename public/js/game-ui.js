@@ -151,7 +151,8 @@ function renderDurak(state){
   // Стіл: пари атака/захист
   const tc=$('trickCards');tc.innerHTML='';
   table.forEach((p,i)=>{
-    const slot=document.createElement('div');slot.className='trick-slot durak-pair';
+    const slot=document.createElement('div');
+    slot.className='trick-slot durak-pair'+(i===table.length-1?' fresh':'');
     slot.innerHTML=makeCardHTML(p.a,attacker,players)
       +(p.d?`<div class="durak-cover">${makeCardHTML(p.d,defender,players)}</div>`
             :(iAmDef?'<div class="durak-target">⬇ бий</div>':''));
@@ -257,15 +258,17 @@ function renderGame(state){
     // simple: last item indicator for display
     return best;
   }, null) : null;
-  for(const t of trick){
-    const slot=document.createElement('div');slot.className='trick-slot';
+  trick.forEach((t,ti)=>{
+    const slot=document.createElement('div');
+    // остання карта «прилітає» (анімація лише для нової — без мерехтіння інших)
+    slot.className='trick-slot'+(ti===trick.length-1?' fresh':'');
     const isMe = t.playerIndex===myIndex;
     slot.innerHTML=`<div class="trick-who" style="${isMe?'color:#00ff88;font-weight:700':''}">
       ${isMe?'▶ ':''}${(players[t.playerIndex]?.name||'?').slice(0,6)}
     </div>`;
     slot.innerHTML+=makeCardHTML(t.card,t.playerIndex,players);
     tc.appendChild(slot);
-  }
+  });
   let msg='';
   if(phase==='discard'){
     const iDiscarded=(state.discardDone||[]).includes(myIndex);

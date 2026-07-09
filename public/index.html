@@ -8,7 +8,7 @@
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script src="https://unpkg.com/@tonconnect/ui@2/dist/tonconnect-ui.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;600;700;800;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=10">
+<link rel="stylesheet" href="css/style.css?v=11">
 
 </head>
 <body class="theme-fan fan-nav">
@@ -65,6 +65,10 @@
         <div style="font-size:10px;opacity:0.6;margin-top:1px">Стіл знайдеться сам</div>
       </div>
     </button>
+    <!-- Правила — одразу видно новачкам -->
+    <div onclick="openRules('hfaly')" style="margin-top:10px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;
+      font-size:12px;color:var(--gold);border:1px solid var(--gold-dim);border-radius:20px;padding:7px 16px;
+      background:rgba(201,168,76,0.08)">❓ Як грати — правила за 1 хвилину</div>
   </div>
 
   <!-- Меню (строгий грід, як у класичних карткових застосунках) -->
@@ -626,6 +630,11 @@
 <div class="game-overlay" id="rulesOverlay" onclick="if(event.target===this)this.classList.remove('show')">
   <div class="go-box" style="max-height:80vh;overflow-y:auto;text-align:left">
     <div class="go-title" id="rulesTitle">Правила</div>
+    <div class="toggle-row" id="rulesTabs" style="margin-bottom:10px">
+      <div class="toggle-opt" data-mode="hfaly" onclick="openRules('hfaly')">🃏 хФали</div>
+      <div class="toggle-opt" data-mode="khrest" onclick="openRules('khrest')">✠ Хрест.</div>
+      <div class="toggle-opt" data-mode="durak" onclick="openRules('durak')">🎴 Дурак</div>
+    </div>
     <div id="rulesBody" style="font-size:12px;color:var(--text2);line-height:1.55"></div>
     <button class="btn-gold" style="max-width:100%;padding:10px;margin-top:12px" onclick="document.getElementById('rulesOverlay').classList.remove('show')">Зрозуміло</button>
   </div>
@@ -672,16 +681,16 @@
   <div class="fan-wrap" id="fanWrap"></div>
 </div>
 
-<script src="js/core.js?v=10"></script>
-<script src="js/sound.js?v=10"></script>
-<script src="js/icons.js?v=10"></script>
-<script src="js/fan.js?v=10"></script>
-<script src="js/lobby.js?v=10"></script>
-<script src="js/economy.js?v=10"></script>
-<script src="js/social.js?v=10"></script>
-<script src="js/ton.js?v=10"></script>
-<script src="js/net.js?v=10"></script>
-<script src="js/game-ui.js?v=10"></script>
-<script src="js/main.js?v=10"></script>
+<script src="js/core.js?v=11"></script>
+<script src="js/sound.js?v=11"></script>
+<script src="js/icons.js?v=11"></script>
+<script src="js/fan.js?v=11"></script>
+<script src="js/lobby.js?v=11"></script>
+<script src="js/economy.js?v=11"></script>
+<script src="js/social.js?v=11"></script>
+<script src="js/ton.js?v=11"></script>
+<script src="js/net.js?v=11"></script>
+<script src="js/game-ui.js?v=11"></script>
+<script src="js/main.js?v=11"></script>
 </body>
 </html>
