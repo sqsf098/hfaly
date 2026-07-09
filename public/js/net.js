@@ -35,7 +35,29 @@ function connectSocket(){
   socket.on('skin_purchased',({name})=>{
     showToast('🎉 «'+name+'» тепер твій! Одягни в Колекції',3500);
     socket.emit('get_wallet',{tgId:getMyTgId()});
+    socket.emit('get_collections',{tgId:getMyTgId()});
   });
+
+  // ── Колекції та ринок ────────────────────────────────────────────
+  socket.on('collections',(data)=>{ collectionsData=data; renderCollections(); });
+  socket.on('market',(data)=>{ marketData=data; renderMarket(); });
+  socket.on('market_ok',({action,name})=>{
+    if(action==='buy'){ sfx('coin'); vibrate('success'); showToast('🎉 Куплено: «'+name+'»!',3000); }
+    if(action==='list') showToast('🛒 Лот виставлено!',2200);
+    if(action==='cancel') showToast('Лот знято, скін повернувся',2200);
+    socket.emit('get_collections',{tgId:getMyTgId()});
+  });
+  socket.on('market_sold',({payout,cur})=>{
+    sfx('coin'); vibrate('success');
+    showToast('💸 Твій лот продано! +'+payout+' '+(cur==='coins'?'💰':'💎'),4000);
+  });
+
+  // ── Чат у кімнаті ────────────────────────────────────────────────
+  socket.on('chat_msg',(m)=>onChatMsg(m));
+
+  // ── Клани ────────────────────────────────────────────────────────
+  socket.on('clan_state',(d)=>{ clanData=d; renderClan(); });
+  socket.on('clan_msg',(m)=>onClanMsg(m));
 
   // ── TON / NFT ───────────────────────────────────────────────────
   socket.on('ton_state',(s)=>{ tonData=s; renderTon(); });
@@ -45,6 +67,7 @@ function connectSocket(){
 
   socket.on('joined',({playerIndex,roomId,deposit})=>{
     myIndex=playerIndex;myRoomId=roomId;currentRoomDeposit=deposit||0;
+    document.body.classList.add('in-game'); // показує кнопку чату
     showWaiting(roomId,deposit||0);
   });
 
@@ -104,7 +127,10 @@ function connectSocket(){
     const maxP=(gameState&&gameState.maxPlayers)||4;
     if(btn&&index>=maxP-1)btn.style.display='none';
   });
-  socket.on('left_room', ()=>{ /* сервер підтвердив вихід */ });
+  socket.on('left_room', ()=>{
+    document.body.classList.remove('in-game');
+    const cm=$('chatMessages'); if(cm)cm.innerHTML='';
+  });
   socket.on('reindexed', ({playerIndex})=>{ myIndex = playerIndex; });
   socket.on('player_left', ({name})=>showToast('👋 '+name+' вийшов з кімнати', 2200));
   socket.on('player_left_replaced', ({name})=>showToast('🤖 '+name+' — тепер грає бот', 2500));
@@ -124,6 +150,9 @@ function connectSocket(){
     socket.emit('find_my_room',{tgId:getMyTgId()});
     socket.emit('get_economy',{tgId:getMyTgId()});
     socket.emit('get_ton',{tgId:getMyTgId()});
+    socket.emit('get_collections',{tgId:getMyTgId()});
+    socket.emit('market_get');
+    socket.emit('clan_get',{tgId:getMyTgId()});
   },300);
 }
 

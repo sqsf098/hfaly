@@ -8,32 +8,39 @@ const PREMIUM_DECKS = ['royal', 'emerald', 'crimson', 'galaxy'];
 // ── Типи скринь ───────────────────────────────────────────────────────────
 // cost: { coins, gems } — ціна відкриття. free: true → безкоштовна за таймером.
 // loot: масив можливих винагород з вагою (weight). Один ролл на скриню.
+// type:'skin' → випадкова НЕзібрана карта колекції вказаних рідкостей
+// (collections.js). Все зібране цієї рідкості → компенсація монетами.
 const CHESTS = {
   wood: {
     id: 'wood', name: 'Дерев\'яна скриня', emoji: '📦', color: '#8d6e63',
     free: true, cooldownMs: 4 * 60 * 60 * 1000, // раз на 4 год
     loot: [
-      { type: 'coins', min: 50,  max: 150, weight: 60 },
-      { type: 'coins', min: 150, max: 300, weight: 25 },
+      { type: 'coins', min: 50,  max: 150, weight: 55 },
+      { type: 'coins', min: 150, max: 300, weight: 22 },
       { type: 'gems',  min: 1,   max: 3,   weight: 15 },
+      { type: 'skin',  rarities: ['common'], weight: 8 },
     ],
   },
   silver: {
     id: 'silver', name: 'Срібна скриня', emoji: '🎁', color: '#b0bec5',
     cost: { coins: 500 },
     loot: [
-      { type: 'coins', min: 300, max: 600, weight: 45 },
-      { type: 'gems',  min: 3,   max: 8,   weight: 35 },
-      { type: 'deck',  weight: 20 },
+      { type: 'coins', min: 300, max: 600, weight: 35 },
+      { type: 'gems',  min: 3,   max: 8,   weight: 25 },
+      { type: 'deck',  weight: 15 },
+      { type: 'skin',  rarities: ['common'], weight: 18 },
+      { type: 'skin',  rarities: ['rare'],   weight: 7 },
     ],
   },
   gold: {
     id: 'gold', name: 'Золота скриня', emoji: '👑', color: '#f1c40f',
     cost: { gems: 20 },
     loot: [
-      { type: 'coins', min: 1000, max: 2500, weight: 40 },
-      { type: 'gems',  min: 10,   max: 30,   weight: 30 },
-      { type: 'deck',  weight: 30 },
+      { type: 'coins', min: 1000, max: 2500, weight: 30 },
+      { type: 'gems',  min: 10,   max: 30,   weight: 20 },
+      { type: 'deck',  weight: 15 },
+      { type: 'skin',  rarities: ['rare'], weight: 25 },
+      { type: 'skin',  rarities: ['epic'], weight: 10 },
     ],
   },
 };
@@ -146,6 +153,18 @@ function rollToReward(wallet, roll) {
     if (locked.length === 0) return { coins: 500 }; // усі колоди вже є → компенсація
     return { deck: locked[Math.floor(Math.random() * locked.length)] };
   }
+  if (roll.type === 'skin') {
+    // Карта колекції: випадковий НЕзібраний скін цієї рідкості
+    const { unownedByRarity } = require('./collections');
+    const pool = unownedByRarity(wallet, roll.rarities || ['common']);
+    if (pool.length === 0) {
+      // все зібрано → компенсація за рідкістю
+      const comp = { common: 300, rare: 800, epic: 2000 };
+      return { coins: comp[(roll.rarities || ['common'])[0]] || 300 };
+    }
+    const pick = pool[Math.floor(Math.random() * pool.length)];
+    return { skin: { kind: pick.kind, id: pick.id, name: pick.def.name, rarity: pick.def.rarity, coll: pick.coll } };
+  }
   return { coins: 50 };
 }
 
@@ -163,6 +182,12 @@ function grantReward(wallet, reward) {
     wallet.chests = wallet.chests || {};
     wallet.chests[reward.chest] = (wallet.chests[reward.chest] || 0) + 1;
     gained.chest = reward.chest;
+  }
+  if (reward.skin) {
+    const bag = reward.skin.kind === 'back' ? 'ownedBackSkins' : 'ownedCardSkins';
+    wallet[bag] = wallet[bag] || [];
+    if (!wallet[bag].includes(reward.skin.id)) wallet[bag].push(reward.skin.id);
+    gained.skin = reward.skin;
   }
   return gained;
 }

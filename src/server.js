@@ -103,8 +103,11 @@ if (bot && !botUsername) {
     .catch(() => {});
 }
 
-// ── Магазин: платежі Telegram Stars ⭐ (продаж скінів) ─────────────────
+// ── Магазин: платежі Telegram Stars ⭐ (скіни + колекції) ──────────────
 const { initPayments } = require('./payments');
+const marketStore = require('./market');
+marketStore.load(); // лоти ринку переживають рестарт
+require('./clans').load(); // клани
 initPayments(bot, (tgId, kind, skinId, def) => {
   // покупець онлайн → миттєво шлемо оновлений гаманець + тост
   for (const [, s] of io.sockets.sockets) {

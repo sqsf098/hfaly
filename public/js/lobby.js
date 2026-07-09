@@ -21,7 +21,7 @@ function renderRooms(list){
   for(const room of list){
     const mp=room.maxPlayers||4;
     const locked=myCoins<room.deposit;
-    const modeLabel=room.mode==='khrest'?'Хрестовець · 3 гравці':'хФали · 2 vs 2';
+    const modeLabel=room.mode==='khrest'?'Хрестовець · 3 гравці':room.mode==='durak'?`Дурак · ${room.maxPlayers||2} гравці`:'хФали · 2 vs 2';
     const row=document.createElement('div');
     row.className=`table-row ${locked?'locked':''}`;
     row.innerHTML=`
@@ -47,7 +47,7 @@ function openJoinBaseRoom(room){
       <div style="font-family:'Rubik',sans-serif;font-size:28px;color:var(--gold2);font-weight:800">${room.deposit||0} 💰</div>
       <div style="font-size:11px;color:var(--text3)">депозит</div>
     </div>
-    <div style="font-size:12px;color:var(--text2);margin-bottom:4px">${room.mode==='khrest'?'♣ Хрестовець — кожен за себе, 3 гравці':'хФали — 2 vs 2, 4 гравці'}</div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:4px">${room.mode==='khrest'?'♣ Хрестовець — кожен за себе, 3 гравці':room.mode==='durak'?'🎴 Дурак підкидний — кожен за себе':'хФали — 2 vs 2, 4 гравці'}</div>
     <div style="font-size:12px;color:var(--text2);margin-bottom:4px">Гравці: <b>${(room.playerNames||[]).join(', ')||'—'}</b></div>
     <div style="font-size:12px;color:var(--text2)">Твій баланс: <b style="color:var(--gold)">${myCoins} 💰</b></div>
   `;
@@ -67,7 +67,7 @@ function createPrivateRoom(){
   connectSocket();
   const roomId=Math.random().toString(36).slice(2,8).toUpperCase();
   socket.emit('join_room',{roomId,name:getMyName(),tgId:getMyTgId(),isPublic:roomType==='public',
-    deposit:privateDeposit||0, mode:roomMode});
+    deposit:privateDeposit||0, mode:roomMode, playersCount:roomMode==='durak'?durakPlayers:undefined});
 }
 
 function joinByCode(){
@@ -90,12 +90,14 @@ function renderWaiting(state){
   const slots=$('waitingSlots');slots.innerHTML='';
   const N=state.maxPlayers||4;
   const isKh=state.mode==='khrest';
+  const isDur=state.mode==='durak';
   const teamNames=isKh?['♣ Кожен за себе','♣ Кожен за себе','♣ Кожен за себе']
+    :isDur?Array(N).fill('🎴 Кожен за себе')
     :['Г1 🔵 Team A','Г2 🔴 Team B','Г3 🔵 Team A','Г4 🔴 Team B'];
-  const tc=isKh?['','','']:['team-a','team-b','team-a','team-b'];
+  const tc=(isKh||isDur)?Array(N).fill(''):['team-a','team-b','team-a','team-b'];
   const pot=state.players.length*currentRoomDeposit;
   $('waitingPot').innerHTML=`${pot} 💰 <span>Банк (${state.players.length}/${N} гравців)</span>`;
-  $('waitingRoomName').textContent=(isKh?'♣ Хрестовець · ':'')+state.players.length+`/${N} гравців`;
+  $('waitingRoomName').textContent=(isKh?'♣ Хрестовець · ':isDur?'🎴 Дурак · ':'')+state.players.length+`/${N} гравців`;
   for(let i=0;i<N;i++){
     const p=state.players?.[i];
     const div=document.createElement('div');

@@ -105,8 +105,11 @@ function calcRoundScores(trickCount, boasterIndex) {
 // ─── Стан кімнати ─────────────────────────────────────────────────────────────
 
 // mode: 'hfaly' (2v2, 4 гравці) | 'khrest' (Хрестовець: кожен за себе, 3 гравці)
-function createRoom(roomId, mode = 'hfaly') {
-  const n = mode === 'khrest' ? 3 : 4;
+function createRoom(roomId, mode = 'hfaly', playersCount) {
+  // durak: 2-4 гравці (обирає творець), khrest: 3, hfaly: 4
+  const n = mode === 'khrest' ? 3
+    : mode === 'durak' ? Math.min(4, Math.max(2, +playersCount || 2))
+    : 4;
   return {
     id: roomId,
     mode,

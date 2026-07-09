@@ -129,6 +129,85 @@ function makeCard(card,opts={}){
   return el;
 }
 
+// ══ ДУРАК: рендер стола ═══════════════════════════════════════════════
+function durakAction(action,cardId,targetIdx){
+  if(!socket)return;
+  socket.emit('durak_move',{action,cardId,targetIdx});
+  sfx('click');
+}
+function renderDurak(state){
+  const{players,trump,trumpCard,deckLeft,table,attacker,defender,hand,out,finished}=state;
+  const iAmDef=defender===myIndex, iAmAtk=attacker===myIndex;
+  const myTurnish=!finished&&!out.includes(myIndex);
+
+  // Шапка: козир + колода
+  const tb=$('ghTrump');tb.textContent=trump||'';tb.style.color=SUIT_RED[trump]?'#e74c3c':'#f0f0f0';
+  $('ghPot').textContent=`Колода: ${deckLeft}${trumpCard?` · козир ${trumpCard.rank}${trumpCard.suit}`:''}`;
+  const sb=document.querySelector('.score-bar'); if(sb)sb.style.display='none';
+
+  renderOpponents(state);
+  renderOpponentCards(state);
+
+  // Стіл: пари атака/захист
+  const tc=$('trickCards');tc.innerHTML='';
+  table.forEach((p,i)=>{
+    const slot=document.createElement('div');slot.className='trick-slot durak-pair';
+    slot.innerHTML=makeCardHTML(p.a,attacker,players)
+      +(p.d?`<div class="durak-cover">${makeCardHTML(p.d,defender,players)}</div>`
+            :(iAmDef?'<div class="durak-target">⬇ бий</div>':''));
+    // захисник може тапнути ЦІЛЬ, коли вибрана карта
+    if(iAmDef&&!p.d)slot.onclick=()=>{
+      if(selectedCardId){durakAction('defend',selectedCardId,i);selectedCardId=null;}
+      else showToast('Спершу обери карту в руці',1800);
+    };
+    tc.appendChild(slot);
+  });
+
+  // Статус + кнопки
+  let msg='';
+  if(finished)msg=`🤡 Дурак — ${(players[state.loserIndex]?.name||'?')}`;
+  else if(out.includes(myIndex))msg='🎉 Ти вийшов! Дивись розв\'язку';
+  else if(iAmDef)msg=table.some(p=>!p.d)?'🛡 Захищайся: карта → тап по столу':'Побито все — чекай «бито» або підкид';
+  else if(iAmAtk&&table.length===0)msg='⚔️ Твоя атака: обери карту';
+  else msg=state.canPass?'Можеш підкинути або «Бито»':`⏳ ${(players[defender]?.name||'?').slice(0,10)} захищається...`;
+  $('statusPill').textContent=msg;
+
+  $('durakTakeBtn').classList.toggle('show',iAmDef&&table.length>0&&table.some(p=>!p.d)&&!finished);
+  $('durakPassBtn').classList.toggle('show',!!state.canPass&&!finished);
+  $('discardBtn')?.classList.remove('show');
+
+  const mnt=$('myNameTag');
+  mnt.textContent=(players[myIndex]?.name||'Ти')+(iAmDef?' 🛡':iAmAtk?' ⚔️':'');
+  mnt.className='my-name-tag'+((iAmDef||iAmAtk)&&!finished?' active':'');
+  $('tricksMini').innerHTML=players.map((p,i)=>
+    `<span class="tm-badge">${(p?.name||`Г${i+1}`).slice(0,5)}${i===attacker?' ⚔️':''}${i===defender?' 🛡':''}${out.includes(i)?' ✅':''}</span>`).join('');
+
+  // Рука
+  const hd=$('myHandCards');hd.innerHTML='';
+  const sorted=trump?sortHand(hand,trump):hand;
+  sorted.forEach((card,i)=>{
+    const isSel=card.id===selectedCardId;
+    const el=makeCard(card,{selected:isSel,onClick:()=>{
+      if(!myTurnish||finished)return;
+      if(iAmDef){
+        // вибір карти для захисту; повторний тап — авто-удар по першій цілі
+        if(isSel){durakAction('defend',card.id);selectedCardId=null;}
+        else{selectedCardId=card.id;renderGame(gameState);}
+        return;
+      }
+      // атака/підкид: тап — одразу хід
+      durakAction('attack',card.id);
+      selectedCardId=null;
+    }});
+    el.style.zIndex=isSel?50:i+1;
+    hd.appendChild(el);
+  });
+
+  updateLog(state);
+  if(finished&&!durakEndShown){durakEndShown=true;}
+}
+let durakEndShown=false;
+
 // ownerIdx/players задані → карта фарбується скіном ВЛАСНИКА (дачка);
 // без них — моїм скіном (моя рука, службові прев'ю)
 function makeCardHTML(card,ownerIdx,players){
@@ -150,8 +229,12 @@ function makeCardHTML(card,ownerIdx,players){
 }
 
 function renderGame(state){
+  if(state.mode==='durak'){renderDurak(state);return;}
   const{phase,players,scores,trump,currentPlayer,trick,trickCount,hand,handSizes,boaster,roundNum}=state;
   const isKhrest=state.mode==='khrest';
+  // ховаємо кнопки дурака поза цим режимом
+  $('durakTakeBtn')?.classList.remove('show');
+  $('durakPassBtn')?.classList.remove('show');
   const isMyTurn=currentPlayer===myIndex,iAmBoaster=boaster===myIndex;
   const tb=$('ghTrump');tb.textContent=trump||'';tb.style.color=trump?(SUIT_RED[trump]?'#e74c3c':'#f0f0f0'):'';
   const pot=players.length*currentRoomDeposit;

@@ -8,7 +8,8 @@ const params = new URLSearchParams(location.search);
 let socket, myIndex, myRoomId, selectedCardId, gameState;
 let currentDeck = localStorage.getItem('hfaly_deck')||'classic';
 let roomType = 'public';
-let roomMode = 'hfaly'; // 'hfaly' (2v2) | 'khrest' (Хрестовець, 3 гравці)
+let roomMode = 'hfaly'; // 'hfaly' (2v2) | 'khrest' (3 гравці) | 'durak' (2-4)
+let durakPlayers = 2;   // скільки гравців у столі Дурака
 let privateDeposit = 0;
 let pendingBaseRoomId = null;
 let myName = localStorage.getItem('hfaly_name')||'';
@@ -172,6 +173,15 @@ function openCreateRoom(){$('createRoomModal').classList.add('show');}
 function openJoinRoom(){$('joinRoomModal').classList.add('show');}
 function setRoomType(el,t){document.querySelectorAll('#rtRow .toggle-opt').forEach(o=>o.classList.remove('active'));el.classList.add('active');roomType=t;}
 function setDeposit(el,d){document.querySelectorAll('#depRow .toggle-opt').forEach(o=>o.classList.remove('active'));el.classList.add('active');privateDeposit=d;}
-function setRoomMode(el,m){document.querySelectorAll('#modeRow .toggle-opt').forEach(o=>o.classList.remove('active'));el.classList.add('active');roomMode=m;}
+function setRoomMode(el,m){
+  document.querySelectorAll('#modeRow .toggle-opt').forEach(o=>o.classList.remove('active'));
+  el.classList.add('active');roomMode=m;
+  const dg=document.getElementById('durakPlayersGroup');
+  if(dg)dg.style.display=m==='durak'?'block':'none';
+}
+function setDurakPlayers(el,n){
+  document.querySelectorAll('#durakPlayersRow .toggle-opt').forEach(o=>o.classList.remove('active'));
+  el.classList.add('active');durakPlayers=n;
+}
 
 // ── ROOMS ─────────────────────────────────────────────────────────

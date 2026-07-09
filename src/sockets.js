@@ -9,7 +9,11 @@ const { linkWallet, unlinkWallet, syncNfts, requestMint, tonState } = require('.
 const { socketAuthMiddleware, resolveTgId } = require('./auth');
 const { holdDeposit, releaseDeposit } = require('./escrow');
 const { getBackSkins, getCardSkins } = require('./skins');
-const { createSkinInvoice } = require('./payments');
+const { createSkinInvoice, createCollectionInvoice } = require('./payments');
+const { collectionsState } = require('./collections');
+const market = require('./market');
+const durak = require('./durak');
+const clans = require('./clans');
 const { log } = require('./logger');
 
 let io = null;
@@ -36,10 +40,11 @@ function questProgress(room, playerIndex, type, amount = 1) {
 }
 
 function broadcastState(room) {
+  const stateFn = room.mode === 'durak' && room.durak ? durak.publicState : publicState;
   for (const player of room.players) {
     if (player.isBot) continue; // ботам стан не потрібен; гравцю, що вийшов — тим паче
     const sock = io.sockets.sockets.get(player.socketId);
-    if (sock) sock.emit('state', publicState(room, player.index));
+    if (sock) sock.emit('state', stateFn(room, player.index));
   }
 }
 
@@ -53,12 +58,54 @@ function safeOn(socket, event, handler) {
 
 function tryStartGame(room) {
   if (room.players.length !== (room.maxPlayers || 4)) return;
-  if (room.mode !== 'khrest') { room.boaster = 0; room.dealer = 2; }
-  room.roundNum = 1;
-  startRound(room); // khrest сам ставить boaster (J♣) і фазу discard
+  if (room.mode === 'durak') {
+    durak.startGame(room);
+  } else {
+    if (room.mode !== 'khrest') { room.boaster = 0; room.dealer = 2; }
+    room.roundNum = 1;
+    startRound(room); // khrest сам ставить boaster (J♣) і фазу discard
+  }
   broadcastState(room);
   io.to(room.id).emit('game_started', { message: `Гра розпочалась! Банк: ${room.pot || 0} 💰` });
   setTimeout(() => runBots(room.id), 600);
+}
+
+// ── Дурак: виплата — програв лише «дурак», решта ділять банк ──────────
+function durakPayout(room) {
+  if (room.payoutDone) return;
+  room.payoutDone = true;
+  const d = room.durak;
+  const n = room.players.length;
+  const isReal = (tgId) => tgId && !String(tgId).startsWith('bot_') && !String(tgId).startsWith('bot_tg_');
+  const winners = room.players.map((_, i) => i).filter(i => i !== d.loserIndex);
+  const pot = room.pot || 0;
+  const share = winners.length ? Math.floor(pot / winners.length) : 0;
+  const payouts = {};
+  for (let i = 0; i < n; i++) {
+    const tgId = room.playerTgIds?.[i];
+    if (!isReal(tgId)) continue;
+    const w = getWallet(tgId);
+    if (i === d.loserIndex) {
+      w.gamesPlayed++; if (room.deposit) w.totalLost += room.deposit;
+      payouts[i] = { delta: -(room.deposit || 0), coins: w.coins };
+    } else {
+      if (share > 0) { w.coins += share; w.totalWon += share; }
+      w.wins++; w.gamesPlayed++;
+      payouts[i] = { delta: +share, coins: w.coins };
+      questProgress(room, i, 'win_game');
+    }
+    const sock = io.sockets.sockets.get(room.players[i]?.socketId);
+    if (sock) sock.emit('wallet', w);
+  }
+  for (const tgId of room.playerTgIds || []) if (isReal(tgId)) releaseDeposit(tgId, room.id);
+  saveWallets();
+  for (let i = 0; i < n; i++) questProgress(room, i, 'play_games');
+  io.to(room.id).emit('game_finished', {
+    mode: 'durak', loserIndex: d.loserIndex,
+    loserName: room.players[d.loserIndex]?.name || '—',
+    winTeam: winners, loseTeam: [d.loserIndex], pot, share, payouts,
+  });
+  if (room.isBaseRoom) setTimeout(() => resetBaseRoom(room.id), 4000);
 }
 
 function distributeWinnings(room) {
@@ -134,6 +181,9 @@ function registerHandlers(serverIo) {
     function uid(payloadTgId) {
       const id = resolveTgId(socket, payloadTgId);
       if (!id) socket.emit('error', { message: 'Потрібна авторизація через Telegram' });
+      // кеш у socket.data: адресні розсилки (клан-чат, продажі, покупки)
+      // знаходять сокет і в dev-режимі без Telegram-підпису
+      else if (!socket.data.tgId) socket.data.tgId = id;
       return id;
     }
 
@@ -223,6 +273,59 @@ function registerHandlers(serverIo) {
       socket.emit('invoice', { link: res.link, kind, skinId, stars: res.stars });
     });
 
+    // ── Колекції: прогрес + покупка бандла за ⭐ ─────────────────
+    safeOn(socket, 'get_collections', ({ tgId }) => {
+      const id = uid(tgId); if (!id) return;
+      socket.emit('collections', collectionsState(getWallet(id)));
+    });
+
+    safeOn(socket, 'buy_collection', async ({ tgId, collId }) => {
+      const id = uid(tgId); if (!id) return;
+      const res = await createCollectionInvoice(id, collId);
+      if (!res.ok) { socket.emit('error', { message: res.error }); return; }
+      socket.emit('invoice', { link: res.link, collId, stars: res.stars });
+    });
+
+    // ── Ринок: гравець ↔ гравець за монети/гемы (комісія 10%) ────
+    safeOn(socket, 'market_get', () => {
+      socket.emit('market', { listings: market.getListings(), fee: market.FEE_PCT });
+    });
+
+    safeOn(socket, 'market_list', ({ tgId, kind, skinId, price }) => {
+      const id = uid(tgId); if (!id) return;
+      const w = getWallet(id);
+      const res = market.listSkin(id, w.name, kind, skinId, price);
+      if (!res.ok) { socket.emit('error', { message: res.error }); return; }
+      socket.emit('wallet', w);
+      socket.emit('market', { listings: market.getListings(), fee: market.FEE_PCT });
+      socket.emit('market_ok', { action: 'list' });
+    });
+
+    safeOn(socket, 'market_cancel', ({ tgId, listingId }) => {
+      const id = uid(tgId); if (!id) return;
+      const res = market.cancelListing(id, listingId);
+      if (!res.ok) { socket.emit('error', { message: res.error }); return; }
+      socket.emit('wallet', getWallet(id));
+      socket.emit('market', { listings: market.getListings(), fee: market.FEE_PCT });
+      socket.emit('market_ok', { action: 'cancel' });
+    });
+
+    safeOn(socket, 'market_buy', ({ tgId, listingId }) => {
+      const id = uid(tgId); if (!id) return;
+      const res = market.buyListing(id, listingId);
+      if (!res.ok) { socket.emit('error', { message: res.error }); return; }
+      socket.emit('wallet', getWallet(id));
+      socket.emit('market', { listings: market.getListings(), fee: market.FEE_PCT });
+      socket.emit('market_ok', { action: 'buy', name: res.name });
+      // продавець онлайн → миттєве сповіщення про продаж
+      for (const [, s] of io.sockets.sockets) {
+        if (String(s.data?.tgId) === String(res.sellerId)) {
+          s.emit('wallet', getWallet(res.sellerId));
+          s.emit('market_sold', { skinId: res.listing.skinId, payout: res.payout, cur: res.cur });
+        }
+      }
+    });
+
     // ── Колекція: одягнути сорочку або скін конкретної карти ─────
     safeOn(socket, 'equip_skin', ({ tgId, kind, cardKey, skinId }) => {
       const id = uid(tgId); if (!id) return;
@@ -290,7 +393,7 @@ function registerHandlers(serverIo) {
       setTimeout(() => runBots(room.id), 400);
     });
 
-    safeOn(socket, 'join_room', ({ roomId, name, tgId, isPublic, deposit, mode }) => {
+    safeOn(socket, 'join_room', ({ roomId, name, tgId, isPublic, deposit, mode, playersCount }) => {
       tgId = uid(tgId); if (!tgId) return;
       const wallet = getWallet(tgId);
       if (name) wallet.name = String(name).slice(0, 32); // для адмін-панелі та лідербордів
@@ -299,7 +402,8 @@ function registerHandlers(serverIo) {
       if (!room) {
         // Кімнату створює ГРАВЕЦЬ: вона зветься його ім'ям, зі ставкою і режимом
         const ALLOWED_DEPOSITS = [0, 50, 100, 200, 300, 500];
-        room = createRoom(roomId, mode === 'khrest' ? 'khrest' : 'hfaly');
+        const m = ['khrest', 'durak'].includes(mode) ? mode : 'hfaly';
+        room = createRoom(roomId, m, playersCount);
         room.createdAt = Date.now();
         room.deposit = ALLOWED_DEPOSITS.includes(+deposit) ? +deposit : 0;
         room.pot = 0;
@@ -439,6 +543,25 @@ function registerHandlers(serverIo) {
       }
     });
 
+    // ── Дурак: атака / захист / взяти / бито ─────────────────────
+    safeOn(socket, 'durak_move', ({ action, cardId, targetIdx }) => {
+      const meta = socketToPlayer.get(socket.id); if (!meta) return;
+      const room = rooms.get(meta.roomId);
+      if (!room || room.mode !== 'durak' || !room.durak) return;
+      const idx = meta.playerIndex;
+      let res;
+      if (action === 'attack') res = durak.attack(room, idx, cardId);
+      else if (action === 'defend') res = durak.defend(room, idx, cardId, targetIdx);
+      else if (action === 'take') res = durak.take(room, idx);
+      else if (action === 'pass') res = durak.pass(room, idx);
+      else return;
+      if (!res.ok) { socket.emit('error', { message: res.error }); return; }
+      questProgress(room, idx, 'play_cards');
+      broadcastState(room);
+      if (res.auto?.gameOver) { durakPayout(room); return; }
+      setTimeout(() => runBots(room.id), 500); // боти реагують на хід людини
+    });
+
     safeOn(socket, 'next_round', () => {
       const meta = socketToPlayer.get(socket.id); if (!meta) return;
       const room = rooms.get(meta.roomId); if (!room || room.phase !== 'round_end') return;
@@ -504,6 +627,60 @@ function registerHandlers(serverIo) {
       }
     });
 
+    // ── Клани ─────────────────────────────────────────────────
+    safeOn(socket, 'clan_get', ({ tgId }) => {
+      const id = uid(tgId); if (!id) return;
+      socket.emit('clan_state', clans.clanState(id));
+    });
+    safeOn(socket, 'clan_create', ({ tgId, name, emoji }) => {
+      const id = uid(tgId); if (!id) return;
+      const res = clans.createClan(id, name, emoji);
+      if (!res.ok) { socket.emit('error', { message: res.error }); return; }
+      socket.emit('wallet', getWallet(id));
+      socket.emit('clan_state', clans.clanState(id));
+    });
+    safeOn(socket, 'clan_join', ({ tgId, tag }) => {
+      const id = uid(tgId); if (!id) return;
+      const res = clans.joinClan(id, tag);
+      if (!res.ok) { socket.emit('error', { message: res.error }); return; }
+      socket.emit('clan_state', clans.clanState(id));
+    });
+    safeOn(socket, 'clan_leave', ({ tgId }) => {
+      const id = uid(tgId); if (!id) return;
+      const res = clans.leaveClan(id);
+      if (!res.ok) { socket.emit('error', { message: res.error }); return; }
+      socket.emit('clan_state', clans.clanState(id));
+    });
+    safeOn(socket, 'clan_chat', ({ tgId, text }) => {
+      const id = uid(tgId); if (!id) return;
+      const res = clans.clanChat(id, text);
+      if (!res.ok) { socket.emit('error', { message: res.error }); return; }
+      // усім онлайн-учасникам клану
+      for (const [, s] of io.sockets.sockets) {
+        if (res.members.includes(String(s.data?.tgId))) s.emit('clan_msg', res.msg);
+      }
+    });
+
+    // ── Чат кімнати: короткі повідомлення між гравцями ──────────
+    const chatTimes = []; // анти-спам: не більше 5 за 10с
+    safeOn(socket, 'chat_msg', ({ tgId, text }) => {
+      const id = uid(tgId); if (!id) return;
+      const meta = socketToPlayer.get(socket.id); if (!meta) return;
+      const room = rooms.get(meta.roomId); if (!room) return;
+      const now = Date.now();
+      while (chatTimes.length && now - chatTimes[0] > 10000) chatTimes.shift();
+      if (chatTimes.length >= 5) { socket.emit('error', { message: 'Не так швидко 🤫' }); return; }
+      chatTimes.push(now);
+      const clean = String(text || '').slice(0, 120).trim();
+      if (!clean) return;
+      const p = room.players[meta.playerIndex];
+      io.to(room.id).emit('chat_msg', {
+        playerIndex: meta.playerIndex,
+        name: p?.name || 'Гравець',
+        text: clean, ts: now,
+      });
+    });
+
     // ── Пошук активної кімнати гравця (для кнопки "Повернутись") ──
     safeOn(socket, 'find_my_room', ({ tgId }) => {
       tgId = uid(tgId); if (!tgId) return;
@@ -537,4 +714,4 @@ function registerHandlers(serverIo) {
   });
 }
 
-module.exports = { registerHandlers, broadcastState, distributeWinnings };
+module.exports = { registerHandlers, broadcastState, distributeWinnings, durakPayout };

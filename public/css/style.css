@@ -588,3 +588,71 @@ body.theme-fan .pslot.filled{background:rgba(217,185,106,0.06)}
 .opp-card-back{background:var(--back-bg);border-color:var(--back-border)}
 .flying-card{background:var(--back-bg);border-color:var(--back-border)}
 .discard-card{background:var(--back-bg);border-color:var(--back-border)}
+
+/* ══ РІДКІСТЬ: рамки і світіння (common/rare/epic) ══════════════════ */
+.r-common{--r-glow:rgba(159,180,200,0.25);--r-border:rgba(159,180,200,0.4)}
+.r-rare{--r-glow:rgba(92,184,255,0.3);--r-border:rgba(92,184,255,0.55)}
+.r-epic{--r-glow:rgba(201,139,255,0.35);--r-border:rgba(201,139,255,0.65)}
+.card-skin-row.r-rare,.card-skin-row.r-epic{border:1px solid var(--r-border);box-shadow:0 0 12px var(--r-glow)}
+
+/* ══ КОЛЕКЦІЇ ═══════════════════════════════════════════════════════ */
+.coll-card{border-radius:16px;padding:12px;margin-bottom:10px;position:relative;
+  background:linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.015));
+  border:1px solid var(--r-border,var(--border2));box-shadow:0 0 16px var(--r-glow,transparent)}
+.coll-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.coll-emoji{font-size:30px;filter:drop-shadow(0 0 8px var(--r-glow))}
+.coll-name{font-family:'Rubik',sans-serif;font-size:15px;font-weight:800}
+.coll-rarity{font-size:10px;font-weight:700;letter-spacing:0.5px;margin-top:1px}
+.coll-buy{font-family:'Rubik',sans-serif;font-size:13px;font-weight:800;color:#241a00;cursor:pointer;
+  background:linear-gradient(135deg,#ffd166,#c9a227);padding:8px 14px;border-radius:11px;
+  box-shadow:0 3px 10px rgba(255,209,102,0.3);flex-shrink:0}
+.coll-buy:active{transform:scale(0.95)}
+.coll-done{font-size:11px;font-weight:800;color:#7bffa0;border:1px solid rgba(123,255,160,0.4);
+  padding:7px 12px;border-radius:11px;background:rgba(123,255,160,0.08);flex-shrink:0}
+.coll-minis{display:flex;gap:5px;margin-bottom:8px;align-items:center}
+.coll-mini{width:34px;height:48px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);
+  display:flex;align-items:center;justify-content:center;font-size:17px}
+.coll-more{font-size:11px;color:var(--text3);font-weight:700;margin-left:2px}
+.coll-progress{height:5px;border-radius:3px;background:rgba(255,255,255,0.08);overflow:hidden;margin-bottom:7px}
+.coll-progress-fill{height:100%;border-radius:3px;transition:width 0.4s}
+.coll-desc{font-size:10px;color:var(--text3);line-height:1.4}
+
+/* ══ РИНОК ══════════════════════════════════════════════════════════ */
+.market-row .cs-btn.on{background:linear-gradient(135deg,#ffd166,#c9a227);color:#241a00;font-weight:800}
+.cs-sell{flex-shrink:0;font-size:15px;padding:7px 8px;border-radius:9px;cursor:pointer;
+  border:1px solid var(--border2);background:rgba(255,255,255,0.04);margin-right:6px}
+.cs-sell:active{transform:scale(0.92)}
+.bs-sell{position:absolute;top:3px;right:3px;font-size:12px;background:rgba(0,0,0,0.55);
+  border-radius:7px;padding:2px 4px;cursor:pointer;z-index:3}
+
+/* ══ ЧАТ У ГРІ ══════════════════════════════════════════════════════ */
+#chatToggle{display:none;position:fixed;right:12px;bottom:190px;z-index:60;width:44px;height:44px;
+  border-radius:50%;background:linear-gradient(135deg,#2a2350,#1a1533);border:1px solid var(--gold-dim);
+  align-items:center;justify-content:center;font-size:19px;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,0.4)}
+body.in-game #chatToggle{display:flex}
+#chatBadge{display:none;position:absolute;top:-4px;right:-4px;min-width:17px;height:17px;border-radius:9px;
+  background:#e74c3c;color:#fff;font-size:10px;font-weight:800;align-items:center;justify-content:center;padding:0 4px}
+#chatPanel{position:fixed;right:10px;bottom:242px;z-index:59;width:min(78vw,300px);max-height:46vh;
+  background:rgba(18,14,36,0.96);border:1px solid var(--border2);border-radius:16px;padding:10px;
+  display:none;flex-direction:column;gap:8px;box-shadow:0 8px 30px rgba(0,0,0,0.5)}
+#chatPanel.open{display:flex}
+#chatMessages{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:5px;min-height:60px;max-height:26vh}
+.chat-msg{font-size:12px;color:var(--text);background:rgba(255,255,255,0.05);border-radius:10px;padding:5px 9px;max-width:92%;align-self:flex-start;word-break:break-word}
+.chat-msg.mine{align-self:flex-end;background:rgba(217,185,106,0.14)}
+.chat-who{display:block;font-size:9px;color:var(--gold);font-weight:700;margin-bottom:1px}
+#chatQuick{display:flex;gap:5px;flex-wrap:wrap}
+#chatQuick span{font-size:12px;background:rgba(255,255,255,0.06);border:1px solid var(--border2);
+  border-radius:9px;padding:4px 8px;cursor:pointer;white-space:nowrap}
+#chatQuick span:active{background:rgba(255,255,255,0.12)}
+#chatPanel input{flex:1;background:rgba(255,255,255,0.06);border:1px solid var(--border2);border-radius:10px;
+  padding:8px 10px;color:var(--text);font-size:12px;outline:none;min-width:0}
+#chatPanel button{background:linear-gradient(135deg,#ffd166,#c9a227);border:none;border-radius:10px;
+  width:38px;font-size:14px;cursor:pointer;flex-shrink:0}
+
+/* ══ ДУРАК: стіл ════════════════════════════════════════════════════ */
+.durak-pair{position:relative}
+.durak-pair .durak-cover{position:absolute;left:14px;top:14px;transform:rotate(8deg);filter:drop-shadow(-2px 2px 5px rgba(0,0,0,0.45))}
+.durak-target{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:800;color:var(--gold);background:rgba(255,209,102,0.12);
+  border:2px dashed var(--gold-dim);border-radius:8px;animation:durakPulse 1.2s infinite}
+@keyframes durakPulse{0%,100%{opacity:0.55}50%{opacity:1}}

@@ -185,6 +185,56 @@ function startBot() {
       { parse_mode: 'MarkdownV2' });
   });
 
+  // ══ ГРУПОВІ КОМАНДИ: колекція, ринок, запит карти ══════════════════
+  // У групах web_app-кнопки не працюють — даємо deep-link на бота.
+  const gameLink = () => botUsername ? `https://t.me/${botUsername}?startapp=play` : APP_URL;
+
+  // /collection — моя колекція (працює і в групі: похвалитись)
+  bot.onText(/\/collection/, async (msg) => {
+    const userId = String(msg.from.id);
+    const name = msg.from.first_name || 'Гравець';
+    const w = getWallet(userId);
+    const { collectionsState } = require('./collections');
+    const colls = collectionsState(w);
+    const lines = colls.map(c => {
+      const bar = c.owned === c.total ? '✅' : `${c.owned}/${c.total}`;
+      return `${c.emoji} ${c.name}: *${bar}*`;
+    }).join('\n');
+    const totalOwned = colls.reduce((s, c) => s + c.owned, 0);
+    const total = colls.reduce((s, c) => s + c.total, 0);
+    await bot.sendMessage(msg.chat.id,
+      `🎴 *Колекція гравця ${escMd(name)}*\n\n${lines}\n\nРазом: *${totalOwned}/${total}* предметів`,
+      { parse_mode: 'Markdown', reply_markup: { inline_keyboard: [[{ text: '🎮 Відкрити гру', url: gameLink() }]] } });
+  });
+
+  // /market — топ лотів ринку
+  bot.onText(/\/market/, async (msg) => {
+    const market = require('./market');
+    const list = market.getListings().slice(0, 8);
+    const text = list.length
+      ? list.map(l => {
+          const cur = l.price.coins ? `${l.price.coins} 💰` : `${l.price.gems} 💎`;
+          return `• *${escMd(l.def?.name || l.skinId)}* — ${cur} (від ${escMd(l.sellerName)})`;
+        }).join('\n')
+      : '_Ринок порожній — вистав щось першим!_';
+    await bot.sendMessage(msg.chat.id,
+      `🛒 *Ринок хФали* (комісія ${market.FEE_PCT}%)\n\n${text}`,
+      { parse_mode: 'Markdown', reply_markup: { inline_keyboard: [[{ text: '🛒 До ринку', url: gameLink() }]] } });
+  });
+
+  // /wish <назва карти> — запросити карту в групі («хто продасть?»)
+  bot.onText(/\/wish(?:@\w+)?(?:\s+(.+))?/, async (msg, match) => {
+    const name = msg.from.first_name || 'Гравець';
+    const want = (match && match[1] || '').trim().slice(0, 40);
+    if (!want) {
+      await bot.sendMessage(msg.chat.id, `Напиши, яку карту шукаєш: \`/wish Мамка-дракон\``, { parse_mode: 'Markdown' });
+      return;
+    }
+    await bot.sendMessage(msg.chat.id,
+      `📢 *${escMd(name)}* шукає карту *«${escMd(want)}»*!\n\nМаєш зайву? Вистав на ринок — і забирай монети 💰`,
+      { parse_mode: 'Markdown', reply_markup: { inline_keyboard: [[{ text: '🛒 Виставити на ринок', url: gameLink() }]] } });
+  });
+
   bot.onText(/\/help/, async (msg) => {
     await bot.sendMessage(msg.chat.id,
       `🃏 *Команди*\n\n/start — Меню\n/newgame — Кімната для друзів\n/balance — Баланс\n/join КОД — В кімнату\n/daily — \\+${DAILY_BONUS} монет\n/help — Довідка`,
@@ -194,6 +244,9 @@ function startBot() {
   bot.setMyCommands([
     { command: 'start', description: '🎮 Головне меню' },
     { command: 'newgame', description: '🆕 Створити кімнату для друзів' },
+    { command: 'collection', description: '🎴 Моя колекція карт' },
+    { command: 'market', description: '🛒 Ринок скінів' },
+    { command: 'wish', description: '📢 Шукаю карту (в групі)' },
     { command: 'balance', description: '💰 Мій баланс' },
     { command: 'daily', description: '🎁 Щоденна нагорода' },
     { command: 'help', description: '❓ Довідка' },

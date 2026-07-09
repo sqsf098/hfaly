@@ -21,7 +21,65 @@ function runBots(roomId) {
   const room = rooms.get(roomId);
   if (!room) return;
   if (room.phase === 'waiting' || room.phase === 'round_end') return;
+  if (room.mode === 'durak' && room.durak) { _durakStep(roomId, 0); return; }
   _step(roomId, 0);
+}
+
+// ── Простий бот для Дурака ─────────────────────────────────────────────
+const DPOW = { '6': 6, '7': 7, '8': 8, '9': 9, '10': 10, J: 11, Q: 12, K: 13, A: 14 };
+const dcost = (c, trump) => DPOW[c.rank] + (c.suit === trump ? 20 : 0); // чим менше — тим охочіше скидаємо
+function _durakStep(roomId, depth) {
+  if (depth > 60) return;
+  const room = rooms.get(roomId);
+  if (!room || !room.durak || room.durak.finished) return;
+  const durak = require('./durak');
+  const d = room.durak;
+
+  // хто з ботів може діяти? захисник з непобитими картами / атакер / підкидачі
+  let actor = null, plan = null;
+  const uncovered = d.table.filter(p => !p.d);
+  if (uncovered.length && isBot(room, d.defender) && !d.out.includes(d.defender)) {
+    actor = d.defender;
+    const hand = room.hands[actor];
+    // мінімальна карта, що б'є першу непобиту
+    const target = d.table.findIndex(p => !p.d);
+    const options = hand.filter(c => durak.beats(c, d.table[target].a, d.trump))
+      .sort((a, b) => dcost(a, d.trump) - dcost(b, d.trump));
+    plan = options.length ? { action: 'defend', cardId: options[0].id, targetIdx: target } : { action: 'take' };
+  } else {
+    // атака/підкид ботами
+    for (const p of room.players) {
+      if (!p.isBot || p.index === d.defender || d.out.includes(p.index)) continue;
+      const idx = p.index, hand = room.hands[idx];
+      if (d.table.length === 0) {
+        if (idx !== d.attacker) continue;
+        const c = [...hand].sort((a, b) => dcost(a, d.trump) - dcost(b, d.trump))[0];
+        if (c) { actor = idx; plan = { action: 'attack', cardId: c.id }; break; }
+      } else if (!d.took && d.table.every(x => x.d)) {
+        // підкинути дешеву карту відповідного номіналу або «бито»
+        const ranks = new Set(); d.table.forEach(x => { ranks.add(x.a.rank); if (x.d) ranks.add(x.d.rank); });
+        const c = hand.filter(x => ranks.has(x.rank) && x.suit !== d.trump)
+          .sort((a, b) => dcost(a, d.trump) - dcost(b, d.trump))[0];
+        if (c && room.hands[d.defender].length > 0) { actor = idx; plan = { action: 'attack', cardId: c.id }; break; }
+        if (!d.passed.has(idx)) { actor = idx; plan = { action: 'pass' }; break; }
+      }
+    }
+  }
+  if (actor === null || !plan) return; // черга людини
+
+  setTimeout(() => {
+    const r = rooms.get(roomId);
+    if (!r || !r.durak || r.durak.finished) return;
+    let res;
+    if (plan.action === 'attack') res = durak.attack(r, actor, plan.cardId);
+    else if (plan.action === 'defend') res = durak.defend(r, actor, plan.cardId, plan.targetIdx);
+    else if (plan.action === 'take') res = durak.take(r, actor);
+    else res = durak.pass(r, actor);
+    if (!res?.ok) return;
+    broadcastState(r);
+    if (res.auto?.gameOver) { require('./sockets').durakPayout(r); return; }
+    _durakStep(roomId, depth + 1);
+  }, BOT_THINK_MS);
 }
 
 function _step(roomId, depth) {

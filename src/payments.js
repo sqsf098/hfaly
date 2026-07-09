@@ -5,18 +5,26 @@
 //   скін у гаманець. Зірки падають на баланс бота (вивід через @BotFather).
 const { getWallet, saveWallets } = require('./wallets');
 const { getPurchasable } = require('./skins');
+const { getCollections, grantCollection } = require('./collections');
 const { log } = require('./logger');
 
 let bot = null;          // інстанс node-telegram-bot-api
 let onGranted = null;    // (tgId, kind, skinId, def) → сокет-сповіщення покупцю
 
-const PAYLOAD_PREFIX = 'skin';
-
 function parsePayload(payload) {
-  // формат: skin:<kind>:<skinId>:<tgId>
+  // формати: skin:<kind>:<skinId>:<tgId> | coll:<collId>:<tgId>
   const p = String(payload || '').split(':');
-  if (p.length !== 4 || p[0] !== PAYLOAD_PREFIX) return null;
-  return { kind: p[1], skinId: p[2], tgId: p[3] };
+  if (p[0] === 'skin' && p.length === 4) return { type: 'skin', kind: p[1], skinId: p[2], tgId: p[3] };
+  if (p[0] === 'coll' && p.length === 3) return { type: 'coll', collId: p[1], tgId: p[2] };
+  return null;
+}
+
+// Чи колекція вже зібрана повністю (тоді покупка бандла беззмістовна)
+function collectionComplete(wallet, coll) {
+  return coll.items.every(it => {
+    const bag = it.kind === 'back' ? wallet.ownedBackSkins : wallet.ownedCardSkins;
+    return Array.isArray(bag) && bag.includes(it.id);
+  });
 }
 
 // Чи вже належить гравцю
@@ -40,7 +48,7 @@ async function createSkinInvoice(tgId, kind, skinId) {
   try {
     const link = await bot.createInvoiceLink(
       title, desc.slice(0, 255),
-      `${PAYLOAD_PREFIX}:${kind}:${skinId}:${tgId}`,
+      `skin:${kind}:${skinId}:${tgId}`,
       '',            // provider_token порожній для Stars
       'XTR',
       [{ label: title, amount: def.stars }],
@@ -48,6 +56,27 @@ async function createSkinInvoice(tgId, kind, skinId) {
     return { ok: true, link, stars: def.stars };
   } catch (e) {
     log('⭐ createInvoiceLink: ' + e.message);
+    return { ok: false, error: 'Не вдалося створити рахунок' };
+  }
+}
+
+// Інвойс на ПОВНУ колекцію (бандл зі знижкою)
+async function createCollectionInvoice(tgId, collId) {
+  if (!bot) return { ok: false, error: 'Платежі недоступні (бот вимкнено)' };
+  const coll = getCollections()[collId];
+  if (!coll || !coll.priceStars) return { ok: false, error: 'Колекція не продається' };
+  if (collectionComplete(getWallet(tgId), coll)) return { ok: false, error: 'Колекція вже зібрана' };
+  try {
+    const link = await bot.createInvoiceLink(
+      `Колекція «${coll.name}»`.slice(0, 32),
+      `${coll.items.length} предметів (${coll.desc}). Все, чого бракує, стане твоїм.`.slice(0, 255),
+      `coll:${collId}:${tgId}`,
+      '', 'XTR',
+      [{ label: coll.name.slice(0, 32), amount: coll.priceStars }],
+    );
+    return { ok: true, link, stars: coll.priceStars };
+  } catch (e) {
+    log('⭐ createCollectionInvoice: ' + e.message);
     return { ok: false, error: 'Не вдалося створити рахунок' };
   }
 }
@@ -78,19 +107,42 @@ function initPayments(botInstance, grantedCallback) {
     const p = parsePayload(q.invoice_payload);
     let ok = true, error;
     if (!p) { ok = false; error = 'Невідомий товар'; }
-    else if (!getPurchasable(p.kind, p.skinId)) { ok = false; error = 'Товар більше не продається'; }
-    else if (alreadyOwned(getWallet(p.tgId), p.kind, p.skinId)) { ok = false; error = 'Цей скін вже у тебе'; }
+    else if (p.type === 'skin') {
+      if (!getPurchasable(p.kind, p.skinId)) { ok = false; error = 'Товар більше не продається'; }
+      else if (alreadyOwned(getWallet(p.tgId), p.kind, p.skinId)) { ok = false; error = 'Цей скін вже у тебе'; }
+    } else if (p.type === 'coll') {
+      const coll = getCollections()[p.collId];
+      if (!coll) { ok = false; error = 'Колекції не існує'; }
+      else if (collectionComplete(getWallet(p.tgId), coll)) { ok = false; error = 'Колекція вже зібрана'; }
+    }
     try {
       await bot.answerPreCheckoutQuery(q.id, ok, ok ? {} : { error_message: error });
     } catch (e) { log('⭐ answerPreCheckoutQuery: ' + e.message); }
   });
 
-  // Оплата пройшла — видаємо скін
+  // Оплата пройшла — видаємо товар
   bot.on('message', (msg) => {
     const sp = msg.successful_payment;
     if (!sp) return;
     const p = parsePayload(sp.invoice_payload);
     if (!p) { log('⭐ Оплата з невідомим payload: ' + sp.invoice_payload); return; }
+
+    if (p.type === 'coll') {
+      const coll = getCollections()[p.collId];
+      const w = getWallet(p.tgId);
+      const granted = grantCollection(w, p.collId) || [];
+      w.purchases = w.purchases || [];
+      w.purchases.push({
+        coll: p.collId, stars: sp.total_amount,
+        chargeId: sp.telegram_payment_charge_id, at: Date.now(),
+      });
+      saveWallets();
+      log(`⭐ КОЛЕКЦІЯ: ${p.tgId} купив «${coll?.name}» за ${sp.total_amount}⭐ (+${granted.length} предметів, ${sp.telegram_payment_charge_id})`);
+      bot.sendMessage(msg.chat.id, `🎉 Колекція «${coll?.name}» зібрана! +${granted.length} нових предметів. Одягай: гра → Колекція 🎴`).catch(() => {});
+      if (onGranted) onGranted(p.tgId, 'coll', p.collId, { name: coll?.name || p.collId });
+      return;
+    }
+
     const w = grantSkin(p.tgId, p.kind, p.skinId);
     w.purchases.push({
       kind: p.kind, skinId: p.skinId, stars: sp.total_amount,
@@ -104,4 +156,4 @@ function initPayments(botInstance, grantedCallback) {
   });
 }
 
-module.exports = { initPayments, createSkinInvoice, grantSkin };
+module.exports = { initPayments, createSkinInvoice, createCollectionInvoice, grantSkin };
