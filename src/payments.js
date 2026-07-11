@@ -114,6 +114,22 @@ async function createCollectionInvoice(tgId, collId) {
   }
 }
 
+// ── Реф-кешбек: запрошувач ДОВІЧНО отримує 10% (гемами) з усіх покупок
+//    друга за Stars. Паритет 1💎≈5⭐ → gems = stars/50. Це паливо росту:
+//    приводити платячих друзів стає вигідно назавжди.
+function refCashback(buyerTgId, stars) {
+  const buyer = getWallet(buyerTgId);
+  if (!buyer.referredBy) return;
+  const gems = Math.max(1, Math.round(stars / 50));
+  const inviter = getWallet(buyer.referredBy);
+  inviter.gems = (inviter.gems || 0) + gems;
+  saveWallets();
+  log(`👥 КЕШБЕК: ${buyer.referredBy} +${gems}💎 (10% з покупки ${buyerTgId} на ${stars}⭐)`);
+  if (bot) bot.sendMessage(buyer.referredBy,
+    `💎 Твій друг зробив покупку — тобі кешбек *+${gems} 💎*! Запрошуй ще: /start`,
+    { parse_mode: 'Markdown' }).catch(() => {});
+}
+
 // Видати куплений скін у гаманець
 function grantSkin(tgId, kind, skinId) {
   const w = getWallet(tgId);
@@ -175,6 +191,7 @@ function initPayments(botInstance, grantedCallback) {
       });
       saveWallets();
       log(`⭐ ПАКЕТ: ${p.tgId} купив ${p.packId} за ${sp.total_amount}⭐ (${sp.telegram_payment_charge_id})`);
+      refCashback(p.tgId, sp.total_amount);
       bot.sendMessage(msg.chat.id, `✅ «${pack.name}» зараховано! Заглянь у гру 🎁`).catch(() => {});
       if (onGranted) onGranted(p.tgId, 'pack', p.packId, { name: pack.name, gained });
       return;
@@ -191,6 +208,7 @@ function initPayments(botInstance, grantedCallback) {
       });
       saveWallets();
       log(`⭐ КОЛЕКЦІЯ: ${p.tgId} купив «${coll?.name}» за ${sp.total_amount}⭐ (+${granted.length} предметів, ${sp.telegram_payment_charge_id})`);
+      refCashback(p.tgId, sp.total_amount);
       bot.sendMessage(msg.chat.id, `🎉 Колекція «${coll?.name}» зібрана! +${granted.length} нових предметів. Одягай: гра → Колекція 🎴`).catch(() => {});
       if (onGranted) onGranted(p.tgId, 'coll', p.collId, { name: coll?.name || p.collId });
       return;
@@ -204,6 +222,7 @@ function initPayments(botInstance, grantedCallback) {
     saveWallets();
     const def = getPurchasable(p.kind, p.skinId) || { name: p.skinId };
     log(`⭐ ПОКУПКА: ${p.tgId} купив ${p.kind}/${p.skinId} за ${sp.total_amount}⭐ (${sp.telegram_payment_charge_id})`);
+    refCashback(p.tgId, sp.total_amount);
     bot.sendMessage(msg.chat.id, `✅ «${def.name}» тепер твій! Одягни його: гра → Колекція 🎴`).catch(() => {});
     if (onGranted) onGranted(p.tgId, p.kind, p.skinId, def);
   });

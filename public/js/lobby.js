@@ -197,9 +197,14 @@ function quickPlayWithBots(){
   });
 }
 
-// ── Daily bonus ───────────────────────────────────────────────
-let dailyClaimed = localStorage.getItem('hfaly_daily') === new Date().toDateString();
+// ── Daily bonus: СЕРВЕРНИЙ стрик (серія днів → нагорода росте) ──
 function claimDaily(){
+  connectSocket();
+  socket.emit('claim_streak',{tgId:getMyTgId()});
+}
+// стара локальна версія (більше не використовується)
+let dailyClaimed = localStorage.getItem('hfaly_daily') === new Date().toDateString();
+function claimDailyLegacy(){
   if(dailyClaimed){ showToast('Вже взяв сьогодні! Повертайся завтра 🌙',2500); return; }
   dailyClaimed = true;
   localStorage.setItem('hfaly_daily', new Date().toDateString());

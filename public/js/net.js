@@ -20,6 +20,11 @@ function connectSocket(){
   // ── Економіка: скрині + квести + банк ───────────────────────────
   socket.on('economy',(e)=>{ economyData=e; myGems=e.gems; updateCoinsUI(); renderEconomy(); if(typeof renderBank==='function')renderBank(); });
   socket.on('bank',(b)=>{ bankData=b; renderBank(); });
+  socket.on('streak_claimed',({day,gained})=>{
+    sfx('coin'); vibrate('success');
+    showToast(`🔥 День ${day}! ${rewardText(gained)}${day>=7?' — максимальна серія!':''}`,3500);
+    if(gained.coins)floatCoin(gained.coins,window.innerWidth/2,180);
+  });
   socket.on('exchanged',({gems,coins})=>{ sfx('coin'); vibrate('success'); showToast(`🔁 ${gems} 💎 → +${coins} 💰`,3000); floatCoin(coins,window.innerWidth/2,180); });
   socket.on('chest_opened',({chestId,gained})=>{sfx('coin');vibrate('success');showChestReward(gained,chestId);});
   socket.on('quest_claimed',({gained})=>{ showToast('🎉 '+rewardText(gained),2500); if(gained.coins)floatCoin(gained.coins,window.innerWidth/2,140); });

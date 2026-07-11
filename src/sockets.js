@@ -4,7 +4,7 @@ const { getWallet, saveWallets, playerWallets } = require('./wallets');
 const { createRoom, startRound, chooseTrump, showNinthCard, confirmTrumpFromLast, playCard, endRound, advanceRound, publicState, discardThree } = require('./game');
 const { createBot } = require('./bot-ai');
 const { runBots } = require('./bots');
-const { openChest, claimQuest, economyState, addQuestProgress, exchangeGems, maybeRewardReferrer } = require('./economy');
+const { openChest, claimQuest, claimStreak, economyState, addQuestProgress, exchangeGems, maybeRewardReferrer } = require('./economy');
 const { linkWallet, unlinkWallet, syncNfts, requestMint, tonState } = require('./ton');
 const { socketAuthMiddleware, resolveTgId } = require('./auth');
 const { holdDeposit, releaseDeposit } = require('./escrow');
@@ -238,6 +238,18 @@ function registerHandlers(serverIo) {
       socket.emit('wallet', w);
     });
 
+    // ── Щоденний стрик входів ────────────────────────────────────
+    safeOn(socket, 'claim_streak', ({ tgId }) => {
+      const id = uid(tgId); if (!id) return;
+      const w = getWallet(id);
+      const res = claimStreak(w);
+      if (!res.ok) { socket.emit('error', { message: res.error }); return; }
+      saveWallets();
+      socket.emit('streak_claimed', { day: res.day, gained: res.gained });
+      socket.emit('economy', economyState(w));
+      socket.emit('wallet', w);
+    });
+
     safeOn(socket, 'claim_quest', ({ tgId, questId }) => {
       const id = uid(tgId); if (!id) return;
       const w = getWallet(id);
@@ -378,6 +390,26 @@ function registerHandlers(serverIo) {
           s.emit('market_sold', { skinId: res.listing.skinId, payout: res.payout, cur: res.cur });
         }
       }
+    });
+
+    // ── Магазин: купити скін за ГЕМИ 💎 (альтернатива Stars) ──────
+    safeOn(socket, 'buy_skin_gems', ({ tgId, kind, skinId }) => {
+      const id = uid(tgId); if (!id) return;
+      if (kind !== 'back' && kind !== 'card') return;
+      const def = (kind === 'back' ? getBackSkins() : getCardSkins())[skinId];
+      if (!def || !def.gems || def.gems <= 0) { socket.emit('error', { message: 'Цей скін за 💎 не продається' }); return; }
+      const w = getWallet(id);
+      const bag = kind === 'back' ? 'ownedBackSkins' : 'ownedCardSkins';
+      if ((w[bag] || []).includes(skinId)) { socket.emit('error', { message: 'Скін вже у тебе' }); return; }
+      if ((w.gems || 0) < def.gems) { socket.emit('error', { message: `Недостатньо 💎 (потрібно ${def.gems})` }); return; }
+      w.gems -= def.gems;
+      w[bag] = w[bag] || [];
+      w[bag].push(skinId);
+      saveWallets();
+      log(`💎 ПОКУПКА: ${id} купив ${kind}/${skinId} за ${def.gems}💎`);
+      socket.emit('wallet', w);
+      socket.emit('economy', economyState(w));
+      socket.emit('skin_purchased', { kind, skinId, name: def.name });
     });
 
     // ── Колекція: одягнути сорочку або скін конкретної карти ─────

@@ -25,6 +25,9 @@ const BUILTIN_CARDS = {
 // rarity → ціна: common 100⭐ · rare 150⭐ · epic 200⭐
 // Скіни видно ВСІМ за столом — сорочку в руках, скіни карт у дачці.
 const STARS_BY_RARITY = { common: 100, rare: 150, epic: 200 };
+// Гемами трохи дорожче за паритет (1💎≈5⭐): Stars — швидкий шлях,
+// але гріндер може НАЗБИРАТИ на скін зі скринь і квестів
+const GEMS_BY_RARITY = { common: 25, rare: 40, epic: 60 };
 
 const PREMIUM_BACKS = {
   // «Меценат» — ЛИШЕ за донат (noSale: не продається і не падає зі скринь)
@@ -103,8 +106,12 @@ const ROYAL_CARDS = (() => {
 function withStars(defs) {
   const out = {};
   for (const [id, d] of Object.entries(defs)) {
-    // noSale (донат-ексклюзиви) не отримують ціни — їх не купиш напряму
-    out[id] = { ...d, stars: d.noSale ? 0 : (d.stars || STARS_BY_RARITY[d.rarity] || 0) };
+    // noSale (донат-ексклюзиви) не отримують цін — їх не купиш напряму
+    out[id] = {
+      ...d,
+      stars: d.noSale ? 0 : (d.stars || STARS_BY_RARITY[d.rarity] || 0),
+      gems: d.noSale ? 0 : (d.gems || GEMS_BY_RARITY[d.rarity] || 0),
+    };
   }
   return out;
 }

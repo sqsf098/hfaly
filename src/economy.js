@@ -197,6 +197,23 @@ function grantReward(wallet, reward) {
   return gained;
 }
 
+// ── Щоденний стрик: заходь щодня — нагорода росте ──────────────────────────
+// День 1..7+: 100/150/200/300/400/500/700💰; з 7-го дня додатково +5💎.
+// Пропустив день — серія скидається. Класична механіка утримання.
+const STREAK_REWARDS = [100, 150, 200, 300, 400, 500, 700];
+
+function claimStreak(wallet) {
+  const t = today();
+  if (wallet.streakDay === t) return { ok: false, error: 'Вже отримано — приходь завтра!' };
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  wallet.streakDays = wallet.streakDay === yesterday ? (wallet.streakDays || 0) + 1 : 1;
+  wallet.streakDay = t;
+  const reward = { coins: STREAK_REWARDS[Math.min(wallet.streakDays, 7) - 1] };
+  if (wallet.streakDays >= 7) reward.gems = 5;
+  const gained = grantReward(wallet, reward);
+  return { ok: true, day: wallet.streakDays, gained };
+}
+
 // ── Реферали: «запроси друга» — ядро зростання ─────────────────────────────
 const REF_REWARD_FRIEND = { coins: 300 };            // новачку одразу при вході
 const REF_REWARD_INVITER = { coins: 300, gems: 5 };  // запрошувачу після 1-ї гри друга
@@ -246,12 +263,18 @@ function economyState(wallet) {
     })),
     // Банк: обмін 💎→💰 (клієнт малює курси звідси)
     exchangePacks: Object.entries(EXCHANGE_PACKS).map(([id, p]) => ({ id, ...p })),
+    // Стрик входів
+    streak: {
+      days: wallet.streakDays || 0,
+      claimedToday: wallet.streakDay === today(),
+      next: STREAK_REWARDS[Math.min((wallet.streakDay === today() ? wallet.streakDays + 1 : (wallet.streakDays || 0) + 1), 7) - 1],
+    },
   };
 }
 
 module.exports = {
   CHESTS, QUEST_POOL, PREMIUM_DECKS, EXCHANGE_PACKS,
   REF_REWARD_FRIEND, REF_REWARD_INVITER,
-  ensureDailyQuests, addQuestProgress, claimQuest,
+  ensureDailyQuests, addQuestProgress, claimQuest, claimStreak,
   openChest, economyState, grantReward, exchangeGems, maybeRewardReferrer,
 };

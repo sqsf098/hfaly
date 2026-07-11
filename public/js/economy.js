@@ -238,7 +238,7 @@ function renderCollection(){
       const bg=s.img?`url('${s.img}') center/cover`:s.css;
       const sellableB=has&&!STARTER_BACKS_CL.includes(id);
       d.innerHTML=`<div class="bs-card" style="background:${bg};position:relative">${sellableB?'<div class="bs-sell">🛒</div>':''}</div><div class="bs-name">${s.name}</div>`
-        +(forSale?`<div class="bs-name" style="color:var(--gold);font-weight:800">${s.stars} ⭐</div>`:'');
+        +(forSale?`<div class="bs-name" style="color:var(--gold);font-weight:800">${s.stars} ⭐${s.gems?` · ${s.gems} 💎`:''}</div>`:'');
       d.onclick=()=>{
         if(has){ equipSkin('back',null,id); return; }
         if(forSale){ buySkin('back',id,s); return; }
@@ -274,8 +274,8 @@ function renderCollection(){
           <div class="cs-sub">${rarityBadge(s)}Карта: <b style="color:${red?'#ff8a97':'var(--text2)'}">${s.card}</b> · бачать усі за столом</div>
         </div>
         ${sellable?'<div class="cs-sell" title="Продати на ринку">🛒</div>':''}
-        <div class="cs-btn ${isOn?'on':''}" ${forSale?'style="background:linear-gradient(135deg,#ffd166,#c9a227);color:#241a00;font-weight:800"':''}>
-          ${has?(isOn?'✓ Одягнуто':'Одягнути'):(forSale?`${s.stars} ⭐`:'🔒 Зі скрині')}</div>`;
+        <div class="cs-btn ${isOn?'on':''}" ${forSale?'style="background:linear-gradient(135deg,#ffd166,#c9a227);color:#241a00;font-weight:800;font-size:10px;line-height:1.3;text-align:center"':''}>
+          ${has?(isOn?'✓ Одягнуто':'Одягнути'):(forSale?`${s.stars} ⭐${s.gems?`<br>${s.gems} 💎`:''}`:'🔒 Зі скрині')}</div>`;
       d.querySelector('.cs-btn').onclick=()=>{
         if(has){ equipSkin('card',s.card,isOn?null:id); return; } // повторний тап — зняти
         if(forSale){ buySkin('card',id,s); return; }
@@ -323,11 +323,35 @@ function renderCollection(){
   }
 }
 
-// Покупка скіна за Telegram Stars: сервер створить інвойс → openInvoice
+// Покупка скіна: шторка вибору валюти — ⭐ Stars або 💎 гемы
 function buySkin(kind,skinId,def){
   if(!socket)return;
-  socket.emit('buy_skin',{tgId:getMyTgId(),kind,skinId});
-  showToast(`⭐ Рахунок на «${def.name}» (${def.stars} ⭐)...`,2000);
+  const ov=$('chestRewardOverlay'); // перевикористовуємо верхній оверлей (z-index 320)
+  const canGems=(myGems||0)>=(def.gems||0);
+  const prev=def.img?`background:url('${def.img}') center/cover`
+    :(def.css?`background:${def.css}`:`background:${def.bg||'#333'};color:${def.color||'#fff'}`);
+  ov.innerHTML=`<div class="go-box" style="text-align:center">
+    <div style="display:flex;justify-content:center;margin-bottom:8px">
+      <div class="cs-preview" style="${prev};width:56px;height:78px">${def.img?'':(def.emoji?`<span style="font-size:26px">${def.emoji}</span>`:'')}</div>
+    </div>
+    <div class="go-title" style="font-size:15px">${def.name}</div>
+    <div style="font-size:10px;color:var(--text3);margin:4px 0 12px">${rarityBadge(def)}${def.card?('Карта '+def.card+' · '):''}бачать усі за столом</div>
+    <button class="btn-gold" style="max-width:100%;padding:11px;margin-bottom:8px" id="buyStarsBtn">⭐ Купити за ${def.stars} Stars</button>
+    ${def.gems?`<button class="btn-gold" style="max-width:100%;padding:11px;margin-bottom:8px;background:linear-gradient(135deg,#5cb8ff,#2a6fb5);${canGems?'':'opacity:0.5'}" id="buyGemsBtn">💎 Купити за ${def.gems} гемів${canGems?'':` (у тебе ${myGems||0})`}</button>`:''}
+    <button class="btn-outline" style="max-width:100%;padding:10px" onclick="document.getElementById('chestRewardOverlay').classList.remove('show')">Скасувати</button>
+  </div>`;
+  ov.classList.add('show');
+  $('buyStarsBtn').onclick=()=>{
+    ov.classList.remove('show');
+    socket.emit('buy_skin',{tgId:getMyTgId(),kind,skinId});
+    showToast(`⭐ Рахунок на «${def.name}» (${def.stars} ⭐)...`,2000);
+  };
+  const gb=$('buyGemsBtn');
+  if(gb)gb.onclick=()=>{
+    if(!canGems){showToast(`Не вистачає 💎 — відкривай скрині або купи пакет у Банку`,2600);return;}
+    ov.classList.remove('show');
+    socket.emit('buy_skin_gems',{tgId:getMyTgId(),kind,skinId});
+  };
   try{ tg?.HapticFeedback?.impactOccurred?.('light'); }catch(e){}
 }
 
