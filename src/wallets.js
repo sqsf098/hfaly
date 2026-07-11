@@ -34,6 +34,11 @@ function defaultWallet() {
     referredBy: null,     // tgId того, хто запросив
     refRewarded: false,   // чи виплачено запрошувачу за першу гру друга
     refCount: 0,          // скільки друзів привів (і вони зіграли)
+    // Колесо Фортуни
+    spins: 0,             // куплені спіни
+    freeSpinAt: 0,        // коли доступний безкоштовний спін
+    // Стрик входів
+    streakDays: 0, streakDay: null,
   };
 }
 

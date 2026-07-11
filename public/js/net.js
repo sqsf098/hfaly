@@ -20,6 +20,10 @@ function connectSocket(){
   // ── Економіка: скрині + квести + банк ───────────────────────────
   socket.on('economy',(e)=>{ economyData=e; myGems=e.gems; updateCoinsUI(); renderEconomy(); if(typeof renderBank==='function')renderBank(); });
   socket.on('bank',(b)=>{ bankData=b; renderBank(); });
+  // ── 🎡 Колесо Фортуни ────────────────────────────────────────────
+  socket.on('wheel',(w)=>{ wheelData=w; if(document.getElementById('wheelEl')&&!wheelSpinning)renderWheel(); });
+  socket.on('wheel_result',(res)=>onWheelResult(res));
+
   socket.on('streak_claimed',({day,gained})=>{
     sfx('coin'); vibrate('success');
     showToast(`🔥 День ${day}! ${rewardText(gained)}${day>=7?' — максимальна серія!':''}`,3500);

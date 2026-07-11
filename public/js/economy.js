@@ -474,6 +474,84 @@ function renderBank(){
   }
 }
 
+// ══ 🎡 КОЛЕСО ФОРТУНИ ═════════════════════════════════════════════════
+let wheelData=null,wheelSpinning=false;
+function openWheel(){
+  connectSocket();
+  socket.emit('wheel_get',{tgId:getMyTgId()});
+  renderWheel();
+}
+function fmtMs(ms){const h=Math.floor(ms/3600000),m=Math.floor(ms%3600000/60000);return h>0?`${h}г ${m}хв`:`${m}хв`;}
+function renderWheel(){
+  const ov=$('chestRewardOverlay');
+  const segs=(wheelData&&wheelData.segments)||[
+    {label:'150 💰'},{label:'3 💎'},{label:'300 💰'},{label:'📦'},
+    {label:'8 💎'},{label:'🎁'},{label:'🃏 RARE'},{label:'👑 ЕПІК'}];
+  const colors=['#1d2b52','#232042','#1d2b52','#232042','#1d2b52','#232042','#3a2a10','#3d1360'];
+  const grad=segs.map((_,i)=>`${colors[i%colors.length]} ${i*45}deg ${(i+1)*45}deg`).join(',');
+  const labels=segs.map((s,i)=>{
+    const a=i*45+22.5;
+    return `<div class="wheel-label" style="transform:rotate(${a}deg) translateY(-96px) rotate(${-a}deg)">${s.label}</div>`;
+  }).join('');
+  const spins=(wheelData&&wheelData.spins)||0;
+  const freeIn=(wheelData&&wheelData.freeReadyIn)||0;
+  ov.innerHTML=`<div class="go-box" style="text-align:center;max-width:340px">
+    <div class="go-title">🎡 Колесо Фортуни</div>
+    <div class="wheel-box">
+      <div class="wheel-pointer">▼</div>
+      <div class="wheel" id="wheelEl" style="background:conic-gradient(from 0deg,${grad})">
+        ${labels}
+        <div class="wheel-hub">хФ</div>
+      </div>
+    </div>
+    <div id="wheelBtns">
+      ${freeIn<=0
+        ?'<button class="btn-gold" style="max-width:100%;padding:11px;margin-bottom:8px" onclick="doSpin(true)">🎁 Безкоштовний спін</button>'
+        :`<div style="font-size:11px;color:var(--text3);margin-bottom:8px">Безкоштовний спін через ${fmtMs(freeIn)}</div>`}
+      ${spins>0
+        ?`<button class="btn-gold" style="max-width:100%;padding:11px;margin-bottom:8px" onclick="doSpin(false)">🎡 Крутити (лишилось: ${spins})</button>`
+        :`<div style="display:flex;gap:6px;margin-bottom:8px">
+            <button class="btn-gold" style="flex:1;padding:10px;font-size:11px" onclick="buyPackUI('spin1')">1 — 25⭐</button>
+            <button class="btn-gold" style="flex:1;padding:10px;font-size:11px" onclick="buyPackUI('spin5')">5 — 100⭐</button>
+            <button class="btn-gold" style="flex:1;padding:10px;font-size:11px" onclick="buyPackUI('spin15')">15 — 250⭐</button>
+          </div>`}
+      <button class="btn-outline" style="max-width:100%;padding:9px" onclick="document.getElementById('chestRewardOverlay').classList.remove('show')">Закрити</button>
+    </div>
+    <div id="wheelResult"></div>
+  </div>`;
+  ov.classList.add('show');
+}
+function buyPackUI(packId){
+  socket.emit('buy_pack',{tgId:getMyTgId(),packId});
+  showToast('⭐ Створюю рахунок...',1800);
+}
+function doSpin(free){
+  if(wheelSpinning||!socket)return;
+  wheelSpinning=true;
+  socket.emit('wheel_spin',{tgId:getMyTgId(),free});
+}
+function onWheelResult(res){
+  const el=$('wheelEl');
+  if(!el){wheelSpinning=false;return;}
+  $('wheelBtns').style.opacity='0.25';
+  const target=5*360-(res.segIndex*45+22.5)+(Math.random()*24-12);
+  el.style.transition='transform 4.2s cubic-bezier(0.12,0.8,0.09,1)';
+  el.style.transform=`rotate(${target}deg)`;
+  let t=0;const ti=setInterval(()=>{sfx('click');if(++t>10)clearInterval(ti);},250);
+  setTimeout(()=>{
+    clearInterval(ti);wheelSpinning=false;
+    const rar=res.gained&&res.gained.skin&&res.gained.skin.rarity;
+    const rarC=rar?(RARITY_UI[rar]||{}).color:'#ffd166';
+    $('wheelResult').innerHTML=`<div style="position:relative;margin-top:10px">
+      <div class="chest-rays" style="--rc:${rarC};width:200px;height:200px"></div>
+      <div class="chest-reveal" style="font-size:15px;color:${rarC};font-family:'Rubik',sans-serif;font-weight:800">${rewardText(res.gained)}</div>
+    </div>`;
+    sfx('win');try{tg?.HapticFeedback?.notificationOccurred?.('success');}catch(e){}
+    // даємо насолодитись виграшем, потім оновлюємо кнопки/лічильники
+    setTimeout(()=>{wheelData&&socket.emit('wheel_get',{tgId:getMyTgId()});},5000);
+  },4400);
+}
+
 // ── Продаж свого скіна: модалка з ціною ───────────────────────────
 let sellCtx=null; // {kind, skinId, def}
 function openSellModal(kind,skinId,def){

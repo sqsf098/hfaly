@@ -4,7 +4,7 @@ const { getWallet, saveWallets, playerWallets } = require('./wallets');
 const { createRoom, startRound, chooseTrump, showNinthCard, confirmTrumpFromLast, playCard, endRound, advanceRound, publicState, discardThree } = require('./game');
 const { createBot } = require('./bot-ai');
 const { runBots } = require('./bots');
-const { openChest, claimQuest, claimStreak, economyState, addQuestProgress, exchangeGems, maybeRewardReferrer } = require('./economy');
+const { openChest, claimQuest, claimStreak, economyState, addQuestProgress, exchangeGems, maybeRewardReferrer, spinWheel, wheelState } = require('./economy');
 const { linkWallet, unlinkWallet, syncNfts, requestMint, tonState } = require('./ton');
 const { socketAuthMiddleware, resolveTgId } = require('./auth');
 const { holdDeposit, releaseDeposit } = require('./escrow');
@@ -236,6 +236,24 @@ function registerHandlers(serverIo) {
       socket.emit('chest_opened', { chestId, reward: res.reward, gained: res.gained });
       socket.emit('economy', economyState(w));
       socket.emit('wallet', w);
+    });
+
+    // ── 🎡 Колесо Фортуни ────────────────────────────────────────
+    safeOn(socket, 'wheel_get', ({ tgId }) => {
+      const id = uid(tgId); if (!id) return;
+      socket.emit('wheel', wheelState(getWallet(id)));
+    });
+
+    safeOn(socket, 'wheel_spin', ({ tgId, free }) => {
+      const id = uid(tgId); if (!id) return;
+      const w = getWallet(id);
+      const res = spinWheel(w, !!free);
+      if (!res.ok) { socket.emit('error', { message: res.error }); return; }
+      saveWallets();
+      log(`🎡 СПІН: ${id} → сегмент ${res.segIndex}${free ? ' (безкоштовний)' : ''}`);
+      socket.emit('wheel_result', res);
+      socket.emit('wallet', w);
+      socket.emit('economy', economyState(w));
     });
 
     // ── Щоденний стрик входів ────────────────────────────────────

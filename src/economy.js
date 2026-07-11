@@ -153,6 +153,7 @@ function rollToReward(wallet, roll) {
     if (locked.length === 0) return { coins: 500 }; // усі колоди вже є → компенсація
     return { deck: locked[Math.floor(Math.random() * locked.length)] };
   }
+  if (roll.type === 'chest_direct') return { chest: roll.chest }; // конкретна скриня (колесо)
   if (roll.type === 'skin') {
     // Карта колекції: випадковий НЕзібраний скін цієї рідкості
     const { unownedByRarity } = require('./collections');
@@ -194,7 +195,59 @@ function grantReward(wallet, reward) {
     if (!wallet.ownedBackSkins.includes(reward.back)) wallet.ownedBackSkins.push(reward.back);
     gained.back = reward.back;
   }
+  if (reward.spins) { // спіни Колеса Фортуни
+    wallet.spins = (wallet.spins || 0) + reward.spins;
+    gained.spins = reward.spins;
+  }
   return gained;
+}
+
+// ── 🎡 Колесо Фортуни ──────────────────────────────────────────────────────
+// Безкоштовний спін раз на 24 год (повернення в гру) + платні спіни за ⭐.
+// Економіка: очікувана віддача ≈61% ціни спіна (маржа ~39% на потоці),
+// джекпот-сегмент (епік-скін) — та сама «мрія», заради якої крутять.
+// ПОРЯДОК сегментів = порядок на колесі клієнта (індекс → кут).
+const WHEEL = [
+  { type: 'coins', amount: 150, label: '150 💰', weight: 400 },
+  { type: 'gems',  amount: 3,   label: '3 💎',   weight: 150 },
+  { type: 'coins', amount: 300, label: '300 💰', weight: 200 },
+  { type: 'chest', chest: 'wood',   label: '📦',  weight: 100 },
+  { type: 'gems',  amount: 8,   label: '8 💎',   weight: 70 },
+  { type: 'chest', chest: 'silver', label: '🎁',  weight: 50 },
+  { type: 'skin',  rarities: ['rare'], label: '🃏 RARE', weight: 25 },
+  { type: 'skin',  rarities: ['epic'], label: '👑 ЕПІК', weight: 5 },
+];
+const FREE_SPIN_COOLDOWN_MS = 24 * 60 * 60 * 1000;
+
+function spinWheel(wallet, useFree) {
+  if (useFree) {
+    if (Date.now() < (wallet.freeSpinAt || 0)) {
+      return { ok: false, error: 'Безкоштовний спін ще не готовий', cooldownMs: (wallet.freeSpinAt || 0) - Date.now() };
+    }
+    wallet.freeSpinAt = Date.now() + FREE_SPIN_COOLDOWN_MS;
+  } else {
+    if ((wallet.spins || 0) < 1) return { ok: false, error: 'Немає спінів — купи в колесі за ⭐' };
+    wallet.spins--;
+  }
+  // зважений вибір сегмента
+  const total = WHEEL.reduce((s, w) => s + w.weight, 0);
+  let r = Math.random() * total, idx = WHEEL.length - 1;
+  for (let i = 0; i < WHEEL.length; i++) { if ((r -= WHEEL[i].weight) <= 0) { idx = i; break; } }
+  const seg = WHEEL[idx];
+  const reward = rollToReward(wallet, seg.type === 'coins' ? { type: 'coins', min: seg.amount, max: seg.amount }
+    : seg.type === 'gems' ? { type: 'gems', min: seg.amount, max: seg.amount }
+    : seg.type === 'chest' ? { type: 'chest_direct', chest: seg.chest }
+    : { type: 'skin', rarities: seg.rarities });
+  const gained = grantReward(wallet, reward);
+  return { ok: true, segIndex: idx, gained, spinsLeft: wallet.spins || 0, freeReadyIn: Math.max(0, (wallet.freeSpinAt || 0) - Date.now()) };
+}
+
+function wheelState(wallet) {
+  return {
+    segments: WHEEL.map(w => ({ label: w.label, type: w.type })),
+    spins: wallet.spins || 0,
+    freeReadyIn: Math.max(0, (wallet.freeSpinAt || 0) - Date.now()),
+  };
 }
 
 // ── Щоденний стрик: заходь щодня — нагорода росте ──────────────────────────
@@ -277,4 +330,5 @@ module.exports = {
   REF_REWARD_FRIEND, REF_REWARD_INVITER,
   ensureDailyQuests, addQuestProgress, claimQuest, claimStreak,
   openChest, economyState, grantReward, exchangeGems, maybeRewardReferrer,
+  spinWheel, wheelState,
 };
