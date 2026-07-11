@@ -4,7 +4,7 @@ const { getWallet, saveWallets, playerWallets } = require('./wallets');
 const { createRoom, startRound, chooseTrump, showNinthCard, confirmTrumpFromLast, playCard, endRound, advanceRound, publicState, discardThree } = require('./game');
 const { createBot } = require('./bot-ai');
 const { runBots } = require('./bots');
-const { openChest, claimQuest, economyState, addQuestProgress, exchangeGems } = require('./economy');
+const { openChest, claimQuest, economyState, addQuestProgress, exchangeGems, maybeRewardReferrer } = require('./economy');
 const { linkWallet, unlinkWallet, syncNfts, requestMint, tonState } = require('./ton');
 const { socketAuthMiddleware, resolveTgId } = require('./auth');
 const { holdDeposit, releaseDeposit } = require('./escrow');
@@ -36,6 +36,22 @@ function questProgress(room, playerIndex, type, amount = 1) {
   if (sock) {
     sock.emit('economy', economyState(w));
     for (const q of done) sock.emit('quest_done', { text: q.text });
+  }
+}
+
+// Друг зіграв першу гру → бонус запрошувачу (+сповіщення в бота і сокет)
+function processReferral(tgId) {
+  const w = getWallet(tgId);
+  const res = maybeRewardReferrer(w, getWallet);
+  if (!res) return;
+  saveWallets();
+  log(`👥 РЕФЕРАЛ: ${res.inviterId} отримав +${res.reward.coins}💰 +${res.reward.gems}💎 за друга ${tgId}`);
+  try {
+    require('./telegram').notifyUser(res.inviterId,
+      `🎉 Твій друг зіграв першу гру! Тобі: *+${res.reward.coins} 💰* та *+${res.reward.gems} 💎*`);
+  } catch (e) { /* бот вимкнено (dev) */ }
+  for (const [, s] of io.sockets.sockets) {
+    if (String(s.data?.tgId) === String(res.inviterId)) s.emit('wallet', getWallet(res.inviterId));
   }
 }
 
@@ -111,6 +127,7 @@ function durakPayout(room) {
   for (const tgId of room.playerTgIds || []) if (isReal(tgId)) releaseDeposit(tgId, room.id);
   saveWallets();
   for (let i = 0; i < n; i++) questProgress(room, i, 'play_games');
+  for (const tgId of room.playerTgIds || []) if (isReal(tgId)) processReferral(tgId);
   io.to(room.id).emit('game_finished', {
     mode: 'durak', loserIndex: d.loserIndex,
     loserName: room.players[d.loserIndex]?.name || '—',
@@ -174,6 +191,7 @@ function distributeWinnings(room) {
   // Квести: зіграв гру — усі реальні гравці; виграв — переможці
   for (let i = 0; i < 4; i++) questProgress(room, i, 'play_games');
   for (const idx of winTeam) questProgress(room, idx, 'win_game');
+  for (const tgId of room.playerTgIds || []) if (isReal(tgId)) processReferral(tgId);
 
   io.to(room.id).emit('game_finished', { winTeam, loseTeam, pot, share, payouts, scoreA, scoreB });
   if (room.isBaseRoom) setTimeout(() => resetBaseRoom(room.id), 4000);

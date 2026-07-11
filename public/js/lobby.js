@@ -126,6 +126,18 @@ function renderWaiting(state){
   }
   const waitHost=state.mode==='hfaly'&&full&&!hasBot;
   startBtn.style.display=waitHost&&iAmHost?'block':'none';
+  // Стіл не повний → головна кнопка: запросити друзів у Telegram
+  let invBtn=$('inviteRoomBtn');
+  if(!invBtn){
+    invBtn=document.createElement('button');
+    invBtn.id='inviteRoomBtn';
+    invBtn.className='btn-gold';
+    invBtn.style.cssText='margin-top:10px;display:none';
+    invBtn.textContent='📨 Запросити друзів у Telegram';
+    invBtn.onclick=()=>inviteToRoom(myRoomId);
+    slots.parentElement.insertBefore(invBtn,startBtn);
+  }
+  invBtn.style.display=full?'none':'block';
   $('waitingStatus').textContent=full
     ?(waitHost?(iAmHost?'Всі на місцях? Тисни «Почати гру»!':'Розсідайтесь! Хост стартує гру'):'Гра розпочинається!')
     :(`${N-state.players.length} місць залишилось · тапни вільне місце, щоб обрати команду`);
@@ -136,7 +148,42 @@ function addBot(){
   socket.emit('add_bot',{roomId:myRoomId});
 }
 
-// ── Quick play with bots ──────────────────────────────────────
+// ── ГОЛОВНИЙ шлях: створити стіл і ОДРАЗУ запросити друзів ────────
+// Гра будується на «запроси друга»: стіл створюється, шторка шерингу
+// Telegram відкривається сама — залишається вибрати чат.
+function inviteAndPlay(){
+  connectSocket();
+  const roomId = Math.random().toString(36).slice(2,8).toUpperCase();
+  myRoomId = roomId;
+  socket.emit('join_room',{roomId, name:getMyName(), tgId:getMyTgId(), isPublic:true, deposit:0, mode:'hfaly'});
+  socket.once('joined', ()=>{ setTimeout(()=>inviteToRoom(roomId), 350); });
+  try{ tg?.HapticFeedback?.impactOccurred?.('medium'); }catch(e){}
+}
+
+// Шторка Telegram-шерингу із запрошенням до конкретного столу
+function inviteToRoom(roomId){
+  const deep = appBotUsername
+    ? `https://t.me/${appBotUsername}?start=join_${roomId}`
+    : location.origin+`/?room=${roomId}`;
+  const text = `🃏 Сідай за мій стіл у хФали! Код: ${roomId}`;
+  const share = `https://t.me/share/url?url=${encodeURIComponent(deep)}&text=${encodeURIComponent(text)}`;
+  if(tg&&tg.openTelegramLink) tg.openTelegramLink(share);
+  else window.open(share,'_blank');
+}
+
+// Реферальне запрошення: +300 💰 обом, +5 💎 після першої гри друга
+function shareRef(){
+  const deep = appBotUsername
+    ? `https://t.me/${appBotUsername}?start=ref_${getMyTgId()}`
+    : location.origin;
+  const text = '🃏 Заходь у хФали — карткова гра прямо в Telegram! Тобі одразу +300 монет 🎁';
+  const share = `https://t.me/share/url?url=${encodeURIComponent(deep)}&text=${encodeURIComponent(text)}`;
+  if(tg&&tg.openTelegramLink) tg.openTelegramLink(share);
+  else window.open(share,'_blank');
+  try{ tg?.HapticFeedback?.impactOccurred?.('light'); }catch(e){}
+}
+
+// ── Тренування з ботами (другорядний шлях) ────────────────────
 function quickPlayWithBots(){
   connectSocket();
   const roomId = Math.random().toString(36).slice(2,8).toUpperCase();

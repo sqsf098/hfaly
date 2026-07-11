@@ -10,6 +10,13 @@ function escMd(text) {
   return String(text).replace(/[_*[\]()~`>#+\-=|{}.!\\]/g, '\\$&');
 }
 
+// Сповіщення користувачу з будь-якого модуля (реферали, продажі на ринку)
+let botRef = null;
+function notifyUser(tgId, text) {
+  if (!botRef) return;
+  botRef.sendMessage(tgId, text, { parse_mode: 'Markdown' }).catch(() => {});
+}
+
 function gameUrl(userName, userId, roomId) {
   let url = `${APP_URL}/?name=${encodeURIComponent(userName)}&tgId=${userId}`;
   if (roomId) url += `&room=${roomId}`;
@@ -23,6 +30,7 @@ function startBot() {
   }
 
   const bot = new TelegramBot(BOT_TOKEN, { polling: true });
+  botRef = bot; // для notifyUser
 
   // Ім'я бота — для deep-link запрошень t.me/<бот>?startapp=<код>
   let botUsername = process.env.BOT_USERNAME || '';
@@ -100,8 +108,8 @@ function startBot() {
     const userId = String(msg.from.id);
     const userName = msg.from.first_name || 'Гравець';
 
-    // Deep-link запрошення: /start join_<КОД>
     const payload = (match && match[1] || '').trim();
+    // Deep-link запрошення до столу: /start join_<КОД>
     if (payload.toLowerCase().startsWith('join_')) {
       return sendJoinInvite(chatId, userId, userName, payload.slice(5).toUpperCase());
     }
@@ -109,19 +117,36 @@ function startBot() {
     const wallet = getWallet(userId);
     const isNew = wallet.gamesPlayed === 0;
 
+    // Реферал: /start ref_<tgId> — новачок одразу отримує бонус,
+    // запрошувач — після ПЕРШОЇ зіграної гри друга (захист від накрутки)
+    let refLine = '';
+    const refM = payload.match(/^ref_(\d+)$/);
+    if (refM && isNew && !wallet.referredBy && refM[1] !== userId) {
+      wallet.referredBy = refM[1];
+      wallet.coins += 300;
+      saveWallets();
+      refLine = `\n🎁 *\\+300 монет* — бонус від друга\\!\n`;
+      notifyUser(refM[1], `👋 *${userName}* прийняв твоє запрошення! Зіграє першу гру — тобі впаде *+300 💰 і +5 💎*`);
+    }
+
+    // Реф-посилання цього гравця (кнопка «Запросити друга»)
+    const refDeep = botUsername ? `https://t.me/${botUsername}?start=ref_${userId}` : APP_URL;
+    const refShare = `https://t.me/share/url?url=${encodeURIComponent(refDeep)}&text=${encodeURIComponent('🃏 Заходь у хФали — карткова гра прямо в Telegram! Тобі одразу +300 монет 🎁')}`;
+
     const text = isNew
-      ? `🃏 *Ласкаво просимо до хФали\\!*\n\nПривіт, *${escMd(userName)}*\\! Стартовий бонус\\:\n\n💰 *${wallet.coins} монет*\n\n👥 Гра для *4 гравців* \\(2 vs 2\\)\nПереможна команда забирає весь банк\\!`
-      : `🃏 *хФали* — з поверненням, *${escMd(userName)}*\\!\n\n💰 Баланс: *${wallet.coins}*\n🎮 Ігор: *${wallet.gamesPlayed}* | 🏆 Перемог: *${wallet.wins}*`;
+      ? `🃏 *хФали* — карткова гра в Telegram\\!\n${escMd(refLine)}\nПривіт, *${escMd(userName)}*\\! Починається все просто:\n\n1️⃣ Тисни *«Відкрити гру»*\n2️⃣ Запроси друга — граємо 2 vs 2\n3️⃣ Переможці ділять банк 💰\n\nСтартовий баланс: *${wallet.coins}* 💰\nА ще: Дурак, скіни\\-колекції, ринок і клани\\!`
+      : `🃏 *хФали* — з поверненням, *${escMd(userName)}*\\!\n\n💰 Баланс: *${wallet.coins}*\n🎮 Ігор: *${wallet.gamesPlayed}* | 🏆 Перемог: *${wallet.wins}*${wallet.refCount ? `\n👥 Друзів привів: *${wallet.refCount}*` : ''}`;
+
+    const kb = [
+      [{ text: '🎮 Відкрити гру', web_app: { url: gameUrl(userName, userId) } }],
+      [{ text: '📨 Запросити друга (+300 💰 обом)', url: refShare }],
+      [{ text: '🆕 Стіл з друзями', callback_data: 'newgame' }, { text: '📖 Правила', callback_data: 'rules' }],
+    ];
+    if (process.env.GROUP_LINK) kb.push([{ text: '👥 Спільнота гравців', url: process.env.GROUP_LINK }]);
 
     await bot.sendMessage(chatId, text, {
       parse_mode: 'MarkdownV2',
-      reply_markup: {
-        inline_keyboard: [
-          [{ text: '🎮 Відкрити гру', web_app: { url: gameUrl(userName, userId) } }],
-          [{ text: '🆕 Нова гра з друзями', callback_data: 'newgame' }],
-          [{ text: '💰 Баланс', callback_data: 'balance' }, { text: '❓ Правила', callback_data: 'rules' }],
-        ],
-      },
+      reply_markup: { inline_keyboard: kb },
     });
   });
 
@@ -237,7 +262,7 @@ function startBot() {
 
   bot.onText(/\/help/, async (msg) => {
     await bot.sendMessage(msg.chat.id,
-      `🃏 *Команди*\n\n/start — Меню\n/newgame — Кімната для друзів\n/balance — Баланс\n/join КОД — В кімнату\n/daily — \\+${DAILY_BONUS} монет\n/help — Довідка`,
+      `🃏 *Як почати грати*\n\n1️⃣ /start → «Відкрити гру»\n2️⃣ «Зіграти з другом» → обери чат — запрошення полетить само\n3️⃣ Друг тисне кнопку і вже за столом\n\n*Команди:*\n/newgame — стіл для друзів\n/collection — моя колекція карт\n/market — ринок скінів\n/wish — шукаю карту \\(в групі\\)\n/balance — баланс\n/daily — \\+${DAILY_BONUS} монет щодня\n\n💡 Запрошуй друзів через /start → «Запросити друга» — *\\+300 💰 обом*\\!`,
       { parse_mode: 'MarkdownV2' });
   });
 
@@ -256,4 +281,4 @@ function startBot() {
   return bot;
 }
 
-module.exports = { startBot };
+module.exports = { startBot, notifyUser };

@@ -707,3 +707,25 @@ body.fan-nav .screen .content{padding-bottom:calc(140px + env(safe-area-inset-bo
 .pcard.playable:hover{transform:translateY(-8px)}
 .opp-card-back{transition:transform 0.25s ease}
 .status-pill,#statusPill{transition:opacity 0.2s}
+
+/* ══ ЛУДКА-ШОУ: відкриття скрині ════════════════════════════════════ */
+@keyframes chestShake{
+  0%,100%{transform:rotate(0) scale(1)}
+  15%{transform:rotate(-9deg) scale(1.04)}30%{transform:rotate(8deg) scale(1.07)}
+  45%{transform:rotate(-7deg) scale(1.1)}60%{transform:rotate(6deg) scale(1.13)}
+  75%{transform:rotate(-4deg) scale(1.17)}90%{transform:rotate(3deg) scale(1.22)}}
+.chest-rays{position:absolute;left:50%;top:34%;width:280px;height:280px;transform:translate(-50%,-50%);
+  background:conic-gradient(from 0deg,transparent 0deg,var(--rc,#ffd166) 8deg,transparent 16deg,transparent 45deg,
+    var(--rc,#ffd166) 53deg,transparent 61deg,transparent 90deg,var(--rc,#ffd166) 98deg,transparent 106deg,
+    transparent 135deg,var(--rc,#ffd166) 143deg,transparent 151deg,transparent 180deg,var(--rc,#ffd166) 188deg,
+    transparent 196deg,transparent 225deg,var(--rc,#ffd166) 233deg,transparent 241deg,transparent 270deg,
+    var(--rc,#ffd166) 278deg,transparent 286deg,transparent 315deg,var(--rc,#ffd166) 323deg,transparent 331deg);
+  opacity:0.22;animation:raysSpin 7s linear infinite;pointer-events:none;border-radius:50%}
+@keyframes raysSpin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+.chest-reveal{animation:revealPop 0.45s cubic-bezier(.2,1.4,.4,1);position:relative;z-index:2}
+@keyframes revealPop{from{transform:scale(0.2) rotate(-12deg);opacity:0}60%{transform:scale(1.15) rotate(3deg)}to{transform:scale(1);opacity:1}}
+.chest-confetti{position:absolute;left:50%;top:32%;pointer-events:none;z-index:1}
+.chest-confetti .cf{position:absolute;width:8px;height:8px;border-radius:2px;
+  animation:cfFly ease-out forwards}
+@keyframes cfFly{from{transform:translate(0,0) rotate(0);opacity:1}
+  to{transform:translate(var(--tx),calc(var(--ty) + 60px)) rotate(300deg);opacity:0}}

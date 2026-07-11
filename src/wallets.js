@@ -30,6 +30,10 @@ function defaultWallet() {
     ownedBackSkins: ['violet', 'navy', 'gold', 'crimson'],
     cardSkins: {},                                        // { 'A♠': 'AS_royal' }
     ownedCardSkins: ['AS_royal', 'QH_rose', 'JC_joker'],
+    // Реферали: гра будується на «запроси друга»
+    referredBy: null,     // tgId того, хто запросив
+    refRewarded: false,   // чи виплачено запрошувачу за першу гру друга
+    refCount: 0,          // скільки друзів привів (і вони зіграли)
   };
 }
 

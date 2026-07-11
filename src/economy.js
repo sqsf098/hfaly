@@ -192,6 +192,22 @@ function grantReward(wallet, reward) {
   return gained;
 }
 
+// ── Реферали: «запроси друга» — ядро зростання ─────────────────────────────
+const REF_REWARD_FRIEND = { coins: 300 };            // новачку одразу при вході
+const REF_REWARD_INVITER = { coins: 300, gems: 5 };  // запрошувачу після 1-ї гри друга
+
+// Друг зіграв першу гру → виплатити запрошувачу. Повертає {inviterId, reward}|null
+function maybeRewardReferrer(wallet, getWalletFn) {
+  if (!wallet.referredBy || wallet.refRewarded) return null;
+  if ((wallet.gamesPlayed || 0) < 1) return null;
+  wallet.refRewarded = true;
+  const inviter = getWalletFn(wallet.referredBy);
+  inviter.coins += REF_REWARD_INVITER.coins;
+  inviter.gems = (inviter.gems || 0) + REF_REWARD_INVITER.gems;
+  inviter.refCount = (inviter.refCount || 0) + 1;
+  return { inviterId: String(wallet.referredBy), reward: REF_REWARD_INVITER };
+}
+
 // ── Обмін валют: гемы → монети (міст між преміум і грою) ───────────────────
 // Більший пакет — кращий курс. Продати монети НАЗАД не можна (захист економіки).
 const EXCHANGE_PACKS = {
@@ -230,6 +246,7 @@ function economyState(wallet) {
 
 module.exports = {
   CHESTS, QUEST_POOL, PREMIUM_DECKS, EXCHANGE_PACKS,
+  REF_REWARD_FRIEND, REF_REWARD_INVITER,
   ensureDailyQuests, addQuestProgress, claimQuest,
-  openChest, economyState, grantReward, exchangeGems,
+  openChest, economyState, grantReward, exchangeGems, maybeRewardReferrer,
 };

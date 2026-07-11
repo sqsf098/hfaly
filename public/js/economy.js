@@ -140,17 +140,48 @@ function renderDecks(){
   }
 }
 
-function showChestReward(gained){
+// ЛУДКА-ШОУ: скриня трясеться → вибух променів і конфеті → нагорода
+// з аурою рідкості. Рідкісніше — драматичніше (довша тряска, більше конфеті).
+function showChestReward(gained,chestId){
   const ov=$('chestRewardOverlay');if(!ov)return;
-  const icon=$('chestRewardIcon');
-  if(gained.skin)icon.textContent=(CARD_SKINS[gained.skin.id]&&CARD_SKINS[gained.skin.id].emoji)||'🃏';
-  else if(gained.deck)icon.textContent='🎴';
-  else if(gained.gems)icon.textContent='💎';
-  else if(gained.chest)icon.textContent='📦';
-  else icon.textContent='💰';
-  $('chestRewardText').textContent=rewardText(gained);
+  const chestEmoji={wood:'📦',silver:'🎁',gold:'👑'}[chestId]||'🎁';
+  const rar=gained.skin&&gained.skin.rarity||null;
+  const rarC=rar?(RARITY_UI[rar]||{}).color:'#ffd166';
+  const drama=rar==='epic'?1.5:rar==='rare'?1.2:1; // множник видовищності
+  const skinDef=gained.skin&&CARD_SKINS[gained.skin.id];
+  const icon=gained.skin?((skinDef&&skinDef.img)?`<img src="${skinDef.img}" style="width:86px;border-radius:8px;box-shadow:0 0 30px ${rarC}">`:`<span style="font-size:56px">${(skinDef&&skinDef.emoji)||'🃏'}</span>`)
+    :gained.deck?'<span style="font-size:56px">🎴</span>'
+    :gained.gems?'<span style="font-size:56px">💎</span>'
+    :gained.chest?'<span style="font-size:56px">📦</span>'
+    :'<span style="font-size:56px">💰</span>';
+
+  // Етап 1: скриня трясеться
+  ov.innerHTML=`<div class="go-box" style="text-align:center;background:transparent;border:none;box-shadow:none">
+    <div id="chestStage" style="font-size:84px;animation:chestShake ${0.9*drama}s ease-in-out">${chestEmoji}</div>
+  </div>`;
   ov.classList.add('show');
-  if(gained.coins)floatCoin(gained.coins,window.innerWidth/2,window.innerHeight/3);
+  try{ tg?.HapticFeedback?.impactOccurred?.('heavy'); }catch(e){}
+
+  // Етап 2: вибух → нагорода
+  setTimeout(()=>{
+    const confetti=Array.from({length:Math.round(16*drama)},(_,i)=>{
+      const ang=Math.random()*360,dist=70+Math.random()*110,dur=0.7+Math.random()*0.7;
+      const clr=['#ffd166','#c98bff','#5cb8ff','#ff8a97','#9fe8a0'][i%5];
+      return `<span class="cf" style="background:${clr};--tx:${Math.cos(ang)*dist}px;--ty:${Math.sin(ang)*dist}px;animation-duration:${dur}s"></span>`;
+    }).join('');
+    ov.innerHTML=`<div class="go-box" style="text-align:center;position:relative;overflow:visible">
+      <div class="chest-rays" style="--rc:${rarC}"></div>
+      <div class="chest-confetti">${confetti}</div>
+      <div class="chest-reveal">${icon}</div>
+      <div class="go-title" style="margin-top:8px">${rar?(RARITY_UI[rar].label+'!'):'Нагорода!'}</div>
+      <div style="font-size:16px;color:${rarC};font-family:'Rubik',sans-serif;margin:8px 0;font-weight:800">${rewardText(gained)}</div>
+      ${gained.skin?'<div style="font-size:10px;color:var(--text3);margin-bottom:6px">Одягни в Колекції — його побачать усі за столом</div>':''}
+      <button class="btn-gold" style="max-width:100%;padding:10px;margin-top:6px" onclick="document.getElementById('chestRewardOverlay').classList.remove('show')">Забрати</button>
+    </div>`;
+    sfx('win');
+    try{ tg?.HapticFeedback?.notificationOccurred?.('success'); }catch(e){}
+    if(gained.coins)floatCoin(gained.coins,window.innerWidth/2,window.innerHeight/3);
+  },900*drama);
 }
 
 // ── Колекція: сорочки та скіни конкретних карт ────────────────────

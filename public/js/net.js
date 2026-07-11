@@ -21,7 +21,7 @@ function connectSocket(){
   socket.on('economy',(e)=>{ economyData=e; myGems=e.gems; updateCoinsUI(); renderEconomy(); if(typeof renderBank==='function')renderBank(); });
   socket.on('bank',(b)=>{ bankData=b; renderBank(); });
   socket.on('exchanged',({gems,coins})=>{ sfx('coin'); vibrate('success'); showToast(`🔁 ${gems} 💎 → +${coins} 💰`,3000); floatCoin(coins,window.innerWidth/2,180); });
-  socket.on('chest_opened',({chestId,gained})=>{sfx('coin');vibrate('success');showChestReward(gained);});
+  socket.on('chest_opened',({chestId,gained})=>{sfx('coin');vibrate('success');showChestReward(gained,chestId);});
   socket.on('quest_claimed',({gained})=>{ showToast('🎉 '+rewardText(gained),2500); if(gained.coins)floatCoin(gained.coins,window.innerWidth/2,140); });
   socket.on('quest_done',({text})=>showToast('✅ Квест виконано: '+text,3000));
 
