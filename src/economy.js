@@ -189,6 +189,11 @@ function grantReward(wallet, reward) {
     if (!wallet[bag].includes(reward.skin.id)) wallet[bag].push(reward.skin.id);
     gained.skin = reward.skin;
   }
+  if (reward.back) { // конкретна сорочка (напр. «Меценат» за донат)
+    wallet.ownedBackSkins = wallet.ownedBackSkins || [];
+    if (!wallet.ownedBackSkins.includes(reward.back)) wallet.ownedBackSkins.push(reward.back);
+    gained.back = reward.back;
+  }
   return gained;
 }
 
@@ -211,9 +216,9 @@ function maybeRewardReferrer(wallet, getWalletFn) {
 // ── Обмін валют: гемы → монети (міст між преміум і грою) ───────────────────
 // Більший пакет — кращий курс. Продати монети НАЗАД не можна (захист економіки).
 const EXCHANGE_PACKS = {
-  x5:  { gems: 5,  coins: 600 },   // 120/💎
-  x20: { gems: 20, coins: 2600 },  // 130/💎
-  x50: { gems: 50, coins: 7000 },  // 140/💎
+  x5:  { gems: 5,  coins: 650 },   // 130/💎
+  x20: { gems: 20, coins: 2800 },  // 140/💎 (+8%)
+  x50: { gems: 50, coins: 7500 },  // 150/💎 (+15%) — вигідніше міняти більше
 };
 
 function exchangeGems(wallet, packId) {

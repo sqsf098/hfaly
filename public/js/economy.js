@@ -22,6 +22,7 @@ function rewardText(g){
   if(g.deck)parts.push(`🎴 Колода «${DECK_LABELS[g.deck]||g.deck}»`);
   if(g.chest)parts.push(`📦 Скриня`);
   if(g.skin)parts.push(`🃏 Скін «${g.skin.name}»${g.skin.rarity==='epic'?' 💜':g.skin.rarity==='rare'?' 💙':''}`);
+  if(g.back)parts.push(`🎴 Сорочка «${(BACK_SKINS[g.back]&&BACK_SKINS[g.back].name)||g.back}»`);
   return parts.join('  ');
 }
 
@@ -140,48 +141,74 @@ function renderDecks(){
   }
 }
 
-// ЛУДКА-ШОУ: скриня трясеться → вибух променів і конфеті → нагорода
-// з аурою рідкості. Рідкісніше — драматичніше (довша тряска, більше конфеті).
+// ЛУДКА: КЕЙС-РУЛЕТКА (як у CS:GO) — стрічка тайлів прокручується і
+// сповільнюється РІВНО на виграші під золотим маркером, потім вибух
+// нагороди з променями рідкості. Оверлей ПОВЕРХ модалки скринь.
 function showChestReward(gained,chestId){
   const ov=$('chestRewardOverlay');if(!ov)return;
-  const chestEmoji={wood:'📦',silver:'🎁',gold:'👑'}[chestId]||'🎁';
   const rar=gained.skin&&gained.skin.rarity||null;
   const rarC=rar?(RARITY_UI[rar]||{}).color:'#ffd166';
-  const drama=rar==='epic'?1.5:rar==='rare'?1.2:1; // множник видовищності
-  const skinDef=gained.skin&&CARD_SKINS[gained.skin.id];
-  const icon=gained.skin?((skinDef&&skinDef.img)?`<img src="${skinDef.img}" style="width:86px;border-radius:8px;box-shadow:0 0 30px ${rarC}">`:`<span style="font-size:56px">${(skinDef&&skinDef.emoji)||'🃏'}</span>`)
-    :gained.deck?'<span style="font-size:56px">🎴</span>'
-    :gained.gems?'<span style="font-size:56px">💎</span>'
-    :gained.chest?'<span style="font-size:56px">📦</span>'
-    :'<span style="font-size:56px">💰</span>';
+  const winDef=gained.skin&&CARD_SKINS[gained.skin.id];
 
-  // Етап 1: скриня трясеться
-  ov.innerHTML=`<div class="go-box" style="text-align:center;background:transparent;border:none;box-shadow:none">
-    <div id="chestStage" style="font-size:84px;animation:chestShake ${0.9*drama}s ease-in-out">${chestEmoji}</div>
+  const tile=(inner,ring)=>`<div class="case-tile" style="--ring:${ring||'rgba(255,255,255,0.14)'}">${inner}</div>`;
+  const skinTile=(s)=>{const c=(s.rarity&&RARITY_UI[s.rarity]||{}).color||'#9fb4c8';
+    return tile(s.img?`<img src="${s.img}">`:`<span>${s.emoji||'🃏'}</span>`,c);};
+  const skinPool=Object.values(CARD_SKINS);
+  const randTile=()=>{const r=Math.random();
+    if(r<0.5&&skinPool.length){return skinTile(skinPool[Math.floor(Math.random()*skinPool.length)]);}
+    if(r<0.72)return tile('<span>💰</span>');
+    if(r<0.9)return tile('<span>💎</span>');
+    return tile('<span>📦</span>');};
+  const winTile=gained.skin?skinTile({...winDef,rarity:gained.skin.rarity})
+    :gained.deck?tile('<span>🎴</span>','#ffd166')
+    :gained.gems?tile('<span>💎</span>','#5cb8ff')
+    :gained.chest?tile('<span>📦</span>','#ffd166')
+    :tile('<span>💰</span>','#ffd166');
+
+  const TILE=92, TARGET=34, TOTAL=42; // 84px тайл + 8px проміжок
+  let tiles='';for(let i=0;i<TOTAL;i++)tiles+=(i===TARGET?winTile:randTile());
+
+  ov.innerHTML=`<div style="width:100%;max-width:430px;text-align:center">
+    <div class="go-title" style="margin-bottom:10px">${({wood:'📦 Дерев\'яна',silver:'🎁 Срібна',gold:'👑 Золота'})[chestId]||'🎁'} скриня</div>
+    <div class="case-wrap">
+      <div class="case-marker"></div>
+      <div class="case-reel" id="caseReel">${tiles}</div>
+      <div class="case-fade left"></div><div class="case-fade right"></div>
+    </div>
+    <div id="caseResult"></div>
   </div>`;
   ov.classList.add('show');
-  try{ tg?.HapticFeedback?.impactOccurred?.('heavy'); }catch(e){}
 
-  // Етап 2: вибух → нагорода
+  const reel=$('caseReel'),wrap=reel.parentElement;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    const center=wrap.clientWidth/2;
+    const jitter=Math.random()*36-18; // ±18px — зупинка «не по лінійці»
+    const dist=TARGET*TILE+42-center+jitter;
+    reel.style.transition='transform 4.4s cubic-bezier(0.12,0.85,0.09,1)';
+    reel.style.transform=`translateX(${-dist}px)`;
+  }));
+  try{ tg?.HapticFeedback?.impactOccurred?.('medium'); }catch(e){}
+  let ticks=0;const tickInt=setInterval(()=>{sfx('click');try{tg?.HapticFeedback?.selectionChanged?.();}catch(e){};if(++ticks>12)clearInterval(tickInt);},220);
+
   setTimeout(()=>{
-    const confetti=Array.from({length:Math.round(16*drama)},(_,i)=>{
-      const ang=Math.random()*360,dist=70+Math.random()*110,dur=0.7+Math.random()*0.7;
-      const clr=['#ffd166','#c98bff','#5cb8ff','#ff8a97','#9fe8a0'][i%5];
-      return `<span class="cf" style="background:${clr};--tx:${Math.cos(ang)*dist}px;--ty:${Math.sin(ang)*dist}px;animation-duration:${dur}s"></span>`;
-    }).join('');
-    ov.innerHTML=`<div class="go-box" style="text-align:center;position:relative;overflow:visible">
+    clearInterval(tickInt);
+    const icon=gained.skin?((winDef&&winDef.img)?`<img src="${winDef.img}" style="width:78px;border-radius:8px;box-shadow:0 0 26px ${rarC}">`:`<span style="font-size:48px">${(winDef&&winDef.emoji)||'🃏'}</span>`)
+      :gained.deck?'<span style="font-size:48px">🎴</span>'
+      :gained.gems?'<span style="font-size:48px">💎</span>'
+      :gained.chest?'<span style="font-size:48px">📦</span>'
+      :'<span style="font-size:48px">💰</span>';
+    $('caseResult').innerHTML=`<div class="go-box" style="margin:14px auto 0;position:relative;overflow:visible">
       <div class="chest-rays" style="--rc:${rarC}"></div>
-      <div class="chest-confetti">${confetti}</div>
       <div class="chest-reveal">${icon}</div>
-      <div class="go-title" style="margin-top:8px">${rar?(RARITY_UI[rar].label+'!'):'Нагорода!'}</div>
-      <div style="font-size:16px;color:${rarC};font-family:'Rubik',sans-serif;margin:8px 0;font-weight:800">${rewardText(gained)}</div>
-      ${gained.skin?'<div style="font-size:10px;color:var(--text3);margin-bottom:6px">Одягни в Колекції — його побачать усі за столом</div>':''}
-      <button class="btn-gold" style="max-width:100%;padding:10px;margin-top:6px" onclick="document.getElementById('chestRewardOverlay').classList.remove('show')">Забрати</button>
+      <div class="go-title" style="margin-top:6px">${rar?(RARITY_UI[rar].label+'!'):'Нагорода!'}</div>
+      <div style="font-size:15px;color:${rarC};font-family:'Rubik',sans-serif;margin:6px 0;font-weight:800">${rewardText(gained)}</div>
+      ${gained.skin?'<div style="font-size:10px;color:var(--text3);margin-bottom:4px">Одягни в Колекції — його побачать усі за столом</div>':''}
+      <button class="btn-gold" style="max-width:100%;padding:10px;margin-top:4px" onclick="document.getElementById('chestRewardOverlay').classList.remove('show')">Забрати</button>
     </div>`;
     sfx('win');
     try{ tg?.HapticFeedback?.notificationOccurred?.('success'); }catch(e){}
-    if(gained.coins)floatCoin(gained.coins,window.innerWidth/2,window.innerHeight/3);
-  },900*drama);
+    if(gained.coins)floatCoin(gained.coins,window.innerWidth/2,window.innerHeight/2);
+  },4550);
 }
 
 // ── Колекція: сорочки та скіни конкретних карт ────────────────────
@@ -389,7 +416,7 @@ function renderBank(){
   if(packsEl){
     packsEl.innerHTML='';
     for(const p of (bankData&&bankData.packs)||[]){
-      const icon=p.reward.gems?'💎':p.reward.chest?'👑':'💰';
+      const icon=p.reward.back?'❤️':p.reward.chest?'👑':p.reward.gems?'💎':'💰';
       const d=document.createElement('div');
       d.className='card-skin-row';
       d.innerHTML=`

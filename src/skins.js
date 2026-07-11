@@ -27,6 +27,8 @@ const BUILTIN_CARDS = {
 const STARS_BY_RARITY = { common: 100, rare: 150, epic: 200 };
 
 const PREMIUM_BACKS = {
+  // «Меценат» — ЛИШЕ за донат (noSale: не продається і не падає зі скринь)
+  patron_bk:  { name: 'Меценат ❤️', css: 'linear-gradient(135deg,#3d0d0d 0%,#8a1e2e 40%,#e3bf6a 130%)', border: 'rgba(255,209,102,0.95)', rarity: 'epic', noSale: true },
   galaxy_bk:  { name: 'Галактика', css: 'linear-gradient(135deg,#1a0b2e 0%,#3d1a78 45%,#7b2ff7 100%)', border: 'rgba(160,110,255,0.8)', rarity: 'epic' },
   royal_gold: { name: 'Королівське золото', css: 'linear-gradient(135deg,#f5d061,#a97c1a 55%,#5c3d00)', border: 'rgba(255,220,120,0.9)', rarity: 'epic' },
   ember_bk:   { name: 'Жар', css: 'linear-gradient(135deg,#ff6b35,#b62203 60%,#4a0d00)', border: 'rgba(255,140,80,0.8)', rarity: 'rare' },
@@ -101,7 +103,8 @@ const ROYAL_CARDS = (() => {
 function withStars(defs) {
   const out = {};
   for (const [id, d] of Object.entries(defs)) {
-    out[id] = { ...d, stars: d.stars || STARS_BY_RARITY[d.rarity] || 0 };
+    // noSale (донат-ексклюзиви) не отримують ціни — їх не купиш напряму
+    out[id] = { ...d, stars: d.noSale ? 0 : (d.stars || STARS_BY_RARITY[d.rarity] || 0) };
   }
   return out;
 }

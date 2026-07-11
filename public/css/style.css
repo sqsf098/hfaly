@@ -729,3 +729,24 @@ body.fan-nav .screen .content{padding-bottom:calc(140px + env(safe-area-inset-bo
   animation:cfFly ease-out forwards}
 @keyframes cfFly{from{transform:translate(0,0) rotate(0);opacity:1}
   to{transform:translate(var(--tx),calc(var(--ty) + 60px)) rotate(300deg);opacity:0}}
+
+/* ══ КЕЙС-РУЛЕТКА (v13) ═════════════════════════════════════════════ */
+/* Нагорода — ПОВЕРХ модалки скринь (у modal-overlay z-index 200) */
+#chestRewardOverlay{z-index:320}
+.case-wrap{position:relative;height:112px;overflow:hidden;border-radius:14px;
+  background:rgba(0,0,0,0.35);border:1px solid var(--border2)}
+.case-reel{display:flex;gap:8px;padding:14px 0;will-change:transform}
+.case-tile{flex:0 0 84px;height:84px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(180deg,rgba(255,255,255,0.07),rgba(255,255,255,0.02));
+  border:2px solid var(--ring,rgba(255,255,255,0.14));font-size:32px}
+.case-tile img{width:60px;border-radius:6px;pointer-events:none}
+.case-marker{position:absolute;left:50%;top:0;bottom:0;width:3px;transform:translateX(-50%);
+  background:linear-gradient(180deg,var(--gold),#fff3c4,var(--gold));z-index:4;
+  box-shadow:0 0 12px rgba(255,209,102,0.9)}
+.case-marker::before,.case-marker::after{content:'';position:absolute;left:50%;transform:translateX(-50%);
+  border:7px solid transparent}
+.case-marker::before{top:-2px;border-top:9px solid var(--gold)}
+.case-marker::after{bottom:-2px;border-bottom:9px solid var(--gold)}
+.case-fade{position:absolute;top:0;bottom:0;width:56px;z-index:3;pointer-events:none}
+.case-fade.left{left:0;background:linear-gradient(90deg,rgba(10,6,28,0.95),transparent)}
+.case-fade.right{right:0;background:linear-gradient(270deg,rgba(10,6,28,0.95),transparent)}
