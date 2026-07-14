@@ -69,15 +69,22 @@ function startMusic(){
   if(!musicOn||musicNodes)return;
   const ctx=ac(); if(!ctx)return;
   const master=ctx.createGain(); master.gain.value=0; master.connect(ctx.destination);
-  master.gain.linearRampToValueAtTime(0.045,ctx.currentTime+2); // дуже тихо, повзучий вхід
-  const oscs=[0,1,2].map(()=>{ const o=ctx.createOscillator(),g=ctx.createGain();
-    o.type='sine'; g.gain.value=0.33; o.connect(g).connect(master); o.start(); return {o,g}; });
+  master.gain.linearRampToValueAtTime(0.07,ctx.currentTime+2.5); // тихо, повзучий вхід
+  // 3 голоси акорду (sine) + бас-октава (triangle) — тепліше і чутніше
+  const oscs=[0,1,2,3].map((i)=>{ const o=ctx.createOscillator(),g=ctx.createGain();
+    o.type=i===3?'triangle':'sine'; g.gain.value=i===3?0.22:0.3;
+    o.connect(g).connect(master); o.start(); return {o,g}; });
+  // повільне «дихання» гучності — жива атмосфера
+  const lfo=ctx.createOscillator(),lg=ctx.createGain();
+  lfo.frequency.value=0.08; lg.gain.value=0.018;
+  lfo.connect(lg).connect(master.gain); lfo.start();
   let step=0;
   const applyChord=()=>{ const ch=MUSIC_CHORDS[step%MUSIC_CHORDS.length]; step++;
-    oscs.forEach((n,i)=>{ n.o.frequency.exponentialRampToValueAtTime(ch[i],ctx.currentTime+1.2); }); };
+    oscs.forEach((n,i)=>{ const f=i===3?ch[0]/2:ch[i];
+      n.o.frequency.exponentialRampToValueAtTime(f,ctx.currentTime+1.4); }); };
   applyChord();
   musicTimer=setInterval(applyChord,5200);
-  musicNodes={master,oscs};
+  musicNodes={master,oscs:[...oscs,{o:lfo,g:lg}]};
 }
 function stopMusic(){
   if(musicTimer){clearInterval(musicTimer);musicTimer=null;}

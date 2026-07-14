@@ -343,6 +343,7 @@ function publicState(room, viewerIndex) {
     // skins — щоб суперники бачили ТВОЮ сорочку і твої скіни карт у дачці
     players: room.players.map(p => ({ name: p.name, index: p.index, skins: p.skins || null })),
     hostTgId: room.hostTgId || null, // хто може стартувати гру (кнопка «Старт»)
+    pro: !!room.pro, // профі-стіл: клієнт НЕ підсвічує дозволені карти
     scores: room.scores,
     trump: room.trump,
     currentPlayer: room.currentPlayer,

@@ -160,3 +160,16 @@ function clanSend(){
 function onClanMsg(m){
   if(clanData&&clanData.my){ clanData.my.chat=clanData.my.chat||[]; clanData.my.chat.push(m); renderClan(); }
 }
+
+// ══ 🏅 Топ рекрутерів тижня ═══════════════════════════════════════════
+function renderRefTop(d){
+  const box=$('refTopBox'); if(!box)return;
+  const prizes=(d.prizes||[]).map((p,i)=>`${['🥇','🥈','🥉'][i]} ${p}💎`).join(' · ');
+  const rows=(d.top||[]).map(t=>
+    `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border2)">
+      <span>${t.place<=3?['🥇','🥈','🥉'][t.place-1]:t.place+'.'} ${escapeHtml(t.name)}</span>
+      <span style="color:var(--gold)">${t.count} друзів · ${t.earned}💎 всього</span></div>`).join('');
+  box.innerHTML=`<div style="font-size:10px;color:var(--text3);margin-bottom:6px">Тиждень ${d.week||''} · призи: ${prizes} · зараховується, коли друг зіграв першу гру</div>`
+    +(rows||'<div style="text-align:center;padding:8px">Ще нікого — приведи друга і будь першим! 🚀</div>')
+    +`<button class="btn-gold" style="max-width:100%;padding:9px;margin-top:8px;font-size:12px" onclick="shareRef()">📨 Запросити друга</button>`;
+}

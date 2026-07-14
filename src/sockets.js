@@ -14,6 +14,7 @@ const { collectionsState } = require('./collections');
 const market = require('./market');
 const durak = require('./durak');
 const clans = require('./clans');
+const reftop = require('./reftop');
 const { log } = require('./logger');
 
 let io = null;
@@ -45,6 +46,7 @@ function processReferral(tgId) {
   const res = maybeRewardReferrer(w, getWallet);
   if (!res) return;
   saveWallets();
+  reftop.onReferralCounted(res.inviterId); // тижневий залік рекрутера
   log(`👥 РЕФЕРАЛ: ${res.inviterId} отримав +${res.reward.coins}💰 +${res.reward.gems}💎 за друга ${tgId}`);
   try {
     require('./telegram').notifyUser(res.inviterId,
@@ -475,6 +477,7 @@ function registerHandlers(serverIo) {
           id: r.id,
           host: r.hostName || r.players[0]?.name || 'Гравець',
           mode: r.mode || 'hfaly',
+          pro: !!r.pro,
           maxPlayers: r.maxPlayers || 4,
           deposit: r.deposit || 0,
           players: r.players.length,
@@ -497,7 +500,7 @@ function registerHandlers(serverIo) {
       setTimeout(() => runBots(room.id), 400);
     });
 
-    safeOn(socket, 'join_room', ({ roomId, name, tgId, isPublic, deposit, mode, playersCount }) => {
+    safeOn(socket, 'join_room', ({ roomId, name, tgId, isPublic, deposit, mode, playersCount, pro }) => {
       tgId = uid(tgId); if (!tgId) return;
       const wallet = getWallet(tgId);
       if (name) wallet.name = String(name).slice(0, 32); // для адмін-панелі та лідербордів
@@ -514,6 +517,7 @@ function registerHandlers(serverIo) {
         room.isPublic = isPublic !== false;
         room.hostName = name || 'Гравець';
         room.hostTgId = tgId; // хост стартує гру, коли всі розсілись
+        room.pro = pro === true; // профі: без підсвітки дозволених карт
         rooms.set(roomId, room);
       }
 
@@ -776,6 +780,11 @@ function registerHandlers(serverIo) {
         broadcastState(room);
         runBots(room.id); // якщо була його черга — бот ходить
       }
+    });
+
+    // ── 🏅 Топ рекрутерів тижня ───────────────────────────────
+    safeOn(socket, 'ref_top', () => {
+      socket.emit('ref_top', reftop.top(10));
     });
 
     // ── Клани ─────────────────────────────────────────────────

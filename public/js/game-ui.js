@@ -317,10 +317,13 @@ function renderGame(state){
   }
 
   // Simple overlap row - all cards visible, scroll if needed
+  // ПРОФІ-стіл: жодних підказок — карти не підсвічуються і не блокуються
+  // (нелегальний хід відхилить сервер)
+  const isPro = !!state.pro;
   sorted.forEach((card, i) => {
     const isSel = card.id===selectedCardId;
-    const isInv = phase==='play'&&isMyTurn&&!canPlay(card,hand,trick,trump);
-    const isPlayable = phase==='play'&&isMyTurn&&!isInv;
+    const isInv = !isPro&&phase==='play'&&isMyTurn&&!canPlay(card,hand,trick,trump);
+    const isPlayable = phase==='play'&&isMyTurn&&!isInv; // у профі граються ВСІ карти
     const el = makeCard(card, {
       selected: isSel,
       invalid: isInv&&!isSel,
@@ -331,7 +334,7 @@ function renderGame(state){
         renderGame(gameState);
       }
     });
-    if(isPlayable && !isSel) el.classList.add('playable');
+    if(!isPro && isPlayable && !isSel) el.classList.add('playable'); // підсвітка лише в любителя
     if(isPlayable) enableCardDrag(el, card); // перетягування на стіл
     el.style.zIndex = isSel ? 50 : i+1;
     hd.appendChild(el);
@@ -624,9 +627,13 @@ function renderOpponentCards(state) {
   ];
 
   const N = state.maxPlayers||4;
-  // 2 гравці (Дурак 1v1): один суперник — зверху; 3: ліворуч+праворуч; 4: всі
+  // 2 гравці (Дурак 1v1): суперник зверху; 3: ліворуч+праворуч;
+  // 4 (хФали): хід ПО КОЛУ як на екрані — я(низ) → (+1)ліворуч →
+  // (+2)ПАРТНЕР НАВПРОТИ (верх) → (+3)праворуч → я
   const offsets = N===2 ? [1] : N===3 ? [1,2] : [1,2,3];
-  const posMap  = N===2 ? [positions[0]] : N===3 ? [positions[1],positions[2]] : positions;
+  const posMap  = N===2 ? [positions[0]]
+    : N===3 ? [positions[1],positions[2]]
+    : [positions[1],positions[0],positions[2]]; // left, top(партнер), right
   for(const pos of positions){
     if(!posMap.includes(pos)){ const c=$(pos.containerId),l=$(pos.labelId); if(c)c.innerHTML=''; if(l)l.innerHTML=''; }
   }

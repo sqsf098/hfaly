@@ -8,7 +8,7 @@
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script src="https://unpkg.com/@tonconnect/ui@2/dist/tonconnect-ui.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;600;700;800;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=16">
+<link rel="stylesheet" href="css/style.css?v=17">
 
 </head>
 <body class="theme-fan fan-nav">
@@ -223,6 +223,8 @@
     </div>
     <div class="section-title">🏆 Топ кланів</div>
     <div class="ui-card" id="clanTop" style="font-size:11px;color:var(--text3)">—</div>
+    <div class="section-title">🏅 Топ рекрутерів тижня</div>
+    <div class="ui-card" id="refTopBox" style="font-size:11px;color:var(--text3)">—</div>
     <div class="section-title">Нікнейм</div>
     <div class="ui-card">
       <div class="input-group">
@@ -439,7 +441,7 @@
     <div class="trick-review" id="trickReview">
       <div class="trick-winner-label" id="trickWinnerLabel">🏆 Дачку взяв</div>
       <div class="trick-review-cards" id="trickReviewCards"></div>
-      <button class="btn-gold" onclick="dismissTrickReview()" style="width:100%;padding:10px;font-size:14px">▶ Далі</button>
+      <button class="btn-gold" onclick="dismissTrickReview()" style="width:100%;padding:10px;font-size:14px">✊ Відбій</button>
     </div>
   </div>
   <div class="my-hand-area">
@@ -497,6 +499,14 @@
         <div class="toggle-opt" onclick="setRoomMode(this,'khrest')">♣ Хрестовець · 3</div>
         <div class="toggle-opt" onclick="setRoomMode(this,'durak')">🎴 Дурак</div>
       </div>
+    </div>
+    <div class="input-group">
+      <label class="input-label">Рівень</label>
+      <div class="toggle-row" id="skillRow">
+        <div class="toggle-opt active" onclick="setRoomSkill(this,'amateur')">🙂 Любитель</div>
+        <div class="toggle-opt" onclick="setRoomSkill(this,'pro')">😎 Профі</div>
+      </div>
+      <div style="font-size:10px;color:var(--text3)">Профі: гра БЕЗ підсвітки дозволених карт — тільки твоя голова.</div>
     </div>
     <div class="input-group" id="durakPlayersGroup" style="display:none">
       <label class="input-label">Гравців (Дурак)</label>
@@ -697,16 +707,16 @@
   <div class="fan-wrap" id="fanWrap"></div>
 </div>
 
-<script src="js/core.js?v=16"></script>
-<script src="js/sound.js?v=16"></script>
-<script src="js/icons.js?v=16"></script>
-<script src="js/fan.js?v=16"></script>
-<script src="js/lobby.js?v=16"></script>
-<script src="js/economy.js?v=16"></script>
-<script src="js/social.js?v=16"></script>
-<script src="js/ton.js?v=16"></script>
-<script src="js/net.js?v=16"></script>
-<script src="js/game-ui.js?v=16"></script>
-<script src="js/main.js?v=16"></script>
+<script src="js/core.js?v=17"></script>
+<script src="js/sound.js?v=17"></script>
+<script src="js/icons.js?v=17"></script>
+<script src="js/fan.js?v=17"></script>
+<script src="js/lobby.js?v=17"></script>
+<script src="js/economy.js?v=17"></script>
+<script src="js/social.js?v=17"></script>
+<script src="js/ton.js?v=17"></script>
+<script src="js/net.js?v=17"></script>
+<script src="js/game-ui.js?v=17"></script>
+<script src="js/main.js?v=17"></script>
 </body>
 </html>

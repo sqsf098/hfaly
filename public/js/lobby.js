@@ -21,7 +21,7 @@ function renderRooms(list){
   for(const room of list){
     const mp=room.maxPlayers||4;
     const locked=myCoins<room.deposit;
-    const modeLabel=room.mode==='khrest'?'Хрестовець · 3 гравці':room.mode==='durak'?`Дурак · ${room.maxPlayers||2} гравці`:'хФали · 2 vs 2';
+    const modeLabel=(room.mode==='khrest'?'Хрестовець · 3 гравці':room.mode==='durak'?`Дурак · ${room.maxPlayers||2} гравці`:'хФали · 2 vs 2')+(room.pro?' · 😎 ПРОФІ':'');
     const row=document.createElement('div');
     row.className=`table-row ${locked?'locked':''}`;
     row.innerHTML=`
@@ -67,7 +67,8 @@ function createPrivateRoom(){
   connectSocket();
   const roomId=Math.random().toString(36).slice(2,8).toUpperCase();
   socket.emit('join_room',{roomId,name:getMyName(),tgId:getMyTgId(),isPublic:roomType==='public',
-    deposit:privateDeposit||0, mode:roomMode, playersCount:roomMode==='durak'?durakPlayers:undefined});
+    deposit:privateDeposit||0, mode:roomMode, playersCount:roomMode==='durak'?durakPlayers:undefined,
+    pro:roomSkill==='pro'});
 }
 
 function joinByCode(){

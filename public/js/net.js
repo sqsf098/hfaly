@@ -69,6 +69,7 @@ function connectSocket(){
   // ── Клани ────────────────────────────────────────────────────────
   socket.on('clan_state',(d)=>{ clanData=d; renderClan(); });
   socket.on('clan_msg',(m)=>onClanMsg(m));
+  socket.on('ref_top',(d)=>renderRefTop(d));
 
   // ── TON / NFT ───────────────────────────────────────────────────
   socket.on('ton_state',(s)=>{ tonData=s; renderTon(); });
@@ -111,9 +112,15 @@ function connectSocket(){
   });
 
   socket.on('trick_won',({winner,winnerName})=>{
-    // Без повідомлення — карти зі столу злітаються в стопку до переможця
     if(gameState && gameState.trick && gameState.trick.length>=3){
       sfx('trick');
+      // «Відбій»: показуємо ВЗЯТКУ з іменами — встигаєш побачити, хто що
+      // кинув. Тап «Відбій» або авто-продовження через 4.5с (нікого не блокує:
+      // це візуальна панель, сервер грає далі)
+      const snap=[...gameState.trick];
+      showTrickReview(snap, winner, winnerName, gameState.players, ()=>{});
+      clearTimeout(showTrickReview._auto);
+      showTrickReview._auto=setTimeout(()=>dismissTrickReview(),4500);
       animateTrickCollect(winner, ()=>{});
     }
   });
@@ -166,6 +173,7 @@ function connectSocket(){
     socket.emit('get_collections',{tgId:getMyTgId()});
     socket.emit('market_get');
     socket.emit('clan_get',{tgId:getMyTgId()});
+    socket.emit('ref_top');
   },300);
 }
 

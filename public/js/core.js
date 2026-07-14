@@ -183,5 +183,11 @@ function setDurakPlayers(el,n){
   document.querySelectorAll('#durakPlayersRow .toggle-opt').forEach(o=>o.classList.remove('active'));
   el.classList.add('active');durakPlayers=n;
 }
+// Рівень стола: любитель (підсвітка ходів) / профі (без підказок)
+let roomSkill='amateur';
+function setRoomSkill(el,s){
+  document.querySelectorAll('#skillRow .toggle-opt').forEach(o=>o.classList.remove('active'));
+  el.classList.add('active');roomSkill=s;
+}
 
 // ── ROOMS ─────────────────────────────────────────────────────────
