@@ -151,6 +151,9 @@ function connectSocket(){
 
   socket.on('player_disconnected',({name})=>showToast('❌ '+name+' відключився',3000));
   socket.on('error',({message})=>{
+    // A rejected wheel spin must immediately re-enable the controls. Otherwise
+    // the player is left staring at a disabled wheel until the fallback timeout.
+    if(typeof wheelSpinning!=='undefined' && wheelSpinning && typeof setWheelBusy==='function') setWheelBusy(false);
     showToast('⚠️ '+message,3000);
     // страховка від «зниклих карт»: після відмови сервера перемальовуємо руку
     if(gameState && gameState.phase==='play') renderGame(gameState);

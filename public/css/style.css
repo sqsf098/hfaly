@@ -763,3 +763,23 @@ body.fan-nav .screen .content{padding-bottom:calc(140px + env(safe-area-inset-bo
   box-shadow:0 0 14px rgba(201,168,76,0.4)}
 .wheel-pointer{position:absolute;left:50%;top:-14px;transform:translateX(-50%);font-size:24px;color:var(--gold);z-index:5;
   text-shadow:0 0 8px rgba(255,209,102,0.8);filter:drop-shadow(0 2px 3px rgba(0,0,0,0.6))}
+
+/* Mobile comfort: keep sheets, wheels and controls inside Telegram's viewport. */
+#wheelBtns.is-busy{opacity:.45;pointer-events:none}
+@media (max-width:380px){
+  .modal-box,.go-box{max-width:calc(100vw - 24px);padding:18px 16px}
+  .wheel-box{width:210px;height:210px}
+  .wheel-label{transform-origin:center 105px!important;font-size:10px}
+  .wheel-hub{width:46px;height:46px;font-size:13px}
+  .wheel-pointer{top:-13px}
+}
+@media (max-height:640px){
+  .modal-overlay{align-items:flex-end}
+  .modal-box{max-height:calc(100dvh - env(safe-area-inset-top) - 12px);overflow-y:auto}
+  .game-overlay{padding:10px 0 calc(10px + env(safe-area-inset-bottom))}
+  .wheel-box{width:200px;height:200px;margin:6px auto}
+  .wheel-label{transform-origin:center 100px!important;font-size:10px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
