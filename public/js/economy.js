@@ -475,9 +475,17 @@ function renderBank(){
 }
 
 // ══ 🎡 КОЛЕСО ФОРТУНИ ═════════════════════════════════════════════════
-let wheelData=null,wheelSpinning=false;
+let wheelData=null,wheelSpinning=false,wheelSpinTimer=null;
+function setWheelBusy(busy){
+  wheelSpinning=busy;
+  clearTimeout(wheelSpinTimer);
+  wheelSpinTimer=null;
+  const buttons=$('wheelBtns');
+  if(buttons) buttons.classList.toggle('is-busy',busy);
+}
 function openWheel(){
   connectSocket();
+  if(!socket){ showToast('Не вдалося підключитися до сервера',3000); return; }
   socket.emit('wheel_get',{tgId:getMyTgId()});
   renderWheel();
 }
@@ -522,24 +530,33 @@ function renderWheel(){
   ov.classList.add('show');
 }
 function buyPackUI(packId){
+  if(!socket){ showToast('Немає з’єднання із сервером',3000); return; }
   socket.emit('buy_pack',{tgId:getMyTgId(),packId});
   showToast('⭐ Створюю рахунок...',1800);
 }
 function doSpin(free){
   if(wheelSpinning||!socket)return;
-  wheelSpinning=true;
+  setWheelBusy(true);
   socket.emit('wheel_spin',{tgId:getMyTgId(),free});
+  // Сервер може бути недоступний або відхилити авторизацію до відповіді.
+  // Без тайм-ауту кнопка залишалась заблокованою до перезавантаження WebApp.
+  wheelSpinTimer=setTimeout(()=>{
+    if(!wheelSpinning)return;
+    setWheelBusy(false);
+    showToast('Немає відповіді від сервера. Спробуй ще раз.',3500);
+  },10000);
 }
 function onWheelResult(res){
   const el=$('wheelEl');
-  if(!el){wheelSpinning=false;return;}
-  $('wheelBtns').style.opacity='0.25';
+  if(!el){setWheelBusy(false);return;}
+  const buttons=$('wheelBtns');
+  if(buttons) buttons.classList.add('is-busy');
   const target=5*360-(res.segIndex*45+22.5)+(Math.random()*24-12);
   el.style.transition='transform 4.2s cubic-bezier(0.12,0.8,0.09,1)';
   el.style.transform=`rotate(${target}deg)`;
   let t=0;const ti=setInterval(()=>{sfx('click');if(++t>10)clearInterval(ti);},250);
   setTimeout(()=>{
-    clearInterval(ti);wheelSpinning=false;
+    clearInterval(ti);setWheelBusy(false);
     const rar=res.gained&&res.gained.skin&&res.gained.skin.rarity;
     const rarC=rar?(RARITY_UI[rar]||{}).color:'#ffd166';
     $('wheelResult').innerHTML=`<div style="position:relative;margin-top:10px">
