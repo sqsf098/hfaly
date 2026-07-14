@@ -135,11 +135,11 @@ function startBot() {
 
     const text = isNew
       ? `🃏 *хФали* — карткова гра в Telegram\\!\n${escMd(refLine)}\nПривіт, *${escMd(userName)}*\\! Починається все просто:\n\n1️⃣ Тисни *«Відкрити гру»*\n2️⃣ Запроси друга — граємо 2 vs 2\n3️⃣ Переможці ділять банк 💰\n\nСтартовий баланс: *${wallet.coins}* 💰\nА ще: Дурак, скіни\\-колекції, ринок і клани\\!`
-      : `🃏 *хФали* — з поверненням, *${escMd(userName)}*\\!\n\n💰 Баланс: *${wallet.coins}*\n🎮 Ігор: *${wallet.gamesPlayed}* | 🏆 Перемог: *${wallet.wins}*${wallet.refCount ? `\n👥 Друзів привів: *${wallet.refCount}*` : ''}`;
+      : `🃏 *хФали* — з поверненням, *${escMd(userName)}*\\!\n\n💰 Баланс: *${wallet.coins}*\n🎮 Ігор: *${wallet.gamesPlayed}* | 🏆 Перемог: *${wallet.wins}*${wallet.refCount ? `\n👥 Команда: *${wallet.refCount}* друзів` : ''}${wallet.refEarnedGems ? ` | 💎 Зароблено на команді: *${wallet.refEarnedGems}*` : ''}`;
 
     const kb = [
       [{ text: '🎮 Відкрити гру', web_app: { url: gameUrl(userName, userId) } }],
-      [{ text: '📨 Запросити друга (+300 💰 обом)', url: refShare }],
+      [{ text: '📨 Збери команду: 25% + 10% з покупок', url: refShare }],
       [{ text: '🆕 Стіл з друзями', callback_data: 'newgame' }, { text: '📖 Правила', callback_data: 'rules' }],
     ];
     if (process.env.GROUP_LINK) kb.push([{ text: '👥 Спільнота гравців', url: process.env.GROUP_LINK }]);

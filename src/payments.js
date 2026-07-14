@@ -118,20 +118,33 @@ async function createCollectionInvoice(tgId, collId) {
   }
 }
 
-// ── Реф-кешбек: запрошувач ДОВІЧНО отримує 10% (гемами) з усіх покупок
-//    друга за Stars. Паритет 1💎≈5⭐ → gems = stars/50. Це паливо росту:
-//    приводити платячих друзів стає вигідно назавжди.
+// ── ДВОРІВНЕВИЙ реф-кешбек (гемами, довічно, з РЕАЛЬНИХ покупок за ⭐):
+//    Рівень 1: 25% тому, хто запросив покупця (stars/20 у гемах, 1💎≈5⭐)
+//    Рівень 2: 10% тому, хто запросив запрошувача (stars/50)
+//    Двох рівнів достатньо (стандарт Hamster) — глибше = дірка в економіці
+//    і токсична «піраміда». Фейкові акаунти не дають нічого: платимо лише
+//    з реальних платежів.
+const REF_LEVELS = [
+  { divisor: 20, pct: '25%' },  // рівень 1
+  { divisor: 50, pct: '10%' },  // рівень 2
+];
+
 function refCashback(buyerTgId, stars) {
-  const buyer = getWallet(buyerTgId);
-  if (!buyer.referredBy) return;
-  const gems = Math.max(1, Math.round(stars / 50));
-  const inviter = getWallet(buyer.referredBy);
-  inviter.gems = (inviter.gems || 0) + gems;
+  let current = getWallet(buyerTgId);
+  for (const lvl of REF_LEVELS) {
+    const inviterId = current.referredBy;
+    if (!inviterId) break;
+    const gems = Math.max(1, Math.round(stars / lvl.divisor));
+    const inviter = getWallet(inviterId);
+    inviter.gems = (inviter.gems || 0) + gems;
+    inviter.refEarnedGems = (inviter.refEarnedGems || 0) + gems;
+    log(`👥 КЕШБЕК L${lvl.pct}: ${inviterId} +${gems}💎 (покупка ${buyerTgId} на ${stars}⭐)`);
+    if (bot) bot.sendMessage(inviterId,
+      `💎 Покупка у твоїй команді — кешбек *+${gems} 💎* (${lvl.pct})! Всього заробив: *${inviter.refEarnedGems} 💎*`,
+      { parse_mode: 'Markdown' }).catch(() => {});
+    current = inviter; // піднімаємось на рівень вище
+  }
   saveWallets();
-  log(`👥 КЕШБЕК: ${buyer.referredBy} +${gems}💎 (10% з покупки ${buyerTgId} на ${stars}⭐)`);
-  if (bot) bot.sendMessage(buyer.referredBy,
-    `💎 Твій друг зробив покупку — тобі кешбек *+${gems} 💎*! Запрошуй ще: /start`,
-    { parse_mode: 'Markdown' }).catch(() => {});
 }
 
 // Видати куплений скін у гаманець
