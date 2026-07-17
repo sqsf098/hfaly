@@ -763,3 +763,256 @@ body.fan-nav .screen .content{padding-bottom:calc(140px + env(safe-area-inset-bo
   box-shadow:0 0 14px rgba(201,168,76,0.4)}
 .wheel-pointer{position:absolute;left:50%;top:-14px;transform:translateX(-50%);font-size:24px;color:var(--gold);z-index:5;
   text-shadow:0 0 8px rgba(255,209,102,0.8);filter:drop-shadow(0 2px 3px rgba(0,0,0,0.6))}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ═══ v18 ПОВНИЙ РЕДИЗАЙН ═══════════════════════════════════════════
+   Лобі/меню — стиль преміум крипто-казино: глибокий нічний нави,
+   неонова бірюза, промо-банер, яскраві градієнтні плитки-ігри.
+   Ігровий стіл + Колекція — мультяшний "данжен": фіолетовий камінь,
+   шахова арена, оранжеві банери-стрічки, карти талантів у рамках.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── ПАЛІТРА КАЗИНО (лобі, обидві теми) ───────────────────────────── */
+:root, body.theme-fan{
+  --bg:#070c16;--bg2:#0d1524;--bg3:#121d31;--bg4:#182640;
+  --cyan:#3fe3ff;--cyan2:#8ff0ff;--cyan-dim:#0e7f96;
+  --violet:#8b5cf6;--accent:#ff9d3d;
+  --gold:#f5c964;--gold2:#ffe1a0;--gold-dim:#8a6f2e;
+  --green:#20b978;--green2:#33e0a0;--green-dim:#158055;
+  --red:#ff5d73;--red-dim:#a5293a;--felt:#182640;
+  --text:#eef4ff;--text2:#9fb0cc;--text3:#5f7091;
+  --border:rgba(120,160,220,0.18);--border2:rgba(120,160,220,0.08);
+  --panel-top:rgba(160,200,255,0.08);
+}
+html,body, body.theme-fan{
+  background:
+    radial-gradient(1000px 620px at 50% -12%, rgba(28,90,140,0.35) 0%, transparent 60%),
+    radial-gradient(700px 500px at 110% 110%, rgba(63,227,255,0.08) 0%, transparent 55%),
+    linear-gradient(175deg,#0a1220 0%,#070c16 65%,#05080f 100%);
+}
+body.theme-fan::before{opacity:0.35}
+
+.app-logo{font-family:'Rubik',sans-serif;font-size:20px;font-weight:900;letter-spacing:3px;
+  background:linear-gradient(180deg,#ffffff,#8ff0ff 80%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 14px rgba(63,227,255,0.45))}
+
+/* ── ПРОМО-БАНЕР (hero) ───────────────────────────────────────────── */
+.promo-hero{position:relative;z-index:2;margin:6px 16px 0;border-radius:22px;overflow:hidden;
+  background:linear-gradient(135deg,#12264a 0%,#0e1c38 45%,#251a4e 100%);
+  border:1px solid rgba(63,227,255,0.22);
+  box-shadow:0 0 30px rgba(63,227,255,0.10), inset 0 1px 0 rgba(160,220,255,0.15), 0 12px 30px rgba(0,0,0,0.45)}
+.promo-hero::before{content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(360px 200px at 85% 0%,rgba(63,227,255,0.20),transparent 65%),
+             radial-gradient(300px 180px at 0% 100%,rgba(139,92,246,0.28),transparent 60%)}
+.promo-inner{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;padding:18px 16px 16px}
+.promo-cards{position:relative;height:96px;width:240px;margin-bottom:10px}
+.promo-title{font-family:'Rubik',sans-serif;font-size:21px;font-weight:900;color:#fff;letter-spacing:0.4px;line-height:1.15}
+.promo-title span{color:var(--cyan);text-shadow:0 0 18px rgba(63,227,255,0.65)}
+.promo-sub{font-size:11px;color:var(--text2);margin:5px 0 14px}
+.promo-row{display:flex;gap:8px;margin-top:9px;width:100%;max-width:340px}
+.promo-mini{flex:1;text-align:center;font-size:12px;font-weight:700;color:var(--text2);
+  border:1px solid var(--border);border-radius:12px;padding:10px 6px;cursor:pointer;
+  background:linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.015));transition:background 0.15s,color 0.15s}
+.promo-mini:active{background:rgba(63,227,255,0.10);color:var(--text);border-color:rgba(63,227,255,0.35)}
+.promo-rules{margin-top:10px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;
+  font-size:12px;color:var(--cyan2);border:1px solid rgba(63,227,255,0.30);border-radius:20px;padding:7px 16px;
+  background:rgba(63,227,255,0.07)}
+
+/* CTA — неонова бірюза (як Bet-кнопка у казино) */
+.quick-play-btn{max-width:340px;border:none;color:#03222c;
+  background:linear-gradient(180deg,#8df1ff 0%,#35d3f2 55%,#19b4d6 100%);
+  box-shadow:0 0 26px rgba(63,227,255,0.35),0 5px 0 #0b7290,0 12px 22px rgba(0,0,0,0.4);
+  transition:transform 0.1s,box-shadow 0.1s}
+.quick-play-btn:active{transform:translateY(4px);border:none;
+  box-shadow:0 0 16px rgba(63,227,255,0.30),0 1px 0 #0b7290}
+.quick-play-btn span:first-child,.quick-play-btn .qp-icon{color:#03222c}
+.qp-title{font-size:16px;font-weight:800;letter-spacing:0.6px}
+.qp-sub{font-size:10px;opacity:0.72;margin-top:1px;font-weight:700}
+
+/* Центральна карта-логотип — бірюзове світіння */
+.hero-card.logo{border-color:rgba(63,227,255,0.5);
+  box-shadow:0 0 20px rgba(63,227,255,0.4),2px 6px 16px rgba(0,0,0,0.5)}
+.hero-card.logo .hc-mono{background:linear-gradient(180deg,#d9faff,#3fe3ff);-webkit-background-clip:text;background-clip:text}
+.hero-card.logo .hc-suits{color:rgba(63,227,255,0.8)}
+
+/* Реферальний банер — фіолет/бірюза неон */
+.ref-banner{position:relative;z-index:2;margin:12px 16px 0;border-radius:16px;padding:12px 14px;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;overflow:hidden;
+  background:linear-gradient(120deg,#331a63 0%,#1f1a4e 55%,#0e2c4e 100%);
+  border:1px solid rgba(139,92,246,0.40);box-shadow:0 0 22px rgba(139,92,246,0.14),inset 0 1px 0 rgba(200,180,255,0.12)}
+.ref-banner::before{content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(220px 120px at 100% 0%,rgba(63,227,255,0.14),transparent 65%)}
+.ref-btn{font-family:'Rubik',sans-serif;font-size:12px;color:#03222c;font-weight:800;flex-shrink:0;
+  background:linear-gradient(180deg,#8df1ff,#19b4d6);padding:9px 14px;border-radius:10px;
+  box-shadow:0 3px 0 #0b7290,0 0 14px rgba(63,227,255,0.3)}
+
+/* ── МЕНЮ: яскраві градієнтні плитки-ігри (як мініатюри ігор казино) ── */
+.menu-grid{gap:10px;margin:16px 16px 0;background:transparent;border:none;border-radius:0;overflow:visible}
+.menu-tile{position:relative;border-radius:16px;padding:18px 10px 14px;overflow:hidden;cursor:pointer;
+  border:1px solid rgba(255,255,255,0.14);
+  background:linear-gradient(165deg,var(--tile1,#1a2f52) 0%,var(--tile2,#101c33) 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.18),0 6px 16px rgba(0,0,0,0.38);
+  transition:transform 0.12s,box-shadow 0.12s}
+.menu-tile:active{transform:scale(0.96);background:linear-gradient(165deg,var(--tile1),var(--tile2))}
+.menu-tile::before{content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(130px 80px at 82% -12%,rgba(255,255,255,0.22),transparent 70%)}
+.menu-tile:nth-child(1){--tile1:#7b4dff;--tile2:#2e1766}  /* Кімнати — фіолет   */
+.menu-tile:nth-child(2){--tile1:#00b3d6;--tile2:#05435c}  /* Нова гра — бірюза  */
+.menu-tile:nth-child(3){--tile1:#2f6bff;--tile2:#10265c}  /* За кодом — синій   */
+.menu-tile:nth-child(4){--tile1:#ff9d3d;--tile2:#6e3610}  /* Скрині — оранж     */
+.menu-tile:nth-child(5){--tile1:#ff5fa2;--tile2:#5c163a}  /* Колекція — рожевий */
+.menu-tile:nth-child(6){--tile1:#20d68f;--tile2:#0a4d34}  /* Фортуна — зелений  */
+.menu-tile:nth-child(7){--tile1:#28c8c8;--tile2:#0b444c}  /* Спільнота — теал   */
+.menu-tile:nth-child(8){--tile1:#ff5d73;--tile2:#571422}  /* Дурак — червоний   */
+.mt-icon{color:#fff;opacity:1;filter:drop-shadow(0 2px 6px rgba(0,0,0,0.45))}
+.mt-icon svg{width:26px;height:26px}
+.mt-label{color:#fff;text-shadow:0 1px 3px rgba(0,0,0,0.45)}
+.mt-sub{color:rgba(255,255,255,0.78)}
+.menu-tile.soon{opacity:0.4;filter:grayscale(0.6)}
+
+/* Веер-навігація: активна карта світиться бірюзою */
+.fan-card.active{border-color:var(--cyan);
+  background:linear-gradient(165deg,rgba(24,54,84,0.98),rgba(10,26,46,0.99));
+  box-shadow:0 0 20px rgba(63,227,255,0.35),0 8px 18px rgba(0,0,0,0.5),inset 0 1px 0 var(--panel-top)}
+.fan-card.active .fc-icon{color:var(--cyan2)}
+
+/* Кімнати: кнопка входу — неонова бірюза */
+.tr-action{color:#03222c;border:none;font-weight:800;
+  background:linear-gradient(180deg,#8df1ff,#19b4d6);box-shadow:0 2px 0 #0b7290}
+.table-row.locked .tr-action,.table-row.playing .tr-action{
+  color:var(--text3);background:transparent;border:1px solid var(--border2);box-shadow:none}
+.private-room-btn:active{background:rgba(63,227,255,0.08);border-color:var(--cyan);color:var(--text)}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ІГРОВИЙ СТІЛ — мультяшна арена (фіолетовий данжен + шахова підлога)
+   ═══════════════════════════════════════════════════════════════════ */
+#gameScreen, body.theme-fan #gameScreen{
+  background:linear-gradient(180deg,#3b1f68 0%,#2a1450 45%,#1c0d38 100%)}
+.game-header, body.theme-fan .game-header{
+  background:rgba(26,10,50,0.78);border-bottom:2px solid rgba(0,0,0,0.35)}
+.gh-title{color:#ffe1a0}
+.score-bar, body.theme-fan .score-bar{background:rgba(26,10,50,0.55)}
+.timer-bar{height:8px;background:#170a2e;border-bottom:2px solid rgba(0,0,0,0.4)}
+.timer-fill{background:linear-gradient(180deg,#ffe27a,#ffb020);box-shadow:0 0 10px rgba(255,190,60,0.6)}
+.timer-fill.urgent{background:linear-gradient(180deg,#ff8a6e,#e53935)}
+
+/* Шахова кругла арена в центрі, довкола — фіолетовий камінь */
+.table-area, body.theme-fan .table-area{
+  background:
+    radial-gradient(ellipse 46% 40% at 50% 46%,
+      transparent 0%, transparent 63%,
+      rgba(26,10,48,0.45) 68%, rgba(26,10,48,0.95) 76%, #1a0a30 84%),
+    repeating-conic-gradient(#b9c3de 0% 25%, #8b99c1 0% 50%);
+  background-size:100% 100%, 58px 58px;
+  background-position:center, center}
+.felt-texture, body.theme-fan .felt-texture{display:none}
+.table-border, body.theme-fan .table-border{
+  inset:8px;border-radius:30px;border:5px solid #6e5a9e;
+  box-shadow:inset 0 3px 0 rgba(255,255,255,0.16), inset 0 0 70px rgba(18,7,38,0.5),
+    0 0 0 3px #2a1548}
+.table-area.drop-ready .table-border{border-color:#ffd257}
+.table-area.drop-active .table-border{border-color:#ffb020;box-shadow:inset 0 0 60px rgba(255,190,60,0.22),0 0 0 3px #2a1548}
+
+/* Статус — оранжева стрічка-банер (як GAME PROGRESS) */
+.status-pill, body.theme-fan .status-pill{
+  background:linear-gradient(180deg,#ffd257,#ff9c1f);color:#4d2500;font-weight:800;
+  border:2px solid #8a4a00;text-shadow:0 1px 0 rgba(255,255,255,0.35);
+  box-shadow:0 3px 0 #8a4a00,0 6px 14px rgba(0,0,0,0.4)}
+.opp-label, body.theme-fan .opp-label{
+  background:rgba(26,10,50,0.85);border:1.5px solid rgba(255,255,255,0.14);color:#cbbde8}
+.opp-label.active{color:#7ee650;border-color:rgba(126,230,80,0.55);box-shadow:0 0 10px rgba(126,230,80,0.3)}
+.opp-label.boaster{color:#ffd257;border-color:rgba(255,210,87,0.55)}
+.log-toggle{background:rgba(26,10,50,0.8);border-color:rgba(255,255,255,0.14)}
+
+/* Панель руки — кам'яна плита */
+.my-hand-area, body.theme-fan .my-hand-area{
+  background:linear-gradient(180deg,#33195c,#241040);border-top:3px solid #120826;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,0.07)}
+.my-name-tag{color:#cbbde8}
+.my-name-tag.active{color:#7ee650}
+
+/* Кнопки дій — соковиті 3D (як Draw) */
+.play-action-btn{background:linear-gradient(180deg,#9df06e,#4cb52e);color:#0c3305;
+  border:2px solid #1c6a12;text-shadow:0 1px 0 rgba(255,255,255,0.35);
+  box-shadow:0 4px 0 #1c6a12,0 8px 14px rgba(0,0,0,0.35)}
+.play-action-btn:active{transform:translateY(3px);box-shadow:0 1px 0 #1c6a12}
+#durakTakeBtn{background:linear-gradient(180deg,#ff9a80,#e0533c);color:#4a0b05;
+  border-color:#8a2214;box-shadow:0 4px 0 #8a2214,0 8px 14px rgba(0,0,0,0.35)}
+#durakTakeBtn:active{box-shadow:0 1px 0 #8a2214}
+
+.trick-log{background:rgba(26,10,50,0.94)}
+.trick-review{background:linear-gradient(180deg,rgba(51,25,92,0.97),rgba(28,13,56,0.98));
+  border-top:3px solid #ffb020}
+.trick-winner-label{color:#ffd257}
+#dealIntro{background:rgba(20,8,40,0.8)}
+body.theme-fan #dealIntro{background:rgba(20,8,40,0.8)}
+.durak-target{color:#ffd257;border-color:#b8791f;background:rgba(255,190,60,0.13)}
+
+/* Кімната очікування — той самий данжен */
+.waiting-screen, body.theme-fan .waiting-screen{
+  background:radial-gradient(700px 480px at 50% -10%,rgba(123,77,255,0.28),transparent 60%),
+             linear-gradient(175deg,#33195c 0%,#22104a 55%,#170a32 100%)}
+
+/* ═══════════════════════════════════════════════════════════════════
+   КОЛЕКЦІЯ (розділ з картками) — стиль talent cards: камінь + рамки
+   ═══════════════════════════════════════════════════════════════════ */
+#decksScreen{
+  background:radial-gradient(700px 460px at 50% -10%, rgba(123,77,255,0.30) 0%, transparent 60%),
+             linear-gradient(175deg,#33195c 0%,#22104a 55%,#170a32 100%)}
+#decksScreen .nav{background:rgba(30,12,58,0.72);border-bottom:2px solid rgba(0,0,0,0.35)}
+#decksScreen .nav-logo{color:#ffd257}
+
+/* Заголовки секцій — оранжеві банери-стрічки */
+#decksScreen .section-title{
+  justify-content:center;text-align:center;font-size:12px;color:#4d2500;
+  background:linear-gradient(180deg,#ffd257,#ff9c1f);border:2px solid #8a4a00;border-radius:14px;
+  padding:8px 12px;text-shadow:0 1px 0 rgba(255,255,255,0.35);
+  box-shadow:0 3px 0 #8a4a00,0 6px 12px rgba(0,0,0,0.3)}
+#decksScreen .section-title::after{display:none}
+#decksScreen .section-title span{color:#6e3a00 !important}
+
+/* Панелі — кам'яні плити */
+#decksScreen .ui-card,
+#decksScreen .card-skin-row,
+#decksScreen .coll-card{
+  background:linear-gradient(180deg,#4d4066,#39294f);
+  border:2px solid #1c0f30;border-radius:16px;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,0.12),inset 0 -4px 0 rgba(0,0,0,0.28),0 5px 12px rgba(0,0,0,0.4)}
+#decksScreen .card-skin-row.r-rare,#decksScreen .card-skin-row.r-epic,
+#decksScreen .coll-card.r-rare,#decksScreen .coll-card.r-epic{
+  border-color:var(--r-border);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,0.12),0 0 14px var(--r-glow),0 5px 12px rgba(0,0,0,0.4)}
+#decksScreen .cs-sub,#decksScreen .coll-desc{color:#b9a8d6}
+#decksScreen .cs-btn{border-color:rgba(255,255,255,0.2);color:#e8ddfa;background:rgba(255,255,255,0.07)}
+#decksScreen .cs-btn.on{border-color:#7ee650;color:#0c3305;font-weight:800;
+  background:linear-gradient(180deg,#9df06e,#4cb52e);box-shadow:0 2px 0 #1c6a12}
+
+/* Карти-таланти: товста золота рамка + соковитий градієнт */
+#decksScreen .deck-card{
+  border:3px solid #f5c964;border-radius:16px;text-align:center;
+  background:linear-gradient(165deg,var(--tc1,#6a4de0) 0%,var(--tc2,#2c1a66) 100%);
+  box-shadow:0 0 0 2px #6e4a12,inset 0 2px 0 rgba(255,255,255,0.28),0 6px 14px rgba(0,0,0,0.45)}
+#decksScreen .decks-grid .deck-card:nth-child(4n+1){--tc1:#ff9d3d;--tc2:#7a3610}
+#decksScreen .decks-grid .deck-card:nth-child(4n+2){--tc1:#8b5cf6;--tc2:#33176e}
+#decksScreen .decks-grid .deck-card:nth-child(4n+3){--tc1:#3fa2ff;--tc2:#123c73}
+#decksScreen .decks-grid .deck-card:nth-child(4n+4){--tc1:#20d68f;--tc2:#0a4d34}
+#decksScreen .deck-card .deck-name{color:#fff;text-shadow:0 1px 2px rgba(0,0,0,0.55)}
+#decksScreen .deck-card .deck-desc{color:rgba(255,255,255,0.82)}
+#decksScreen .deck-card.selected{border-color:#7ee650;
+  box-shadow:0 0 0 2px #1c6a12,0 0 20px rgba(126,230,80,0.5),inset 0 2px 0 rgba(255,255,255,0.28)}
+#decksScreen .deck-card.locked{opacity:0.55;filter:grayscale(0.7)}
+#decksScreen .deck-check{background:linear-gradient(180deg,#9df06e,#5ecb3a);color:#0c3305;box-shadow:0 2px 0 #1c6a12}
+#decksScreen .deck-mini{box-shadow:0 2px 5px rgba(0,0,0,0.4)}
+
+/* Сорочки карт — рамка як у карт талантів */
+#decksScreen .back-skin .bs-card{border:3px solid #f5c964;border-radius:12px;
+  box-shadow:0 0 0 2px #6e4a12,0 4px 10px rgba(0,0,0,0.45)}
+#decksScreen .back-skin.equipped .bs-card{border-color:#7ee650;
+  box-shadow:0 0 0 2px #1c6a12,0 0 16px rgba(126,230,80,0.5)}
+#decksScreen .back-skin.locked{opacity:0.45;filter:grayscale(0.6)}
+#decksScreen .back-skin .bs-name{color:#cbbde8}
+#decksScreen .back-skin.equipped .bs-name{color:#9df06e}
+
+/* Прогрес колекцій на камені */
+#decksScreen .coll-progress{background:rgba(0,0,0,0.35);border:1px solid rgba(0,0,0,0.4)}

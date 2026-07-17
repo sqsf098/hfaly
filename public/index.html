@@ -8,7 +8,7 @@
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script src="https://unpkg.com/@tonconnect/ui@2/dist/tonconnect-ui.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;600;700;800;900&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css?v=17">
+<link rel="stylesheet" href="css/style.css?v=18">
 
 </head>
 <body class="theme-fan fan-nav">
@@ -21,7 +21,7 @@
 
   <!-- Header -->
   <div style="position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;flex-shrink:0">
-    <div style="font-family:'Rubik',sans-serif;font-size:20px;font-weight:900;color:var(--gold);letter-spacing:3px;text-shadow:0 0 20px rgba(201,168,76,0.4)">хФали</div>
+    <div class="app-logo">хФали</div>
     <div style="display:flex;gap:8px;align-items:center">
       <div class="mute-btn" onclick="toggleMuteAll()">🔊</div>
       <div class="coin-badge" onclick="openChestsModal()" style="border-color:rgba(120,180,255,0.35)">
@@ -42,49 +42,49 @@
     </div>
   </div>
 
-  <!-- Hero section -->
-  <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;padding:8px 20px 0;text-align:center" id="heroSection">
+  <!-- Hero section: казино-промо-баннер -->
+  <div class="promo-hero" id="heroSection">
+    <div class="promo-inner">
 
-    <!-- Animated cards preview -->
-    <div id="heroCards" style="position:relative;height:100px;width:240px;margin-bottom:16px">
-      <div class="hero-card" style="left:0;transform:rotate(-18deg);animation-delay:0s">A<br>♠</div>
-      <div class="hero-card" style="left:40px;transform:rotate(-9deg);animation-delay:0.1s">K<br>♥</div>
-      <div class="hero-card logo" style="left:80px;transform:rotate(0deg);animation-delay:0.2s"><span class="hc-mono">хФ</span><span class="hc-suits">♠♥♦♣</span></div>
-      <div class="hero-card" style="left:120px;transform:rotate(9deg);animation-delay:0.3s">A<br>♦</div>
-      <div class="hero-card" style="left:160px;transform:rotate(18deg);animation-delay:0.4s">K<br>♣</div>
-    </div>
-
-    <div style="font-family:'Rubik',sans-serif;font-size:13px;color:var(--text2);letter-spacing:3px;text-transform:uppercase;margin-bottom:4px">хФали · Карткова гра</div>
-    <div style="font-size:11px;color:var(--text3);margin-bottom:18px">хФали 2v2 · Хрестовець · Дурак 🎴</div>
-
-    <!-- Головна дія: гра з ДРУЗЯМИ (боти — лише тренування) -->
-    <button class="quick-play-btn" onclick="inviteAndPlay()" id="btnNewGame">
-      <span class="qp-icon" data-icon="play"></span>
-      <div style="text-align:left">
-        <div style="font-size:16px;font-weight:700;letter-spacing:1px">🃏 Зіграти з другом</div>
-        <div style="font-size:10px;opacity:0.6;margin-top:1px">Створюємо стіл — запрошення летить у Telegram</div>
+      <!-- Animated cards preview -->
+      <div id="heroCards" class="promo-cards">
+        <div class="hero-card" style="left:0;transform:rotate(-18deg);animation-delay:0s">A<br>♠</div>
+        <div class="hero-card" style="left:40px;transform:rotate(-9deg);animation-delay:0.1s">K<br>♥</div>
+        <div class="hero-card logo" style="left:80px;transform:rotate(0deg);animation-delay:0.2s"><span class="hc-mono">хФ</span><span class="hc-suits">♠♥♦♣</span></div>
+        <div class="hero-card" style="left:120px;transform:rotate(9deg);animation-delay:0.3s">A<br>♦</div>
+        <div class="hero-card" style="left:160px;transform:rotate(18deg);animation-delay:0.4s">K<br>♣</div>
       </div>
-    </button>
-    <div style="display:flex;gap:8px;margin-top:8px;width:100%;max-width:330px">
-      <div onclick="switchTab('rooms')" style="flex:1;text-align:center;font-size:12px;color:var(--text2);border:1px solid var(--border2);border-radius:12px;padding:9px 6px;cursor:pointer;background:rgba(255,255,255,0.03)">👥 Відкриті столи</div>
-      <div onclick="quickPlayWithBots()" style="flex:1;text-align:center;font-size:12px;color:var(--text3);border:1px solid var(--border2);border-radius:12px;padding:9px 6px;cursor:pointer">🤖 Тренування</div>
+
+      <div class="promo-title">Грай. Хвалися. <span>Вигравай!</span></div>
+      <div class="promo-sub">хФали 2v2 · Хрестовець · Дурак 🎴</div>
+
+      <!-- Головна дія: гра з ДРУЗЯМИ (боти — лише тренування) -->
+      <button class="quick-play-btn" onclick="inviteAndPlay()" id="btnNewGame">
+        <span class="qp-icon" data-icon="play"></span>
+        <div style="text-align:left">
+          <div class="qp-title">🃏 Зіграти з другом</div>
+          <div class="qp-sub">Створюємо стіл — запрошення летить у Telegram</div>
+        </div>
+      </button>
+      <div class="promo-row">
+        <div onclick="switchTab('rooms')" class="promo-mini">👥 Відкриті столи</div>
+        <div onclick="quickPlayWithBots()" class="promo-mini">🤖 Тренування</div>
+      </div>
+      <!-- Правила — одразу видно новачкам -->
+      <div onclick="openRules('hfaly')" class="promo-rules">❓ Як грати — правила за 1 хвилину</div>
     </div>
-    <!-- Правила — одразу видно новачкам -->
-    <div onclick="openRules('hfaly')" style="margin-top:10px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;
-      font-size:12px;color:var(--gold);border:1px solid var(--gold-dim);border-radius:20px;padding:7px 16px;
-      background:rgba(201,168,76,0.08)">❓ Як грати — правила за 1 хвилину</div>
   </div>
 
   <!-- Реферал: запроси друга — бонус обом -->
-  <div style="position:relative;z-index:2;margin:12px 16px 0;background:linear-gradient(135deg,rgba(201,168,76,0.12),rgba(155,107,255,0.10));border:1px solid var(--gold-dim);border-radius:14px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer" onclick="shareRef()">
+  <div class="ref-banner" onclick="shareRef()">
     <div style="display:flex;align-items:center;gap:10px">
       <span style="font-size:24px">🎁</span>
       <div>
-        <div style="font-size:13px;color:var(--text);font-weight:700">Збери команду — <span style="color:var(--gold)">25% з покупок друзів</span></div>
-        <div style="font-size:10px;color:var(--text3);margin-top:1px">+10% з покупок ЇХНІХ друзів · +300 💰 обом за вхід · довічно</div>
+        <div style="font-size:13px;color:var(--text);font-weight:700">Збери команду — <span style="color:var(--cyan2,#8ff0ff)">25% з покупок друзів</span></div>
+        <div style="font-size:10px;color:var(--text2);margin-top:1px">+10% з покупок ЇХНІХ друзів · +300 💰 обом за вхід · довічно</div>
       </div>
     </div>
-    <div style="font-family:'Rubik',sans-serif;font-size:12px;color:#241a00;background:linear-gradient(135deg,#ffd166,#c9a227);padding:8px 14px;border-radius:10px;font-weight:800;flex-shrink:0">Запросити</div>
+    <div class="ref-btn">Запросити</div>
   </div>
 
   <!-- Меню (строгий грід, як у класичних карткових застосунках) -->
